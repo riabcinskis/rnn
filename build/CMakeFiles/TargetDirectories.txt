@@ -1,0 +1,3 @@
+/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rebuild_cache.dir
+/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir
+/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/edit_cache.dir

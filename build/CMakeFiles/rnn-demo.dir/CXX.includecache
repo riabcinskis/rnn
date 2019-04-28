@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/ws/repos/coding/progs/rnn-demo/src/ann.cpp
+ann.h
+/ws/repos/coding/progs/rnn-demo/src/ann.h
+
+/ws/repos/coding/progs/rnn-demo/src/ann.h
+
+/ws/repos/coding/progs/rnn-demo/src/rnn-demo.cpp
+stdio.h
+-
+rnn.h
+/ws/repos/coding/progs/rnn-demo/src/rnn.h
+tests.h
+/ws/repos/coding/progs/rnn-demo/src/tests.h
+
+/ws/repos/coding/progs/rnn-demo/src/rnn.cpp
+rnn.h
+/ws/repos/coding/progs/rnn-demo/src/rnn.h
+
+/ws/repos/coding/progs/rnn-demo/src/rnn.h
+ann.h
+/ws/repos/coding/progs/rnn-demo/src/ann.h
+cmath
+-
+
+/ws/repos/coding/progs/rnn-demo/src/tests.cpp
+stdio.h
+-
+rnn.h
+/ws/repos/coding/progs/rnn-demo/src/rnn.h
+
+/ws/repos/coding/progs/rnn-demo/src/tests.h
+

@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -fopenmp   -rdynamic CMakeFiles/rnn-demo.dir/src/tests.cpp.o CMakeFiles/rnn-demo.dir/src/ann.cpp.o CMakeFiles/rnn-demo.dir/src/rnn.cpp.o CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o  -o rnn-demo 
