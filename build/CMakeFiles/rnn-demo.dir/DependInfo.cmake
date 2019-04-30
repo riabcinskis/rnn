@@ -4,10 +4,10 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/ws/repos/coding/progs/rnn-demo/src/ann.cpp" "/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir/src/ann.cpp.o"
-  "/ws/repos/coding/progs/rnn-demo/src/rnn-demo.cpp" "/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o"
-  "/ws/repos/coding/progs/rnn-demo/src/rnn.cpp" "/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir/src/rnn.cpp.o"
-  "/ws/repos/coding/progs/rnn-demo/src/tests.cpp" "/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir/src/tests.cpp.o"
+  "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.cpp" "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rnn-demo.dir/src/ann.cpp.o"
+  "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn-demo.cpp" "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o"
+  "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.cpp" "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rnn-demo.dir/src/rnn.cpp.o"
+  "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.cpp" "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rnn-demo.dir/src/tests.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

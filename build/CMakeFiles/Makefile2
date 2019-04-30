@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /ws/repos/coding/progs/rnn-demo
+CMAKE_SOURCE_DIR = /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /ws/repos/coding/progs/rnn-demo/build
+CMAKE_BINARY_DIR = /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build
 
 #=============================================================================
 # Target rules for target CMakeFiles/rnn-demo.dir
@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /ws/repos/coding/progs/rnn-demo/build
 CMakeFiles/rnn-demo.dir/all:
 	$(MAKE) -f CMakeFiles/rnn-demo.dir/build.make CMakeFiles/rnn-demo.dir/depend
 	$(MAKE) -f CMakeFiles/rnn-demo.dir/build.make CMakeFiles/rnn-demo.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/ws/repos/coding/progs/rnn-demo/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target rnn-demo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target rnn-demo"
 .PHONY : CMakeFiles/rnn-demo.dir/all
 
 # Include target in all.
@@ -76,9 +76,9 @@ all: CMakeFiles/rnn-demo.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/rnn-demo.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /ws/repos/coding/progs/rnn-demo/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles 5
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/rnn-demo.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /ws/repos/coding/progs/rnn-demo/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles 0
 .PHONY : CMakeFiles/rnn-demo.dir/rule
 
 # Convenience name for target.

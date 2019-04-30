@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /ws/repos/coding/progs/rnn-demo
+CMAKE_SOURCE_DIR = /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /ws/repos/coding/progs/rnn-demo/build
+CMAKE_BINARY_DIR = /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /ws/repos/coding/progs/rnn-demo/build/CMakeFiles /ws/repos/coding/progs/rnn-demo/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /ws/repos/coding/progs/rnn-demo/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

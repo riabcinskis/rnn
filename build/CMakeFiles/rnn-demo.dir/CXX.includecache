@@ -6,35 +6,57 @@
 
 #IncludeRegexTransform: 
 
-/ws/repos/coding/progs/rnn-demo/src/ann.cpp
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.cpp
 ann.h
-/ws/repos/coding/progs/rnn-demo/src/ann.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.h
 
-/ws/repos/coding/progs/rnn-demo/src/ann.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.h
+cmath
+-
+cstdlib
+-
+cmath
+-
+math.h
+-
+vector
+-
+iostream
+-
+iomanip
+-
+fstream
+-
+string
+-
+array
+-
+random
+-
 
-/ws/repos/coding/progs/rnn-demo/src/rnn-demo.cpp
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn-demo.cpp
 stdio.h
 -
 rnn.h
-/ws/repos/coding/progs/rnn-demo/src/rnn.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.h
 tests.h
-/ws/repos/coding/progs/rnn-demo/src/tests.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.h
 
-/ws/repos/coding/progs/rnn-demo/src/rnn.cpp
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.cpp
 rnn.h
-/ws/repos/coding/progs/rnn-demo/src/rnn.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.h
 
-/ws/repos/coding/progs/rnn-demo/src/rnn.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.h
 ann.h
-/ws/repos/coding/progs/rnn-demo/src/ann.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.h
 cmath
 -
 
-/ws/repos/coding/progs/rnn-demo/src/tests.cpp
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.cpp
 stdio.h
 -
 rnn.h
-/ws/repos/coding/progs/rnn-demo/src/rnn.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.h
 
-/ws/repos/coding/progs/rnn-demo/src/tests.h
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.h
 

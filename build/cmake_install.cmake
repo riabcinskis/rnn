@@ -1,4 +1,4 @@
-# Install script for directory: /ws/repos/coding/progs/rnn-demo
+# Install script for directory: /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/ws/repos/coding/progs/rnn-demo/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

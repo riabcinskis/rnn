@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /ws/repos/coding/progs/rnn-demo
+CMAKE_SOURCE_DIR = /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /ws/repos/coding/progs/rnn-demo/build
+CMAKE_BINARY_DIR = /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/rnn-demo.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/rnn-demo.dir/flags.make
 
 CMakeFiles/rnn-demo.dir/src/tests.cpp.o: CMakeFiles/rnn-demo.dir/flags.make
 CMakeFiles/rnn-demo.dir/src/tests.cpp.o: ../src/tests.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/ws/repos/coding/progs/rnn-demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/rnn-demo.dir/src/tests.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/tests.cpp.o -c /ws/repos/coding/progs/rnn-demo/src/tests.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/rnn-demo.dir/src/tests.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/tests.cpp.o -c /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.cpp
 
 CMakeFiles/rnn-demo.dir/src/tests.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rnn-demo.dir/src/tests.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /ws/repos/coding/progs/rnn-demo/src/tests.cpp > CMakeFiles/rnn-demo.dir/src/tests.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.cpp > CMakeFiles/rnn-demo.dir/src/tests.cpp.i
 
 CMakeFiles/rnn-demo.dir/src/tests.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rnn-demo.dir/src/tests.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /ws/repos/coding/progs/rnn-demo/src/tests.cpp -o CMakeFiles/rnn-demo.dir/src/tests.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/tests.cpp -o CMakeFiles/rnn-demo.dir/src/tests.cpp.s
 
 CMakeFiles/rnn-demo.dir/src/tests.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/rnn-demo.dir/src/tests.cpp.o.provides.build: CMakeFiles/rnn-demo.dir/
 
 CMakeFiles/rnn-demo.dir/src/ann.cpp.o: CMakeFiles/rnn-demo.dir/flags.make
 CMakeFiles/rnn-demo.dir/src/ann.cpp.o: ../src/ann.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/ws/repos/coding/progs/rnn-demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/rnn-demo.dir/src/ann.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/ann.cpp.o -c /ws/repos/coding/progs/rnn-demo/src/ann.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/rnn-demo.dir/src/ann.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/ann.cpp.o -c /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.cpp
 
 CMakeFiles/rnn-demo.dir/src/ann.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rnn-demo.dir/src/ann.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /ws/repos/coding/progs/rnn-demo/src/ann.cpp > CMakeFiles/rnn-demo.dir/src/ann.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.cpp > CMakeFiles/rnn-demo.dir/src/ann.cpp.i
 
 CMakeFiles/rnn-demo.dir/src/ann.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rnn-demo.dir/src/ann.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /ws/repos/coding/progs/rnn-demo/src/ann.cpp -o CMakeFiles/rnn-demo.dir/src/ann.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/ann.cpp -o CMakeFiles/rnn-demo.dir/src/ann.cpp.s
 
 CMakeFiles/rnn-demo.dir/src/ann.cpp.o.requires:
 
@@ -107,16 +107,16 @@ CMakeFiles/rnn-demo.dir/src/ann.cpp.o.provides.build: CMakeFiles/rnn-demo.dir/sr
 
 CMakeFiles/rnn-demo.dir/src/rnn.cpp.o: CMakeFiles/rnn-demo.dir/flags.make
 CMakeFiles/rnn-demo.dir/src/rnn.cpp.o: ../src/rnn.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/ws/repos/coding/progs/rnn-demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/rnn-demo.dir/src/rnn.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/rnn.cpp.o -c /ws/repos/coding/progs/rnn-demo/src/rnn.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/rnn-demo.dir/src/rnn.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/rnn.cpp.o -c /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.cpp
 
 CMakeFiles/rnn-demo.dir/src/rnn.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rnn-demo.dir/src/rnn.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /ws/repos/coding/progs/rnn-demo/src/rnn.cpp > CMakeFiles/rnn-demo.dir/src/rnn.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.cpp > CMakeFiles/rnn-demo.dir/src/rnn.cpp.i
 
 CMakeFiles/rnn-demo.dir/src/rnn.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rnn-demo.dir/src/rnn.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /ws/repos/coding/progs/rnn-demo/src/rnn.cpp -o CMakeFiles/rnn-demo.dir/src/rnn.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn.cpp -o CMakeFiles/rnn-demo.dir/src/rnn.cpp.s
 
 CMakeFiles/rnn-demo.dir/src/rnn.cpp.o.requires:
 
@@ -131,16 +131,16 @@ CMakeFiles/rnn-demo.dir/src/rnn.cpp.o.provides.build: CMakeFiles/rnn-demo.dir/sr
 
 CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o: CMakeFiles/rnn-demo.dir/flags.make
 CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o: ../src/rnn-demo.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/ws/repos/coding/progs/rnn-demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o -c /ws/repos/coding/progs/rnn-demo/src/rnn-demo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o -c /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn-demo.cpp
 
 CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /ws/repos/coding/progs/rnn-demo/src/rnn-demo.cpp > CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn-demo.cpp > CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.i
 
 CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /ws/repos/coding/progs/rnn-demo/src/rnn-demo.cpp -o CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/src/rnn-demo.cpp -o CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.s
 
 CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o.requires:
 
@@ -169,7 +169,7 @@ rnn-demo: CMakeFiles/rnn-demo.dir/src/rnn.cpp.o
 rnn-demo: CMakeFiles/rnn-demo.dir/src/rnn-demo.cpp.o
 rnn-demo: CMakeFiles/rnn-demo.dir/build.make
 rnn-demo: CMakeFiles/rnn-demo.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/ws/repos/coding/progs/rnn-demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable rnn-demo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable rnn-demo"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/rnn-demo.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -189,6 +189,6 @@ CMakeFiles/rnn-demo.dir/clean:
 .PHONY : CMakeFiles/rnn-demo.dir/clean
 
 CMakeFiles/rnn-demo.dir/depend:
-	cd /ws/repos/coding/progs/rnn-demo/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /ws/repos/coding/progs/rnn-demo /ws/repos/coding/progs/rnn-demo /ws/repos/coding/progs/rnn-demo/build /ws/repos/coding/progs/rnn-demo/build /ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir/DependInfo.cmake --color=$(COLOR)
+	cd /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build /media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rnn-demo.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/rnn-demo.dir/depend
 

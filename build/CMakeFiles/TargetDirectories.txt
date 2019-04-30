@@ -1,3 +1,3 @@
-/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rebuild_cache.dir
-/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/rnn-demo.dir
-/ws/repos/coding/progs/rnn-demo/build/CMakeFiles/edit_cache.dir
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rebuild_cache.dir
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/rnn-demo.dir
+/media/deiria/6b105ad7-17ab-4367-afb6-af2fd4e134d1/rnn/build/CMakeFiles/edit_cache.dir
