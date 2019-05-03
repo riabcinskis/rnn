@@ -117,11 +117,69 @@ private:
   void prepare(Topology *top, int M);
   void init(FILE *pFile);
 
-    	void calc_feedForward();
+  void calc_feedForward();
 
   double f(double x);
   double f_deriv(double x);
 
 };
+
+
+class AnnSerialDBL_tanh{
+private:
+  Topology* cTopology;
+
+  int L;
+  int M;
+  int * l;
+  int * s;
+  double * a_arr;
+  double * ah_arr;
+  double * z_arr;
+  int * W;
+  int * sw;
+  double * w_arr;
+  double * dw_arr;
+  double * wh_arr;
+  double * dwh_arr;
+
+
+public:
+  void feedForward(double *h_input,double *a, double *b);
+
+  void setWeights(double *t_w_arr, double *t_wh_arr){
+    w_arr = t_w_arr;
+    wh_arr = t_wh_arr;
+  };
+
+
+  AnnSerialDBL_tanh(Topology *top, int mM) {
+    prepare(top,mM);
+    init(NULL);
+  };
+
+
+  double* getWeights();
+  double* getHWeights();
+  double* getDWeights();
+  double* getDHWeights();
+  double* getA();
+  Topology* getTopology();
+
+
+private:
+  void prepare(Topology *top, int M);
+  void init(FILE *pFile);
+
+  void calc_feedForward();
+
+  double f(double x);
+  double f_deriv(double x);
+
+};
+
+
+
+
 
 #endif /* */
