@@ -36,7 +36,7 @@ template <typename T>
 class RnnBase {
   public:
   	 virtual void train(T *a, T *b, T alpha, T eta) = 0;
-  	// virtual void feedForward(T *a, T *b) = 0;
+  	 virtual void feedForward(T *h_in, T *c_in,T *a, T *c_out, T *h_out) = 0;
   	// virtual void destroy() = 0;
   	// virtual T obtainError(T *b) = 0;
     //
@@ -58,6 +58,17 @@ class RnnSerialDBL : public RnnBase<double> {
     AnnSerialDBL *ann2;
     AnnSerialDBL_tanh *ann3;
     AnnSerialDBL *ann4;
+
+    double * c_current;
+    double * c_new;
+    double * h_current;
+    double * h_new;
+    double * b;
+    double * a1_output;
+    double * a2_output;
+    double * a3_output;
+    double * a4_output;
+
     //
   	// int L;
   	// int * l;
@@ -72,7 +83,7 @@ class RnnSerialDBL : public RnnBase<double> {
   	// double * gjl;
   public:
   	 void train(double *a, double *b, double alpha, double eta){};
-  	// void feedForward(double *a, double *b);
+  	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
   	// void destroy();
     //
   	// double obtainError(double *b);

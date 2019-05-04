@@ -425,7 +425,6 @@ bool test_rnn_feedforward(){
   if(serialDBL->getANN4()->getA()[2] != 1) return false;
   if(serialDBL->getANN4()->getA()[4] != 1) return false;
 
-
   delete [] warr1;
   delete [] wharr1;
   delete [] wharr_1;
@@ -449,14 +448,234 @@ bool test_rnn_feedforward(){
   delete [] h_input;
   delete [] input;
   delete [] output;
-  delete serialDBL;
+
   delete topology1;
   delete topology2;
   delete topology3;
   delete topology4;
 
+  // free(topology1);
+  // free(topology2);
+  // free(topology3);
+  // free(topology4);
+  delete conf;
+  delete serialDBL;
   return true;
 }
+
+bool test_rnn_feedforward_full(){
+  Topology *topology1 = new Topology();
+  topology1->addLayer(2);
+  topology1->addLayer(1);
+  topology1->addLayer(2);//7weights+2
+
+  Topology *topology2 = new Topology();
+  topology2->addLayer(2);
+  topology2->addLayer(2);
+  topology2->addLayer(2);//12weights+4
+
+  Topology *topology3 = new Topology();
+  topology3->addLayer(2);
+  topology3->addLayer(2);
+  topology3->addLayer(2);//12weights+4
+
+  Topology *topology4 = new Topology();
+  topology4->addLayer(2);
+  topology4->addLayer(1);
+  topology4->addLayer(1);
+  topology4->addLayer(2);//9weights+2
+
+  int M = 2;
+
+  rnnConfig *conf = new rnnConfig();
+  conf->setTopology1(topology1);
+  conf->setTopology2(topology2);
+  conf->setTopology3(topology3);
+  conf->setTopology4(topology4);
+  conf->setM(M);
+
+
+  RnnSerialDBL *serialDBL = new RnnSerialDBL(conf);
+
+  double *warr1 = new double[7];
+  int idx1 = 0;
+  warr1[idx1++] = 0.5;
+  warr1[idx1++] = 0.2;
+  warr1[idx1++] = 0.0;
+
+  warr1[idx1++] = 0.1;
+  warr1[idx1++] = 0.2;
+  warr1[idx1++] = 0.7;
+  warr1[idx1++] = 0.9;
+
+  double *warr2 = new double[12];
+  int idx2 = 0;
+  warr2[idx2++] = 0.5;
+  warr2[idx2++] = 0.2;
+  warr2[idx2++] = 0.0;
+  warr2[idx2++] = 0.1;
+  warr2[idx2++] = 0.2;
+  warr2[idx2++] = 0.7;
+
+  warr2[idx2++] = 0.9;
+  warr2[idx2++] = 0.0;
+  warr2[idx2++] = 0.1;
+  warr2[idx2++] = 0.2;
+  warr2[idx2++] = 0.7;
+  warr2[idx2++] = 0.9;
+
+  double *warr3 = new double[12];
+  int idx3 = 0;
+  warr3[idx3++] = 0.5;
+  warr3[idx3++] = 0.2;
+  warr3[idx3++] = 0.0;
+  warr3[idx3++] = 0.1;
+  warr3[idx3++] = 0.2;
+  warr3[idx3++] = 0.7;
+
+  warr3[idx3++] = 0.0;
+  warr3[idx3++] = 0.1;
+  warr3[idx3++] = 0.2;
+  warr3[idx3++] = 0.7;
+  warr3[idx3++] = 0.9;
+  warr3[idx3++] = 0.9;
+
+  double *warr4 = new double[9];
+  int idx4 = 0;
+  warr4[idx4++] = 0.5;
+  warr4[idx4++] = 0.2;
+  warr4[idx4++] = 0.0;
+
+  warr4[idx4++] = 0.1;
+  warr4[idx4++] = 0.2;
+
+  warr4[idx4++] = 0.7;
+  warr4[idx4++] = 0.9;
+  warr4[idx4++] = 0.2;
+  warr4[idx4++] = 0.7;
+
+
+
+  double *wharr1 = new double[2];
+  int idxh1 = 0;
+  wharr1[idxh1++] = 0.5;
+  wharr1[idxh1++] = 0.4;
+
+  double *wharr2 = new double[4];
+  int idxh2 = 0;
+  wharr2[idxh2++] = 0.5;
+  wharr2[idxh2++] = 0.4;
+  wharr2[idxh2++] = 0.3;
+  wharr2[idxh2++] = 0.1;
+
+  double *wharr3 = new double[4];
+  int idxh3 = 0;
+  wharr3[idxh3++] = 0.5;
+  wharr3[idxh3++] = 0.3;
+  wharr3[idxh3++] = 0.3;
+  wharr3[idxh3++] = 0.2;
+
+  double *wharr4 = new double[2];
+  int idxh4 = 0;
+  wharr4[idxh4++] = 0.5;
+  wharr4[idxh4++] = 0.1;
+
+  serialDBL->getANN1()->setWeights(warr1, wharr1);
+  serialDBL->getANN2()->setWeights(warr2, wharr2);
+  serialDBL->getANN3()->setWeights(warr3, wharr3);
+  serialDBL->getANN4()->setWeights(warr4, wharr4);
+
+  //serialDBL->printf_Network("w_and_dw_tests.bin");
+  double *h_input = new double[2];
+  h_input[0] = 3;
+  h_input[1] = 4;
+
+  double *input = new double[2];
+  input[0] = 1;
+  input[1] = 2;
+
+  double *output1 = new double[2];
+  double *output2 = new double[2];
+  double *output3 = new double[2];
+  double *output4 = new double[2];
+
+
+  ///
+  ///1
+  ///
+  	serialDBL->getANN1()->feedForward(h_input,input, output1);
+  //              0.689589607251556
+  if(output1[0] != 0.68958960725155571403) return false;
+  //              0.74958548419844700000
+  if(output1[1] != 0.74958548419844750477) return false;
+
+  ///
+  ///2
+  ///
+	serialDBL->getANN2()->feedForward(h_input,input, output2);
+  //              0.84085944955203300000
+  if(output2[0] != 0.84085944955203295592) return false;
+  //              0.74789281328782
+  if(output2[1] != 0.74789281328782009073) return false;
+
+  ///
+  ///3
+  ///
+	serialDBL->getANN3()->feedForward(h_input,input, output3);
+
+
+  //              0.79996904340460500000
+  if(output3[0] != 0.79996904340460495142) return false;
+  //              0.934733066362687
+  if(output3[1] != 0.93473306636268660430) return false;
+
+  ///
+  ///4
+  ///
+	serialDBL->getANN4()->feedForward(h_input,input, output4);
+
+  //              0.645914426127551
+  if(output4[0] != 0.64591442612755145536) return false;
+  //              0.771312387165297
+  if(output4[1] != 0.77131238716529726407) return false;
+
+  double *c_in = new double[2];
+  c_in[0] = 0.5;
+  c_in[1] = 0.3;
+  double *c_out = new double[2];
+  double *h_out = new double[2];
+  serialDBL->feedForward(h_input,c_in,input,c_out, h_out);
+
+
+
+  delete [] warr1;
+  delete [] wharr1;
+
+  delete [] warr2;
+  delete [] wharr2;
+
+  delete [] warr3;
+  delete [] wharr3;
+
+  delete [] warr4;
+  delete [] wharr4;
+
+  delete [] h_input;
+  delete [] input;
+
+  delete [] output1;
+  delete [] output2;
+  delete [] output3;
+  delete [] output4;
+  delete topology1;
+  delete topology2;
+  delete topology3;
+  delete topology4;
+  delete conf;
+  delete serialDBL;
+  return true;
+}
+
 
 bool run_tests(){
 
@@ -473,8 +692,11 @@ bool run_tests(){
   passed = test_ann_feedforward_tanh(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_feedforward_tanh\n", passed ? "PASSED" : "FAILED");
 
-  passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
-  printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
+  // passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
+  // printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
+
+  passed = test_rnn_feedforward_full(); failCount += passed ? 0 : 1;
+  printf("%s - test_rnn_feedforwards_full\n", passed ? "PASSED" : "FAILED");
 
 
   printf("\n");

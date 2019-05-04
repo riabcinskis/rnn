@@ -54,6 +54,16 @@ void RnnSerialDBL::prepare(rnnConfig *mRnnConf){
   ann3 = new AnnSerialDBL_tanh(mRnnConf->getTopology3(),M);
   ann4 = new AnnSerialDBL(mRnnConf->getTopology4(),M);
 
+  b = new double[M];
+  c_current = new double[M];
+  c_new = new double[M];
+  h_current = new double[M];
+  h_new = new double[M];
+  a1_output = new double[M];
+  a2_output = new double[M];
+  a3_output = new double[M];
+  a4_output = new double[M];
+
 	// a_arr = new double[neuronCount];
 	// z_arr = new double[neuronCount];
   //
@@ -71,51 +81,25 @@ void RnnSerialDBL::prepare(rnnConfig *mRnnConf){
 
 
 void RnnSerialDBL::init(FILE * pFile=NULL){
-  // L = cTopology->getLayerCount();
-  //
-	// Random *rnd = new Random();
-  //
-	// //Neuronu kiekiai sluoksnyje
-	// for (int i = 0; i < L; i++) {
-	// 	l[i] = cTopology->getLayerSize(i) + 1;
-	// }
-  //
-	// //Sluoksniu pradzios indeksai
-	// for (int i = 0; i < L; i++) {
-	// 	s[i] = 0;
-	// 	for (int j = i; j > 0; j--) {
-	// 		s[i] += l[j - 1];
-	// 	}
-	// }
-  //
-	// //Bias neuronai
-	// for (int i = 0; i < L - 1; i++) {
-	// 	a_arr[s[i + 1] - 1] = 1;
-	// }
-  //
-  //
-	// //Svoriu kiekiai l-ame sluoksnyje
-	// for (int i = 0; i < L - 1; i++) {
-	// 	W[i] = l[i] * (l[i + 1] - 1);
-	// 	sw[i] = 0;
-	// 	if (i != 0) {
-	// 		for (int j = 0; j < i; j++) {
-	// 			sw[i] += W[j];
-	// 		}
-	// 	}
-  // }
-  //
-  //
-  // if (pFile==NULL) {
-  //   for (int i = 0; i < L - 1; i++)
-  //     for (int j = 0; j < W[i]; j++) {
-  //       w_arr[sw[i] + j] =(rnd->next()*2-1); // (double)rand() / double(RAND_MAX);
-  //       dw_arr[sw[i] + j] = 0.0;
-  //   }
-  // }
-  // else {
-  // //  readf_Network(pFile);
-  // }
+
+  for(int i=0; i<M;i++){
+    c_current[i] = 0;
+    h_current[i] = 0;
+  }
+
+}
+
+void RnnSerialDBL::feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out){
+  ann1->feedForward(h_in,a,a1_output);
+
+  ann2->feedForward(h_in,a,a2_output);
+
+  ann3->feedForward(h_in,a,a3_output);
+
+  ann4->feedForward(h_in,a,a4_output);
+
+
+
 
 }
 
