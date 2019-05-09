@@ -646,6 +646,31 @@ bool test_rnn_feedforward_full(){
   double *h_out = new double[2];
   serialDBL->feedForward(h_input,c_in,input,c_out, h_out);
 
+  //             1.01745633312164000000
+  if(c_out[0] != 1.01745633312164018847) return false;
+  //             0.923955787934675
+  if(c_out[1] != 0.92395578793467447731) return false;
+  //             0.469404624141351
+  if(h_out[0] != 0.46940462414135097902) return false;
+  //             0.530595375858649
+  if(h_out[1] != 0.53059537585864913201) return false;
+
+  c_in[0] = c_out[0];
+  c_in[1] = c_out[1];
+  h_input[0] = h_out[0];
+  h_input[1] = h_out[1];
+
+  serialDBL->feedForward(h_input,c_in,input,c_out, h_out);
+
+  //             1.33881207992600000000
+  if(c_out[0] != 1.33881207992600104184) return false;
+  //             1.3692467644635
+  if(c_out[1] != 1.36924676446350157555) return false;
+  //             0.453692800787076
+  if(h_out[0] != 0.45369280078707552306) return false;
+  //             0.546307199212925
+  if(h_out[1] != 0.54630719921292447694) return false;
+
 
 
   delete [] warr1;

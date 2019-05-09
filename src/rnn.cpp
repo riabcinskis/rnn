@@ -98,48 +98,28 @@ void RnnSerialDBL::feedForward(double *h_in, double *c_in,double *a, double *c_o
 
   ann4->feedForward(h_in,a,a4_output);
 
+  double temp= 0;
+
+  for(int i=0; i < M; i++){
+    temp = c_in[i] * a1_output[i] + a2_output[i] * a3_output[i];
+    c_out[i] = temp;
+    temp = tanh(temp);
+    b[i] = temp * a4_output[i];
+  }
+
+  double sumB = 0;
+  for(int i = 0; i < M; i++){
+    sumB+= b[i];
+  }
+
+  for(int i = 0; i < M; i++){
+    h_out[i] = b[i] / sumB;
+  }
+
 
 
 
 }
-
-
-// void RnnSerialDBL::feedForward(double *h_input,double *a, double *b){
-// 	for (int i = 0; i < cTopology->getLayerSize(0); i++) {
-// 		a_arr[i] = a[i];
-// 	}
-//
-//   for(int i=0; i<M;i++){
-//     ah_arr[i] = h_input[i];
-//   }
-//
-// 	for (int j = 0; j < cTopology->obtainNeuronCount(); j++) {
-// 		z_arr[j] = 0;
-// 	}
-//
-// 	calc_feedForward();
-//
-// 	for (int i = 0; i<cTopology->getLayerSize(cTopology->getLayerCount() - 1); i++)
-// 		b[i] = a_arr[s[L - 1] + i];
-// }
-//
-// void RnnSerialDBL::calc_feedForward(){
-//   for(int i = 0; i < l[1] - 1; i++){
-//     for(int j = 0; j < M; j++){
-//       z_arr[s[1] + i] += ah_arr[j] * wh_arr[j*M + i];
-//     }
-//   }
-// 	for (int i = 0; i < L - 1; i++) {//per sluoksnius einu+
-// 		for (int j = 0; j < l[i]; j++) { //kiek neuronu sluoksnyje+
-// 			for (int k = 0; k < l[i + 1] - 1; k++) {//per sekancio sluoksnio z+
-// 				z_arr[s[i + 1] + k] += w_arr[sw[i] + k + j*(l[i + 1] - 1)] * a_arr[s[i] + j];
-// 			}
-// 		}
-// 		for (int k = 0; k < l[i + 1] - 1; k++) {//per sekancio sluoksnio z
-// 			a_arr[s[i + 1] + k] = f(z_arr[s[i + 1] + k]);
-// 		}
-// 	}
-// }
 
 
 AnnSerialDBL* RnnSerialDBL::getANN1(){
