@@ -54,6 +54,7 @@ int Topology::obtainNeuronCount(){
 	int count = 0;
 	for (int i = 0; i < ml->size(); i++)
 		count += (*ml)[i] + 1;
+  count--;
 	return count;
 }
 
@@ -77,7 +78,8 @@ int Topology::getOutputNeuronCount(){
 // AnnSerial
 //
 
-AnnSerial(int u, int M, Topology **top, double (*f)(double), double (*f_deriv)(double)){
+AnnSerial::AnnSerial(int V, int u, int M, Topology **top, double (*f)(double), double (*f_deriv)(double)){
+  this->V = V;
   this->u = u;
   this->M = M;
   cTopology = top[u];
@@ -97,6 +99,11 @@ int AnnSerial::obtainGCount(int L){
     remaining_L -= 2;
   }
   return G_count;
+}
+
+int AnnSerial::layerToGIndex(int L, int l){
+  int G_count = obtainGCount(L);
+  return G_count - (ll - ll%2) / 2;
 }
 
 void AnnSerial::obtainSW(Topology *top, int *sW){
@@ -121,8 +128,8 @@ void AnnSerial::prepare(Topology **top){
 
   ah_arr = new double[M];
 
-  vsW = new int*[4];
-  for(int v = 0; v < 4; v++)
+  vsW = new int*[V];
+  for(int v = 0; v < V; v++)
     vsW[v] = new int[top[v]->getLayerCount()-1];
 
 	sW = new int[cTopology->getLayerCount()-1];
@@ -148,7 +155,7 @@ void AnnSerial::prepare(Topology **top){
   int l2;
   for(int gl = 0; gl > G_count; gl++){
     l2 = L - 2*gl - 1;
-    nG[gl] = cTopology->getLayerSize(l2)*(cTopology->getLayerSize(l2 - 2)+1);
+    nG[gl] = cTopology->getLayerSize(l2)*(cTopology->getLayerSize(l2 - 2));
     count += nG[gl];
   }
 
@@ -190,7 +197,7 @@ void AnnSerial::init(FILE * pFile=NULL){
 
 
   obtainSW(top[u], sW);
-  for(int v = 0; v < 4; v++){
+  for(int v = 0; v < V; v++){
     obtainSW(top[v], vsW[v]);
   }
 
@@ -225,6 +232,7 @@ void AnnSerial::feedForward(double *h_input, double *a, double *b){
   for (int i = 0; i < cTopology->getLayerSize(0); i++) {
     a_arr[i] = a[i];
   }
+  a_arr[cTopology->getLayerSize(0)] = 1.0;
 
   for(int i=0; i<M;i++){
     ah_arr[i] = h_input[i];
@@ -263,7 +271,7 @@ void AnnSerial::backPropagation(Derivatives *deriv_in, Derivatives *deriv_out, d
   calc_feedForward();
   calcG();
 
-  for(int v = 0; v < 4; v++)
+  for(int v = 0; v < V; v++)
   calcDerivatives(1, deriv_in[v],  deriv_out[v]);
 
   copyOutput(a);
@@ -318,56 +326,125 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
   // deriv_in->v[vi(...)];
   // deriv_in->vh[vhi(...)];
 
-for(int ll = 0; ll < L; ll++){
-  for(int k = 0; k < l[ll]; k++){
+  int max_layer_size = 0;
+  for(int i = 0; i < L; i++)
+    max_layer_size = l[i] > max_layer_size? l[i]: max_layer_size;
 
-    for(int vswi = 0; vswi < 4 ; vswi++){
-      for(int ii = 0; ii < vL[vswi]; ii++){
-        for(int i = 0; i < vl[vswi][ll]; i++){
-          for(int j = 0; j < vl[vswi][ll+1]-1; j++){
+  // vec0 -> vec1
+  double *vec0 = new double[max_layer_size];
+  double *vec1 = new double[max_layer_size];
 
-            if(ii == 1){
 
-              deriv_out->v[vi(v,ii,i,j,k)]=deriv_in->vh[vi(v,i,j,k)];
+  int start_l = L%2 == 1 ? 0 : 1;
 
-            }
+  for(int v = 0; v < V; v++){
+    for(int ss = 0; ss < vL[v]-1; ss++){
+      for(int wi = 0; wi < vl[v][ss]; wi++){
+        for(int wj = 0; wj < vl[v][ss+1]-1; wj++){
+          for(int ll = start_l; ll <= L; ll=ll+2){
+            if(ll == 0){
 
-            if(ii == 2){
-              double sum = 0;
-              for(int n = 0; n < M; n++){
-                sum += Wh[k*M + n]*deriv_in->vh[vhi(v,i,j,k)];
+              for(int k = 0; k < M; k++)
+                vec1[k] = deriv_in->v[vi(v, ss, wi, wj, k)];
+
+            }else if(ll == 1){
+
+              for(int k = 0; k < l[ll]-1){
+                double sum = 0;
+                for(int n = 0; n < M; n++)
+                  sum += W[sW[ll] + l[ll]*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
+                if(u == v) sum += a_arr[wi];
+                vec1[k] = f_deriv(z[s[ll] + k])*sum;
+
               }
 
-              sum*=f_deriv(z[s[ii]+n]);
-              deriv_out->v[vi(v,ii,i,j,k)]=sum;
-            }
+            }else {
 
-            if(ii >= 3){
+
+              int gl = layerToGIndex(L, ll);
               double sum = 0;
+              int to_p = ll == 2 ? M : l[ll-2];
 
-              for(int p = 0; p < l[ll-2]; p++){
-                sum += deriv_in->v[vi(v,ii-2,i,j,p)]*G[];
+              for(int p = 0; p < to_p; p++){
+                sum += vec0[p]*G[sG[gl] + (l[ll]-1)*p + k]
               }
 
-            //  l2 = L - 2*gl - 1;
-
-
-
-              if( u == v){
-                if( ll == ii+1){
-                  sum*=f_deriv(z[s[ll]+k])*A[l[ll]+i];
+              if(u == v){
+                if(ll == ss+1)
+                  sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-1] + wi];
+                else if(ll == ss+2){
+                    double sum2 = 0;
+                    for(int n = 0; n < l[ll-1]; n++)
+                      sum2 += W[sW[ll-1] + (l[ll]-1)*n + k] * f_deriv(z[s[ll-1] + n]);
+                    sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-2] + wi]*sum2
                 }
               }
-              deriv_out->v[vi(v,ii,i,j,k)]=sum;
-
-
             }
+            int to_k = ll == 0 ? M : l[ll]-1;
+            for(k = 0; k < to_k; k++) vec0[k] = vec1[k];
           }
+          for(k = 0; k < M /*l[L-1]-1*/; k++)
+            deriv_out->v[vi(v, ss, wi, wj, k)] = vec1[k];
         }
       }
     }
   }
-}
+
+
+
+  delete [] vec0;
+  delete [] vec1;
+
+// for(int ll = 0; ll < L; ll++){
+//   for(int k = 0; k < l[ll]; k++){
+//
+//     for(int vswi = 0; vswi < V; vswi++){
+//       for(int ii = 0; ii < vL[vswi]; ii++){
+//         for(int i = 0; i < vl[vswi][ii]; i++){
+//           for(int j = 0; j < vl[vswi][ii+1]-1; j++){
+//
+//             if(ii == 1){
+//
+//               deriv_out->v[vi(v,ii,i,j,k)]=deriv_in->vh[vi(v,i,j,k)];
+//
+//             }
+//
+//             if(ii == 2){
+//               double sum = 0;
+//               for(int n = 0; n < M; n++){
+//                 sum += Wh[k*M + n]*deriv_in->vh[vhi(v,i,j,k)];
+//               }
+//
+//               sum*=f_deriv(z[s[ii]+n]);
+//               deriv_out->v[vi(v,ii,i,j,k)]=sum;
+//             }
+//
+//             if(ii >= 3){
+//               double sum = 0;
+//
+//               for(int p = 0; p < l[ll-2]; p++){
+//                 sum += deriv_in->v[vi(v,ii-2,i,j,p)]*G[];
+//               }
+//
+//             //  l2 = L - 2*gl - 1;
+//
+//
+//
+//               if( u == v){
+//                 if( ll == ii+1){
+//                   sum*=f_deriv(z[s[ll]+k])*A[l[ll]+i];
+//                 }
+//               }
+//               deriv_out->v[vi(v,ii,i,j,k)]=sum;
+//
+//
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 
 
 }

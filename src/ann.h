@@ -90,7 +90,7 @@ class AnnBase {
 class AnnSerial{ // -> AnnSerial
 private:
   Topology* cTopology;
-
+  int V; // total number of ANNs
   int u; // index of ANN
   int L;
   int M;
@@ -120,11 +120,11 @@ private:
 
 public:
 
-  AnnSerial(int u, int mM, Topology **top,  double (*f)(double), double (*f_deriv)(double));
+  AnnSerial(int V, int u, int M, Topology **top,  double (*f)(double), double (*f_deriv)(double));
 
   void setWeights(double *t_w_arr, double *t_wh_arr){ // MB: naudojam this->w_arr = w_arr, iskelti i ann.cpp
-    w_arr = t_w_arr;
-    wh_arr = t_wh_arr;
+    W = t_w_arr;
+    Wh = t_wh_arr;
   };
 
   void feedForward(double *h_input, double *a, double *b); // ...
@@ -151,9 +151,11 @@ private:
   void calcDerivatives(int v, double *deriv_h, double *deriv_a);
 
   int obtainGCount(int L);
+  int layerToGIndex(int l);
+
   void obtainSW(Topology *top, int *sW);
   int vi(int v, int s, int i, int j, int k);
-  int vhi(int i, int j, int k);
+  int vhi(int v, int i, int j, int k);
 
   double d(int i, int j);
 
