@@ -74,10 +74,10 @@ int Topology::getOutputNeuronCount(){
 
 //***********************************
 //
-// AnnSerialDBL
+// AnnSerial
 //
 
-AnnSerialDBL(int u, int M, Topology **top, double (*f)(double), double (*f_deriv)(double)){
+AnnSerial(int u, int M, Topology **top, double (*f)(double), double (*f_deriv)(double)){
   this->u = u;
   this->M = M;
   cTopology = top[u];
@@ -89,7 +89,7 @@ AnnSerialDBL(int u, int M, Topology **top, double (*f)(double), double (*f_deriv
   init(NULL);
 }
 
-int AnnSerialDBL::obtainGCount(int L){
+int AnnSerial::obtainGCount(int L){
   int G_count = 0;
   int remaining_L = L;
   while(remaining_L >= 3){
@@ -99,7 +99,7 @@ int AnnSerialDBL::obtainGCount(int L){
   return G_count;
 }
 
-void AnnSerialDBL::obtainSW(Topology *top, int *sW){
+void AnnSerial::obtainSW(Topology *top, int *sW){
   int nW;
   sW[i] = 0;
   for (int i = 1; i < L-1; i++) {
@@ -108,7 +108,7 @@ void AnnSerialDBL::obtainSW(Topology *top, int *sW){
   }
 }
 
-void AnnSerialDBL::prepare(Topology **top){
+void AnnSerial::prepare(Topology **top){
 
 	l = new int[cTopology->getLayerCount()];
 	s = new int[cTopology->getLayerCount()];
@@ -163,7 +163,7 @@ void AnnSerialDBL::prepare(Topology **top){
 	//gjl = new double[neuronCount];
 }
 
-void AnnSerialDBL::init(FILE * pFile=NULL){
+void AnnSerial::init(FILE * pFile=NULL){
 
 	Random *rnd = new Random();
 
@@ -209,18 +209,18 @@ void AnnSerialDBL::init(FILE * pFile=NULL){
 
 }
 
-void AnnSerialDBL::reset(){
+void AnnSerial::reset(){
 
 
 
 }
 
-void AnnSerialDBL::copyOutput(double *a){
+void AnnSerial::copyOutput(double *a){
   for (int i = 0; i<cTopology->getLayerSize(cTopology->getLayerCount() - 1); i++)
 		a[i] = a_arr[s[L - 1] + i];
 }
 
-void AnnSerialDBL::feedForward(double *h_input, double *a, double *b){
+void AnnSerial::feedForward(double *h_input, double *a, double *b){
 
   for (int i = 0; i < cTopology->getLayerSize(0); i++) {
     a_arr[i] = a[i];
@@ -235,7 +235,7 @@ void AnnSerialDBL::feedForward(double *h_input, double *a, double *b){
 	copyOutput(b);
 }
 
-void AnnSerialDBL::calc_feedForward(){
+void AnnSerial::calc_feedForward(){
 
   for (int j = 0; j < cTopology->obtainNeuronCount(); j++) {
 		z_arr[j] = 0;
@@ -258,7 +258,7 @@ void AnnSerialDBL::calc_feedForward(){
 	}
 }
 
-void AnnSerialDBL::backPropagation(Derivatives *deriv_in, Derivatives *deriv_out, double *a){
+void AnnSerial::backPropagation(Derivatives *deriv_in, Derivatives *deriv_out, double *a){
 
   calc_feedForward();
   calcG();
@@ -270,10 +270,10 @@ void AnnSerialDBL::backPropagation(Derivatives *deriv_in, Derivatives *deriv_out
 
 }
 
-void AnnSerialDBL::calcG(){
+void AnnSerial::calcG(){
   int G_count = obtainGCount(L);
 
-  for(int gl = 0; gl > G_count; gl++){
+  for(int gl = 0; gl < G_count; gl++){
     l2 = L - 2*gl - 1;
 
     double sum = 0;
@@ -308,23 +308,75 @@ void AnnSerialDBL::calcG(){
   }
 }
 
-double AnnSerialDBL::d(int i, int j){
+double AnnSerial::d(int i, int j){
   if(i == j) return 1.0;
   return 0.0;
 }
 
 
-void AnnSerialDBL::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv_out){
+void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv_out){
   // deriv_in->v[vi(...)];
   // deriv_in->vh[vhi(...)];
 
+for(int ll = 0; ll < L; ll++){
+  for(int k = 0; k < l[ll]; k++){
+
+    for(int vswi = 0; vswi < 4 ; vswi++){
+      for(int ii = 0; ii < vL[vswi]; ii++){
+        for(int i = 0; i < vl[vswi][ll]; i++){
+          for(int j = 0; j < vl[vswi][ll+1]-1; j++){
+
+            if(ii == 1){
+
+              deriv_out->v[vi(v,ii,i,j,k)]=deriv_in->vh[vi(v,i,j,k)];
+
+            }
+
+            if(ii == 2){
+              double sum = 0;
+              for(int n = 0; n < M; n++){
+                sum += Wh[k*M + n]*deriv_in->vh[vhi(v,i,j,k)];
+              }
+
+              sum*=f_deriv(z[s[ii]+n]);
+              deriv_out->v[vi(v,ii,i,j,k)]=sum;
+            }
+
+            if(ii >= 3){
+              double sum = 0;
+
+              for(int p = 0; p < l[ll-2]; p++){
+                sum += deriv_in->v[vi(v,ii-2,i,j,p)]*G[];
+              }
+
+            //  l2 = L - 2*gl - 1;
+
+
+
+              if( u == v){
+                if( ll == ii+1){
+                  sum*=f_deriv(z[s[ll]+k])*A[l[ll]+i];
+                }
+              }
+              deriv_out->v[vi(v,ii,i,j,k)]=sum;
+
+
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-int AnnSerialDBL::vi(int v, int s, int i, int j, int k){
+
+}
+
+int AnnSerial::vi(int v, int s, int i, int j, int k){
   return (vsW[v][s] + i*(vl[v][s+1]-1) + j)*M + k;
 }
 
-int AnnSerialDBL::vhi(int v, int i, int j, int k){
+int AnnSerial::vhi(int v, int i, int j, int k){
   return  (i*(vl[v][1]-1) + j)*M + k;
 }
 
@@ -336,26 +388,26 @@ int AnnSerialDBL::vhi(int v, int i, int j, int k){
 // 	return 1 / y;
 // }
 
-double* AnnSerialDBL::getWeights(){
+double* AnnSerial::getWeights(){
 	return w_arr;
 }
 
-double* AnnSerialDBL::getDWeights(){
+double* AnnSerial::getDWeights(){
 	return dw_arr;
 }
 
-double* AnnSerialDBL::getHWeights(){
+double* AnnSerial::getHWeights(){
 	return wh_arr;
 }
 
-double* AnnSerialDBL::getDHWeights(){
+double* AnnSerial::getDHWeights(){
 	return dwh_arr;
 }
 
-double* AnnSerialDBL::getA(){
+double* AnnSerial::getA(){
 	return a_arr;
 }
 
-Topology* AnnSerialDBL::getTopology(){
+Topology* AnnSerial::getTopology(){
   return cTopology;
 }

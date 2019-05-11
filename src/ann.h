@@ -87,7 +87,7 @@ class AnnBase {
 };
 
 
-class AnnSerialDBL{ // -> AnnSerial
+class AnnSerial{ // -> AnnSerial
 private:
   Topology* cTopology;
 
@@ -96,6 +96,7 @@ private:
   int M;
   int * l; // neuronu skaičius sluoksnyje
   int **vl;
+  int *vL;
   int * s; // sluoksnio pradzios indeksai
   double * a_arr;
   double * ah_arr;
@@ -119,7 +120,7 @@ private:
 
 public:
 
-  AnnSerialDBL(int u, int mM, Topology **top,  double (*f)(double), double (*f_deriv)(double));
+  AnnSerial(int u, int mM, Topology **top,  double (*f)(double), double (*f_deriv)(double));
 
   void setWeights(double *t_w_arr, double *t_wh_arr){ // MB: naudojam this->w_arr = w_arr, iskelti i ann.cpp
     w_arr = t_w_arr;
