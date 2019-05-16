@@ -73,6 +73,8 @@ int Topology::getOutputNeuronCount(){
 	return (*ml)[ml->size()-1];
 }
 
+
+
 //***********************************
 //
 // AnnSerial
@@ -298,13 +300,13 @@ void AnnSerial::copyOutput(double *a){
 		a[i] = a_arr[s[L - 1] + i];
 }
 
-void AnnSerial::backPropagation(Derivatives *deriv_in, Derivatives *deriv_out, double *a){
+void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out, double *a){
 
   calc_feedForward();
   calcG();
 
-  //for(int v = 0; v < V; v++)
-  calcDerivatives(1, deriv_in,  deriv_out);
+  for(int v = 0; v < V; v++)
+  calcDerivatives(v, deriv_in[v],  deriv_out[v]);
 
   copyOutput(a);
 
@@ -365,7 +367,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
   int start_l = L%2 == 1 ? 0 : 1;
 
-  for(int v = 0; v < V; v++){//kiek yra tinklu
+
     for(int ss = 0; ss < vL[v]-1; ss++){//kiek sluoksniu tinkle
       for(int wi = 0; wi < vl[v][ss]; wi++){//kiek neuronu
         for(int wj = 0; wj < vl[v][ss+1]-1; wj++){//kiek sekanciame neuronu
@@ -422,9 +424,8 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
         }
       }
     }
-  }
 
-  for(int v = 0; v < V; v++){//kiek yra tinklu
+
       for(int wi = 0; wi < M; wi++){//kiek neuronu
         for(int wj = 0; wj < vl[v][1]-1; wj++){//kiek sekanciame neuronu
           for(int ll = start_l; ll <= L; ll=ll+2){//per G reiksmes  cia gal maziau tik
@@ -485,7 +486,6 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
             deriv_out->vh[vhi(v, wi, wj, k)] = vec1[k];
         }
       }
-    }
 
 
   delete vec0;
@@ -506,15 +506,6 @@ int AnnSerial::obtainGCount(int L){
 int AnnSerial::layerToGIndex(int L, int l){
   int G_count = obtainGCount(L);
   return G_count - (l - l%2) / 2;
-}
-
-void AnnSerial::obtainSW(Topology *top, int *sW){
-  int nW;
-  sW[0] = 0;
-  for (int i = 1; i < L-1; i++) {
-		nW = (top->getLayerSize(i-1)+1)*top->getLayerSize(i); //l[i] * (l[i + 1] - 1);
-    sW[i] = sW[i-1] + nW;
-  }
 }
 
 int AnnSerial::vi(int v, int s, int i, int j, int k){
@@ -557,4 +548,18 @@ double* AnnSerial::getA(){
 
 Topology* AnnSerial::getTopology(){
   return cTopology;
+}
+
+//
+// Global functions
+//
+
+
+void obtainSW(Topology *top, int *sW){
+  int nW;
+  sW[0] = 0;
+  for (int i = 1; i < top->getLayerCount()-1; i++) {
+		nW = (top->getLayerSize(i-1)+1)*top->getLayerSize(i); //l[i] * (l[i + 1] - 1);
+    sW[i] = sW[i-1] + nW;
+  }
 }

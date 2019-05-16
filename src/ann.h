@@ -58,7 +58,6 @@ class Topology {
 struct Derivatives{
   double *v;
   double *vh;
-
 };
 
 // Derivatives *a = new Derivatives;
@@ -72,20 +71,21 @@ class AnnBase {
   public:
   	//virtual void train(T *a, T *b, T alpha, T eta) = 0;
 
-    virtual void feedForward(T *h_input,T *a, T *b) = 0; // MB: h, a->x, b->a
-    virtual void backPropagation(Derivatives *deriv_in, Derivatives *deriv_out);
+    virtual void feedForward(T *h_input, T *a, T *b) = 0; // MB: h, a->x, b->a
+    virtual void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out, double *a);
     virtual void destroy() = 0;
   	//virtual T obtainError(T *b) = 0;
 
   //	virtual void print_out() = 0;
 
   private:
-    virtual void prepare(Topology **top, int mM)=0; // MB: M
+    virtual void prepare(Topology **top, int M)=0; // MB: M
     virtual	void init(FILE *pFile)=0; // MB: pFile neraikia kol kas
     virtual void reset()=0;
     virtual void calc_feedForward()=0;
     virtual void copyOutput(double *a)=0;
 };
+
 
 
 class AnnSerial{ // -> AnnSerial
@@ -126,7 +126,7 @@ public:
   void destroy();
 
   void feedForward(double *h_input, double *a, double *b); // ...
-  void backPropagation(Derivatives *deriv_in, Derivatives *deriv_out, double *a);
+  void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out, double *a);
 
 
 private:
@@ -142,9 +142,9 @@ private:
   void calcDerivatives(int v, Derivatives *deriv_h, Derivatives *deriv_a);
 
   int obtainGCount(int L);
-  int layerToGIndex(int L,int l);
+  int layerToGIndex(int L, int l);
 
-  void obtainSW(Topology *top, int *sW);
+
   int vi(int v, int s, int i, int j, int k);
   int vhi(int v, int i, int j, int k);
 
@@ -162,6 +162,12 @@ public:
   double* getA();
   Topology* getTopology();
 };
+
+//
+// Global functions
+//
+
+void obtainSW(Topology *top, int *sW);
 
 
 #endif /* */

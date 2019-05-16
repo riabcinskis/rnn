@@ -1,6 +1,74 @@
 
 #include <stdio.h>
 #include "rnn.h"
+#include "tests.h"
+
+
+//
+// WeightIO
+//
+WeightIO::WeightIO(Topology *top, int M){
+  this->cTopology = top;
+  this->M = M;
+
+  int L = top->getLayerCount();
+
+  assert(L > 1);
+  assert(M == top->getLayerSize(L-1));
+
+  sW = new int[top->getLayerCount()-1];
+
+  w = new double[top->obtainWeightCount()];
+  wh = new double[M*top->getLayerSize(1)];
+
+  obtainSW(top, sW);
+}
+
+WeightIO::~WeightIO(){
+  delete [] sW;
+}
+
+void WeightIO::setHWeight(int i, int j, double weight){
+  assert(i >= 0);
+  assert(j >= 0);
+  assert(i < M);
+  assert(j < cTopology->getLayerSize(1));
+
+  wh[whij(i, j)] = weight;
+}
+
+void WeightIO::setWeight(int l, int i, int j, double weight){
+
+  assert(l >= 0);
+  assert(l < cTopology->getLayerCount());
+
+  assert(i >= 0);
+  assert(j >= 0);
+  assert(i < cTopology->getLayerSize(l)+1);
+  assert(j < cTopology->getLayerSize(l+1));
+
+  w[wij(l, i, j)] = weight;
+}
+
+double* WeightIO::getWeights(){
+  return w;
+}
+
+double* WeightIO::getHWeights(){
+  return wh;
+}
+
+int WeightIO::wij(int l, int i, int j){
+  return sW[l] + i*cTopology->getLayerSize(l+1) + j;
+}
+
+int WeightIO::whij(int i, int j){
+  return i*cTopology->getLayerSize(1) + j;
+}
+
+//
+//
+//
 
 bool test_topology(){
 
@@ -18,47 +86,54 @@ bool test_topology(){
 
 bool test_ann_feedforward(){
 
+  int M = 2;
+
   Topology **topology = new Topology*[1];
   topology[0] = new Topology();
   topology[0]->addLayer(2);
   topology[0]->addLayer(2);
-  topology[0]->addLayer(2);
+  topology[0]->addLayer(M);
 
-  int M = 2;
   //printf("%.20f\n", f(2.0));
   double (*func)(double);
   double (*func_deriv)(double);
-  func=f;
+  func = f;
   func_deriv = f_deriv;
 
-  AnnSerial *serialDBL = new AnnSerial(1,0,M,topology,func,func_deriv);
 
-  double *warr = new double[12];
-  int idx = 0;
-  warr[idx++] = 0.5;
-  warr[idx++] = 0.2;
-  warr[idx++] = 0.0;
+  WeightIO* weightIO = new WeightIO(topology[0], M);
 
-  warr[idx++] = 0.1;
-  warr[idx++] = 0.2;
-  warr[idx++] = 0.7;
+  // double *warr = new double[12];
+  // int idx = 0;
+  weightIO->setWeight(0, 0, 0, 0.5); // warr[idx++] = 0.5;
+  weightIO->setWeight(0, 0, 1, 0.2); // warr[idx++] = 0.2;
+  //
+  weightIO->setWeight(0, 1, 0, 0.0); // warr[idx++] = 0.0;
+  weightIO->setWeight(0, 1, 1, 0.1); // warr[idx++] = 0.1;
+  //
+  weightIO->setWeight(0, 2, 0, 0.2); // warr[idx++] = 0.2;
+  weightIO->setWeight(0, 2, 1, 0.7); // warr[idx++] = 0.7;
+  //
+  //
+  weightIO->setWeight(1, 0, 0, 0.9); // warr[idx++] = 0.9;
+  weightIO->setWeight(1, 0, 1, 0.3); // warr[idx++] = 0.3;
+  //
+  weightIO->setWeight(1, 1, 0, 0.2); // warr[idx++] = 0.2;
+  weightIO->setWeight(1, 1, 1, 0.9); // warr[idx++] = 0.9;
+  //
+  weightIO->setWeight(1, 2, 0, 0.3); // warr[idx++] = 0.3;
+  weightIO->setWeight(1, 2, 1, 0.2); // warr[idx++] = 0.2;
+  //
+  // double *wharr = new double[4];
+  // int idxh = 0;
+  weightIO->setHWeight(0, 0, 0.5); // wharr[idxh++] = 0.5;
+  weightIO->setHWeight(0, 1, 0.4); // wharr[idxh++] = 0.4;
+  //
+  weightIO->setHWeight(1, 0, 0.3); // wharr[idxh++] = 0.3;
+  weightIO->setHWeight(1, 1, 0.1); // wharr[idxh++] = 0.1;
 
-  warr[idx++] = 0.9;
-  warr[idx++] = 0.3;
-  warr[idx++] = 0.2;
-
-  warr[idx++] = 0.9;
-  warr[idx++] = 0.3;
-  warr[idx++] = 0.2;
-
-  double *wharr = new double[4];
-  int idxh = 0;
-  wharr[idxh++] = 0.5;
-  wharr[idxh++] = 0.4;
-  wharr[idxh++] = 0.3;
-  wharr[idxh++] = 0.1;
-
-  serialDBL->setWeights(warr, wharr);
+  AnnSerial *serialDBL = new AnnSerial(1, 0, M, topology, func, func_deriv);
+  serialDBL->setWeights(weightIO->getWeights(), weightIO->getHWeights());
 
   //serialDBL->printf_Network("w_and_dw_tests.bin");
   double *h_input = new double[2];
@@ -69,38 +144,37 @@ bool test_ann_feedforward(){
   input[0] = 1;
   input[1] = 2;
 
-  double *output = new double[2];
+  double *output = new double[M];
 
   double *warr2 = serialDBL->getWeights();
   double *wharr2 = serialDBL->getHWeights();
 
   for(int i = 0; i < 9; i++){
      //printf("w[%d] = %.20f\n", i, warr2[i]);
-     if(warr2[i]!=warr[i]) return false;
+     if(warr2[i]!=weightIO->getWeights()[i]) return false;
  }
 
 
   for(int i = 0; i < 4; i++){
   //  printf("wh[%d] = %.20f\n", i, wharr2[i]);
-    if(wharr2[i]!=wharr[i]) return false;
+    if(wharr2[i]!=weightIO->getHWeights()[i]) return false;
   }
 
 	serialDBL->feedForward(h_input,input, output);
 
-  // printf("output = %.20f\n", output[1]);
+  // printf("output = %.20f\n", output[0]);
   //              0.795489675867213
-  if(output[0] != 0.79548967586721286427) return false;
+  if(output[0] != 0.79548967586721286427) {printf("fail : 0, \n");return false;}
 
   //              0.791441326894792
-  if(output[1] != 0.79144132689479196330) return false;
+  if(output[1] != 0.79144132689479196330) {printf("fail : 1\n");return false;}
 
   if(serialDBL->getA()[2] != 1) return false;
   if(serialDBL->getA()[5] != 1) return false;
 
   //  printf("A3:  %f\n", serialDBL->getA()[3]);
 
-  delete [] warr;
-  delete [] wharr;
+  delete weightIO;
   delete [] input;
   delete [] output;
   delete serialDBL;
@@ -109,95 +183,6 @@ bool test_ann_feedforward(){
   return true;
 }
 
-bool test_ann_feedforward_tanh(){
-  Topology **topology = new Topology*[1];
-  topology[0] = new Topology();
-  topology[0]->addLayer(2);
-  topology[0]->addLayer(2);
-  topology[0]->addLayer(2);
-
-  int M = 2;
-
-  double (*func)(double);
-  double (*func_deriv)(double);
-  func=f_tanh;
-  func_deriv = f_tanh_deriv;
-
-  AnnSerial *serialDBL = new AnnSerial(1,0,M,topology,func,func_deriv);
-
-  double *warr = new double[12];
-  int idx = 0;
-  warr[idx++] = 0.5;
-  warr[idx++] = 0.2;
-  warr[idx++] = 0.0;
-
-  warr[idx++] = 0.1;
-  warr[idx++] = 0.2;
-  warr[idx++] = 0.7;
-
-  warr[idx++] = 0.9;
-  warr[idx++] = 0.3;
-  warr[idx++] = 0.2;
-
-  warr[idx++] = 0.9;
-  warr[idx++] = 0.3;
-  warr[idx++] = 0.2;
-
-  double *wharr = new double[4];
-  int idxh = 0;
-  wharr[idxh++] = 0.5;
-  wharr[idxh++] = 0.4;
-  wharr[idxh++] = 0.3;
-  wharr[idxh++] = 0.1;
-
-  serialDBL->setWeights(warr, wharr);
-
-  //serialDBL->printf_Network("w_and_dw_tests.bin");
-  double *h_input = new double[2];
-  h_input[0] = 3;
-  h_input[1] = 4;
-
-  double *input = new double[2];
-  input[0] = 1;
-  input[1] = 2;
-
-  double *output = new double[1];
-
-  double *warr2 = serialDBL->getWeights();
-  double *wharr2 = serialDBL->getHWeights();
-
-  for(int i = 0; i < 9; i++){
-     //printf("w[%d] = %.20f\n", i, warr2[i]);
-     if(warr2[i]!=warr[i]) return false;
- }
-
-  for(int i = 0; i < 4; i++){
-  //  printf("wh[%d] = %.20f\n", i, wharr2[i]);
-    if(wharr2[i]!=wharr[i]) return false;
-  }
-
-	serialDBL->feedForward(h_input,input, output);
-
-  //              0.884527266372134
-  if(output[0] != 0.88452726637213452410) return false;
-  //              0.883443223178355
-  if(output[1] != 0.88344322317835477509) return false;
-
-  if(serialDBL->getA()[2] != 1) return false;
-  if(serialDBL->getA()[5] != 1) return false;
-
-
- //  printf("A3:  %f\n", serialDBL->getA()[3]);
-
-  delete [] warr;
-  delete [] wharr;
-  delete [] input;
-  delete [] output;
-  delete serialDBL;
-  delete [] topology;
-
-  return true;
-}
 
 bool test_rnn_feedforward(){
 
@@ -733,9 +718,6 @@ bool run_tests(){
   printf("%s\n", "---------------------");
   passed = test_ann_feedforward(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_feedforward\n", passed ? "PASSED" : "FAILED");
-  printf("%s\n", "---------------------");
-  passed = test_ann_feedforward_tanh(); failCount += passed ? 0 : 1;
-  printf("%s - test_ann_feedforward_tanh\n", passed ? "PASSED" : "FAILED");
   printf("%s\n", "---------------------");
   passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
   printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
