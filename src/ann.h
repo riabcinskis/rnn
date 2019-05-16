@@ -12,6 +12,7 @@
 #include <fstream>
 #include <string>
 #include <array>
+#include <assert.h>
 
 #include <random>
 
@@ -100,18 +101,18 @@ private:
   int * s; // sluoksnio pradzios indeksai
   double * a_arr;
   double * ah_arr;
-  double * z_arr;
+  double * z;
   int * sW;
   int ** vsW;
 
-  double * w_arr;
-  double * dw_arr;
-  double * wh_arr;
-  double * dwh_arr;
+  double * W;
+  double * dW;
+  double * Wh;
+  double * dWh;
 
 
-  int * nG;
-  int * sG;
+  double * nG;
+  int * sG;//pazieti kurie int kurie double
   double * G;
 
   double (*f)(double);
@@ -122,36 +123,26 @@ public:
 
   AnnSerial(int V, int u, int M, Topology **top,  double (*f)(double), double (*f_deriv)(double));
 
-  void setWeights(double *t_w_arr, double *t_wh_arr){ // MB: naudojam this->w_arr = w_arr, iskelti i ann.cpp
-    W = t_w_arr;
-    Wh = t_wh_arr;
-  };
+  void destroy();
 
   void feedForward(double *h_input, double *a, double *b); // ...
-  void backPropagation(Derivatives *deriv_in, Derivatives *deriv_out);
-
-
-  double* getWeights();
-  double* getHWeights();
-  double* getDWeights();
-  double* getDHWeights();
-  double* getA();
-  Topology* getTopology();
+  void backPropagation(Derivatives *deriv_in, Derivatives *deriv_out, double *a);
 
 
 private:
 
   void prepare(Topology **top);
-  void init(FILE *pFile);
+  void init(Topology **top,FILE *pFile);
+
   void reset();
   void calc_feedForward();
   void copyOutput(double *a);
 
   void calcG();
-  void calcDerivatives(int v, double *deriv_h, double *deriv_a);
+  void calcDerivatives(int v, Derivatives *deriv_h, Derivatives *deriv_a);
 
   int obtainGCount(int L);
-  int layerToGIndex(int l);
+  int layerToGIndex(int L,int l);
 
   void obtainSW(Topology *top, int *sW);
   int vi(int v, int s, int i, int j, int k);
@@ -160,9 +151,16 @@ private:
   double d(int i, int j);
 
 
+public:
+  void setWeights(double *W, double *Wh);
 
 
-
+  double* getWeights();
+  double* getHWeights();
+  double* getDWeights();
+  double* getDHWeights();
+  double* getA();
+  Topology* getTopology();
 };
 
 

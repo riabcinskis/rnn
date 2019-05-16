@@ -1,21 +1,24 @@
 #include "rnn.h"
 
 /* C++ code here. */
+void rnnConfig::setTopology(Topology **top){
+  cTopology = top;
+}
 
 void rnnConfig::setTopology1(Topology *top){
-  cTopology1 = top;
+  cTopology[0] = top;
 }
 
 void rnnConfig::setTopology2(Topology *top){
-  cTopology2 = top;
+  cTopology[1] = top;
 }
 
 void rnnConfig::setTopology3(Topology *top){
-  cTopology3 = top;
+  cTopology[2] = top;
 }
 
 void rnnConfig::setTopology4(Topology *top){
-  cTopology4 = top;
+  cTopology[3] = top;
 }
 
 void rnnConfig::setM(int M){
@@ -23,19 +26,23 @@ void rnnConfig::setM(int M){
 }
 
 Topology* rnnConfig::getTopology1(){
-  return cTopology1;
+  return cTopology[0];
 }
 
 Topology* rnnConfig::getTopology2(){
-  return cTopology2;
+  return cTopology[1];
 }
 
 Topology* rnnConfig::getTopology3(){
-  return cTopology3;
+  return cTopology[2];
 }
 
 Topology* rnnConfig::getTopology4(){
-  return cTopology4;
+  return cTopology[3];
+}
+
+Topology** rnnConfig::getTopology(){
+  return cTopology;
 }
 
 int rnnConfig::getM(){
@@ -46,13 +53,28 @@ int rnnConfig::getM(){
 //
 //RnnSerialDBL
 //
-void RnnSerialDBL::prepare(rnnConfig *mRnnConf){
+void RnnSerial::prepare(rnnConfig *mRnnConf){
   M = mRnnConf->getM();
 
-  ann1 = new AnnSerialDBL(mRnnConf->getTopology1(),M);
-  ann2 = new AnnSerialDBL(mRnnConf->getTopology2(),M);
-  ann3 = new AnnSerialDBL_tanh(mRnnConf->getTopology3(),M);
-  ann4 = new AnnSerialDBL(mRnnConf->getTopology4(),M);
+  double (*func)(double);
+  double (*func_deriv)(double);
+
+  double (*func_tanh)(double);
+  double (*func_tanh_deriv)(double);
+
+  func=f;
+  func_deriv = f_deriv;
+
+  func_tanh=f_tanh;
+  func_tanh_deriv = f_tanh_deriv;
+
+
+  ann1 = new AnnSerial(4,0,M,mRnnConf->getTopology(),func,func_deriv);
+  ann2 = new AnnSerial(4,1,M,mRnnConf->getTopology(),func,func_deriv);
+  ann3 = new AnnSerial(4,2,M,mRnnConf->getTopology(),func_tanh,func_tanh_deriv);
+  ann4 = new AnnSerial(4,3,M,mRnnConf->getTopology(),func,func_deriv);
+
+
 
   b = new double[M];
   c_current = new double[M];
@@ -64,23 +86,10 @@ void RnnSerialDBL::prepare(rnnConfig *mRnnConf){
   a3_output = new double[M];
   a4_output = new double[M];
 
-	// a_arr = new double[neuronCount];
-	// z_arr = new double[neuronCount];
-  //
-  // ah_arr = new double[mM];
-  //
-	// W = new int[cTopology->getLayerCount()];
-	// sw = new int[cTopology->getLayerCount()];
-  //
-	// w_arr = new double[weightCount];
-	// dw_arr = new double[weightCount];
-  //
-  // int nd_layer_size = cTopology->getLayerSize(2);
-  // int h_weightCount = nd_layer_size * M;
 }
 
 
-void RnnSerialDBL::init(FILE * pFile=NULL){
+void RnnSerial::init(FILE * pFile=NULL){
 
   for(int i=0; i<M;i++){
     c_current[i] = 0;
@@ -89,7 +98,7 @@ void RnnSerialDBL::init(FILE * pFile=NULL){
 
 }
 
-void RnnSerialDBL::feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out){
+void RnnSerial::feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out){
   ann1->feedForward(h_in,a,a1_output);
 
   ann2->feedForward(h_in,a,a2_output);
@@ -115,27 +124,80 @@ void RnnSerialDBL::feedForward(double *h_in, double *c_in,double *a, double *c_o
   for(int i = 0; i < M; i++){
     h_out[i] = b[i] / sumB;
   }
-
-
-
-
 }
 
 
-AnnSerialDBL* RnnSerialDBL::getANN1(){
+void RnnSerial::backPropagation(){
+
+}
+
+void RnnSerial::destroy(){
+  ann1->destroy();
+  ann2->destroy();
+  ann3->destroy();
+  ann4->destroy();
+
+   delete ann1;
+   ann1 = NULL;
+   delete ann2;
+   ann2 = NULL;
+   delete ann3;
+   ann3 = NULL;
+   delete ann4;
+   ann4 = NULL;
+
+  delete c_current;
+  c_current = NULL;
+  delete c_new;
+  c_new = NULL;
+  delete h_current;
+  h_current = NULL;
+  delete h_new;
+  h_new = NULL;
+  delete b;
+  b = NULL;
+  delete a1_output;
+  a1_output = NULL;
+  delete a2_output;
+  a2_output = NULL;
+  delete a3_output;
+  a3_output = NULL;
+  delete a4_output;
+  a4_output = NULL;
+}
+
+
+AnnSerial* RnnSerial::getANN1(){
   return ann1;
 }
 
-AnnSerialDBL* RnnSerialDBL::getANN2(){
+AnnSerial* RnnSerial::getANN2(){
   return ann2;
 }
 
-AnnSerialDBL_tanh* RnnSerialDBL::getANN3(){
+AnnSerial* RnnSerial::getANN3(){
   return ann3;
 }
 
-AnnSerialDBL* RnnSerialDBL::getANN4(){
+AnnSerial* RnnSerial::getANN4(){
   return ann4;
+}
+
+double f(double x){
+  double y = 1 + exp(-x);
+  return 1 / y;
+}
+
+double f_deriv(double x){
+  return exp(-x) / pow((1 + exp(-x)), 2);
+}
+
+double f_tanh(double x){
+  return tanh(x);
+}
+
+double f_tanh_deriv(double x){
+  return 1 - pow(tanh(x), 2);
 }
 
 // double* RnnSerialDBL::getWeights(){

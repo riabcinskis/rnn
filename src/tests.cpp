@@ -9,23 +9,31 @@ bool test_topology(){
   topology->addLayer(2);
   topology->addLayer(1);
 
-  if(topology->obtainNeuronCount() != 8) return false;
+  if(topology->obtainNeuronCount() != 7) return false;
   if(topology->obtainWeightCount() != 9) return false;
 
+  delete topology;
   return true;
 }
 
 bool test_ann_feedforward(){
-  Topology *topology = new Topology();
-  topology->addLayer(2);
-  topology->addLayer(2);
-  topology->addLayer(1);
+
+  Topology **topology = new Topology*[1];
+  topology[0] = new Topology();
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(2);
 
   int M = 2;
+  //printf("%.20f\n", f(2.0));
+  double (*func)(double);
+  double (*func_deriv)(double);
+  func=f;
+  func_deriv = f_deriv;
 
-  AnnSerialDBL *serialDBL = new AnnSerialDBL(topology,M);
+  AnnSerial *serialDBL = new AnnSerial(1,0,M,topology,func,func_deriv);
 
-  double *warr = new double[9];
+  double *warr = new double[12];
   int idx = 0;
   warr[idx++] = 0.5;
   warr[idx++] = 0.2;
@@ -34,6 +42,10 @@ bool test_ann_feedforward(){
   warr[idx++] = 0.1;
   warr[idx++] = 0.2;
   warr[idx++] = 0.7;
+
+  warr[idx++] = 0.9;
+  warr[idx++] = 0.3;
+  warr[idx++] = 0.2;
 
   warr[idx++] = 0.9;
   warr[idx++] = 0.3;
@@ -57,7 +69,7 @@ bool test_ann_feedforward(){
   input[0] = 1;
   input[1] = 2;
 
-  double *output = new double[1];
+  double *output = new double[2];
 
   double *warr2 = serialDBL->getWeights();
   double *wharr2 = serialDBL->getHWeights();
@@ -67,6 +79,7 @@ bool test_ann_feedforward(){
      if(warr2[i]!=warr[i]) return false;
  }
 
+
   for(int i = 0; i < 4; i++){
   //  printf("wh[%d] = %.20f\n", i, wharr2[i]);
     if(wharr2[i]!=wharr[i]) return false;
@@ -74,10 +87,12 @@ bool test_ann_feedforward(){
 
 	serialDBL->feedForward(h_input,input, output);
 
-  // printf("output = %.20f\n", output[0]);
+  // printf("output = %.20f\n", output[1]);
+  //              0.795489675867213
+  if(output[0] != 0.79548967586721286427) return false;
 
-  //                0.794463281942811
-  if(output[0] != 0.79446328194281123913) return false;
+  //              0.791441326894792
+  if(output[1] != 0.79144132689479196330) return false;
 
   if(serialDBL->getA()[2] != 1) return false;
   if(serialDBL->getA()[5] != 1) return false;
@@ -95,16 +110,22 @@ bool test_ann_feedforward(){
 }
 
 bool test_ann_feedforward_tanh(){
-  Topology *topology = new Topology();
-  topology->addLayer(2);
-  topology->addLayer(2);
-  topology->addLayer(1);
+  Topology **topology = new Topology*[1];
+  topology[0] = new Topology();
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(2);
 
   int M = 2;
 
-  AnnSerialDBL_tanh *serialDBL = new AnnSerialDBL_tanh(topology,M);
+  double (*func)(double);
+  double (*func_deriv)(double);
+  func=f_tanh;
+  func_deriv = f_tanh_deriv;
 
-  double *warr = new double[9];
+  AnnSerial *serialDBL = new AnnSerial(1,0,M,topology,func,func_deriv);
+
+  double *warr = new double[12];
   int idx = 0;
   warr[idx++] = 0.5;
   warr[idx++] = 0.2;
@@ -113,6 +134,10 @@ bool test_ann_feedforward_tanh(){
   warr[idx++] = 0.1;
   warr[idx++] = 0.2;
   warr[idx++] = 0.7;
+
+  warr[idx++] = 0.9;
+  warr[idx++] = 0.3;
+  warr[idx++] = 0.2;
 
   warr[idx++] = 0.9;
   warr[idx++] = 0.3;
@@ -153,10 +178,10 @@ bool test_ann_feedforward_tanh(){
 
 	serialDBL->feedForward(h_input,input, output);
 
- //printf("output = %.20f\n", output[0]);
-
-  //              0.884331422484791
-  if(output[0] != 0.88433142248479079672) return false;
+  //              0.884527266372134
+  if(output[0] != 0.88452726637213452410) return false;
+  //              0.883443223178355
+  if(output[1] != 0.88344322317835477509) return false;
 
   if(serialDBL->getA()[2] != 1) return false;
   if(serialDBL->getA()[5] != 1) return false;
@@ -169,46 +194,48 @@ bool test_ann_feedforward_tanh(){
   delete [] input;
   delete [] output;
   delete serialDBL;
-  delete topology;
+  delete [] topology;
 
   return true;
 }
 
 bool test_rnn_feedforward(){
-  Topology *topology1 = new Topology();
-  topology1->addLayer(2);
-  topology1->addLayer(1);
-  topology1->addLayer(2);//7weights+2
 
-  Topology *topology2 = new Topology();
-  topology2->addLayer(2);
-  topology2->addLayer(2);
-  topology2->addLayer(2);//12weights+4
+  Topology **topology = new Topology*[4];
+  topology[0] = new Topology();
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(1);
+  topology[0]->addLayer(2);//7weights+2
 
-  Topology *topology3 = new Topology();
-  topology3->addLayer(2);
-  topology3->addLayer(2);
-  topology3->addLayer(2);//12weights+4
+  topology[1] = new Topology();
+  topology[1]->addLayer(2);
+  topology[1]->addLayer(2);
+  topology[1]->addLayer(2);//12weights+4
 
-  Topology *topology4 = new Topology();
-  topology4->addLayer(2);
-  topology4->addLayer(1);
-  topology4->addLayer(1);
-  topology4->addLayer(2);//9weights+2
+  topology[2] = new Topology();
+  topology[2]->addLayer(2);
+  topology[2]->addLayer(2);
+  topology[2]->addLayer(2);//12weights+4
+
+  topology[3] = new Topology();
+  topology[3]->addLayer(2);
+  topology[3]->addLayer(1);
+  topology[3]->addLayer(1);
+  topology[3]->addLayer(2);//9weights+2
 
   int M = 2;
 
   rnnConfig *conf = new rnnConfig();
-  conf->setTopology1(topology1);
-  conf->setTopology2(topology2);
-  conf->setTopology3(topology3);
-  conf->setTopology4(topology4);
+  conf->setTopology(topology);
+  // conf->setTopology2(topology2);
+  // conf->setTopology3(topology3);
+  // conf->setTopology4(topology4);
   conf->setM(M);
 
-
-  RnnSerialDBL *serialDBL = new RnnSerialDBL(conf);
+  RnnSerial *serialDBL = new RnnSerial(conf);
 
   double *warr1 = new double[7];
+
   int idx1 = 0;
   warr1[idx1++] = 0.5;
   warr1[idx1++] = 0.2;
@@ -425,77 +452,72 @@ bool test_rnn_feedforward(){
   if(serialDBL->getANN4()->getA()[2] != 1) return false;
   if(serialDBL->getANN4()->getA()[4] != 1) return false;
 
-  delete [] warr1;
-  delete [] wharr1;
-  delete [] wharr_1;
-  delete [] warr_1;
+  serialDBL->destroy();
 
-  delete [] warr2;
-  delete [] wharr2;
-  delete [] wharr_2;
-  delete [] warr_2;
+//   delete [] warr1;
+//   delete [] wharr1;
+//   delete [] wharr_1;
+//   delete [] warr_1;
 
-  delete [] warr3;
-  delete [] wharr3;
-  delete [] wharr_3;
-  delete [] warr_3;
-
-  delete [] warr4;
-  delete [] wharr4;
-  delete [] wharr_4;
-  delete [] warr_4;
+//   delete [] warr2;
+//   delete [] wharr2;
+//   delete [] wharr_2;
+//   delete [] warr_2;
+//
+//   delete [] warr3;
+//   delete [] wharr3;
+//   delete [] wharr_3;
+//   delete [] warr_3;
+//
+//   delete [] warr4;
+//   delete [] wharr4;
+//   delete [] wharr_4;
+//   delete [] warr_4;
 
   delete [] h_input;
   delete [] input;
   delete [] output;
-
-  delete topology1;
-  delete topology2;
-  delete topology3;
-  delete topology4;
-
-  // free(topology1);
-  // free(topology2);
-  // free(topology3);
-  // free(topology4);
+  delete [] topology;
   delete conf;
   delete serialDBL;
   return true;
 }
 
 bool test_rnn_feedforward_full(){
-  Topology *topology1 = new Topology();
-  topology1->addLayer(2);
-  topology1->addLayer(1);
-  topology1->addLayer(2);//7weights+2
+  Topology **topology = new Topology*[4];
+  topology[0] = new Topology();
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(1);
+  topology[0]->addLayer(2);//7weights+2
 
-  Topology *topology2 = new Topology();
-  topology2->addLayer(2);
-  topology2->addLayer(2);
-  topology2->addLayer(2);//12weights+4
+  topology[1] = new Topology();
+  topology[1]->addLayer(2);
+  topology[1]->addLayer(2);
+  topology[1]->addLayer(2);//12weights+4
 
-  Topology *topology3 = new Topology();
-  topology3->addLayer(2);
-  topology3->addLayer(2);
-  topology3->addLayer(2);//12weights+4
+  topology[2] = new Topology();
+  topology[2]->addLayer(2);
+  topology[2]->addLayer(2);
+  topology[2]->addLayer(2);//12weights+4
 
-  Topology *topology4 = new Topology();
-  topology4->addLayer(2);
-  topology4->addLayer(1);
-  topology4->addLayer(1);
-  topology4->addLayer(2);//9weights+2
+  topology[3] = new Topology();
+  topology[3]->addLayer(2);
+  topology[3]->addLayer(1);
+  topology[3]->addLayer(1);
+  topology[3]->addLayer(2);//9weights+2
+
 
   int M = 2;
 
   rnnConfig *conf = new rnnConfig();
-  conf->setTopology1(topology1);
-  conf->setTopology2(topology2);
-  conf->setTopology3(topology3);
-  conf->setTopology4(topology4);
+  conf->setTopology(topology);
+  // conf->setTopology2(topology2);
+  // conf->setTopology3(topology3);
+  // conf->setTopology4(topology4);
   conf->setM(M);
 
 
-  RnnSerialDBL *serialDBL = new RnnSerialDBL(conf);
+  RnnSerial *serialDBL = new RnnSerial(conf);
 
   double *warr1 = new double[7];
   int idx1 = 0;
@@ -672,7 +694,7 @@ bool test_rnn_feedforward_full(){
   if(h_out[1] != 0.54630719921292447694) return false;
 
 
-
+  serialDBL->destroy();
   delete [] warr1;
   delete [] wharr1;
 
@@ -692,14 +714,12 @@ bool test_rnn_feedforward_full(){
   delete [] output2;
   delete [] output3;
   delete [] output4;
-  delete topology1;
-  delete topology2;
-  delete topology3;
-  delete topology4;
+  delete [] topology;
   delete conf;
   delete serialDBL;
   return true;
 }
+
 
 
 bool run_tests(){
@@ -710,16 +730,16 @@ bool run_tests(){
 
   bool passed = test_topology(); failCount += passed ? 0 : 1;
   printf("%s - test_topology\n", passed ? "PASSED" : "FAILED");
-
+  printf("%s\n", "---------------------");
   passed = test_ann_feedforward(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_feedforward\n", passed ? "PASSED" : "FAILED");
-
+  printf("%s\n", "---------------------");
   passed = test_ann_feedforward_tanh(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_feedforward_tanh\n", passed ? "PASSED" : "FAILED");
-
-  // passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
-  // printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
-
+  printf("%s\n", "---------------------");
+  passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
+  printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
+  printf("%s\n", "---------------------");
   passed = test_rnn_feedforward_full(); failCount += passed ? 0 : 1;
   printf("%s - test_rnn_feedforwards_full\n", passed ? "PASSED" : "FAILED");
 

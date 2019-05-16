@@ -12,19 +12,18 @@ void run_cuda_sample();
 
 class rnnConfig{
 private:
-  Topology* cTopology1;
-  Topology* cTopology2;
-  Topology* cTopology3;
-  Topology* cTopology4;
+  Topology** cTopology;
   int mM;
 
 public:
+  void setTopology(Topology **top);
   void setTopology1(Topology *top);
   void setTopology2(Topology *top);
   void setTopology3(Topology *top);
   void setTopology4(Topology *top);
   void setM(int M);
 
+  Topology** getTopology();
   Topology* getTopology1();
   Topology* getTopology2();
   Topology* getTopology3();
@@ -49,15 +48,15 @@ class RnnBase {
 };
 
 
-class RnnSerialDBL : public RnnBase<double> {
+class RnnSerial : public RnnBase<double> {
   private:
 
     int M;
 
-    AnnSerialDBL *ann1;
-    AnnSerialDBL *ann2;
-    AnnSerialDBL_tanh *ann3;
-    AnnSerialDBL *ann4;
+    AnnSerial *ann1;
+    AnnSerial *ann2;
+    AnnSerial *ann3;
+    AnnSerial *ann4;
 
     double * c_current;
     double * c_new;
@@ -92,12 +91,12 @@ class RnnSerialDBL : public RnnBase<double> {
     // void setWeights(double *t_w_arr){
     //   w_arr=t_w_arr;
     // };
-    RnnSerialDBL(rnnConfig *mRnnConf) {
+    RnnSerial(rnnConfig *mRnnConf) {
       prepare(mRnnConf);
       init(NULL);
     };
 
-  	RnnSerialDBL(string filename) {
+  	RnnSerial(string filename) {
         // FILE * p1File;
         // p1File = fopen(filename.c_str(), "rb");
         // Topology *top=new Topology();
@@ -108,10 +107,12 @@ class RnnSerialDBL : public RnnBase<double> {
     };
 
     //
-    AnnSerialDBL* getANN1();
-    AnnSerialDBL* getANN2();
-    AnnSerialDBL_tanh* getANN3();
-    AnnSerialDBL* getANN4();
+    AnnSerial* getANN1();
+    AnnSerial* getANN2();
+    AnnSerial* getANN3();
+    AnnSerial* getANN4();
+
+    void backPropagation();
 
   	// double* getWeights();
     // double* getDWeights();
@@ -120,7 +121,7 @@ class RnnSerialDBL : public RnnBase<double> {
     //
     // void printf_Network(string filename);
 
-
+    void destroy();
   private:
     void prepare(rnnConfig *mRnnConf);
     void init(FILE *pFile);
@@ -136,7 +137,11 @@ class RnnSerialDBL : public RnnBase<double> {
     // void readf_Network(FILE *pFile);
 };
 
+double f(double x);
+double f_deriv(double x);
 
+double f_tanh(double x);
+double f_tanh_deriv(double x);
 
 
 
