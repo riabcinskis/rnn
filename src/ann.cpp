@@ -93,7 +93,6 @@ AnnSerial::AnnSerial(int V, int u, int M, Topology **top, double (*f)(double), d
   this->f_deriv=(*f_deriv);
 
   assert(M == top[u]->getOutputNeuronCount());
-
   prepare(top);
 
   init(top,NULL);
@@ -152,7 +151,11 @@ void AnnSerial::destroy(){
 
 void AnnSerial::prepare(Topology **top){
 
-
+  vL = new int[V];
+  vl = new int*[V];
+  for(int i = 0; i < V; i++){
+    vl[i] = new int[top[u]->getLayerCount()];
+  }
 	l = new int[cTopology->getLayerCount()];
 	s = new int[cTopology->getLayerCount()];
 
@@ -181,14 +184,13 @@ void AnnSerial::prepare(Topology **top){
 
   int G_count = obtainGCount(L);
 
-
-  nG = new double[G_count];
+  if(G_count > 0){
+  nG = new int[G_count];
   sG = new int[G_count];//cia pazieti
-
 
   int count = 0;
   int l2;
-  for(int gl = 0; gl > G_count; gl++){
+  for(int gl = 0; gl < G_count; gl++){
     l2 = L - 2*gl - 1;
     nG[gl] = cTopology->getLayerSize(l2)*(cTopology->getLayerSize(l2 - 2));
     count += nG[gl];
@@ -199,7 +201,7 @@ void AnnSerial::prepare(Topology **top){
     sG[gl] = sG[gl-1] + nG[gl-1];
 
   G = new double[count];
-
+}
 
 
 	//gjl = new double[neuronCount];
@@ -226,6 +228,16 @@ void AnnSerial::init(Topology **top,FILE * pFile=NULL){
 	for (int i = 0; i < L - 1; i++) {
 		a_arr[s[i + 1] - 1] = 1;
 	}
+
+  for(int i = 0; i < V; i++){
+    vL[i] = top[i]->getLayerCount()-1;
+  }
+
+  for(int i = 0; i < V; i++){
+    for(int j = 0; j < vL[i]; i++)
+      vl[i][j] = top[i]->getLayerSize(j)+1;
+  }
+
 
 
 	//Svoriu kiekiai l-ame sluoksnyje
@@ -306,7 +318,7 @@ void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out,
   calcG();
 
   for(int v = 0; v < V; v++)
-  calcDerivatives(v, deriv_in[v],  deriv_out[v]);
+    calcDerivatives(v, deriv_in[v],  deriv_out[v]);
 
   copyOutput(a);
 
@@ -372,6 +384,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
       for(int wi = 0; wi < vl[v][ss]; wi++){//kiek neuronu
         for(int wj = 0; wj < vl[v][ss+1]-1; wj++){//kiek sekanciame neuronu
           for(int ll = start_l; ll <= L; ll=ll+2){//per G reiksmes  cia gal maziau tik
+
             if(ll == 0){
 
               for(int k = 0; k < M; k++)
@@ -388,6 +401,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
                 vec1[k] = f_deriv(z[s[ll] + k])*sum;
 
               }
+
 
             }else {
 
@@ -424,7 +438,6 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
         }
       }
     }
-
 
       for(int wi = 0; wi < M; wi++){//kiek neuronu
         for(int wj = 0; wj < vl[v][1]-1; wj++){//kiek sekanciame neuronu

@@ -1,0 +1,81 @@
+\documentclass{ktu_phd_summary}
+
+\usepackage{ktu_phd}
+
+
+\usepackage{siunitx}
+\usepackage{array}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+%\pagenumbering{gobble}
+%\pagenumbering{arabic}
+%\setcounter{page}{3}
+
+
+\begin{document}
+
+%%
+%% Table of contents & lists
+%%
+\tableofcontents
+\clearpage
+
+\listoffigures
+\clearpage
+
+\listoftables
+\clearpage
+
+\section*{Įvadas}
+\addcontentsline{toc}{section}{Įvadas}
+\input{sections/intro.tex}
+
+\clearpage
+
+\section{Literatūros apžvalga}
+\input{sections/literature-review.tex}
+
+\clearpage
+
+
+
+\section{LSTM rekurentinis neuroninis tinklas}
+\input{sections/lstm/lstm.tex}
+
+\subsection{Veikimo principai}
+\input{sections/lstm/introduction.tex}
+
+\subsection{Išvesties reikšmės apskaičiavimas}
+\input{sections/lstm/feedforward.tex}
+
+\subsection{Apmokymas gradientinio nusileidimo metodu}
+\input{sections/lstm/backpropagation.tex}
+
+\clearpage
+
+\section{LSTM taikymo idėja}
+\input{sections/app/app.tex}
+
+\clearpage
+
+\section{Eksperimentiniai skaičiavimai}
+\input{sections/research/research.tex}
+
+\clearpage
+
+\section{Išvados}
+\input{sections/conc.tex}
+
+\section*{Literatūros sąrašas}
+\addcontentsline{toc}{section}{Literatūros sąrašas}
+
+\begingroup
+   \renewcommand{\section}[2]{}%
+   \bibliographystyle{iso}
+   \bibliography{db}
+\endgroup
+
+
+\end{document}

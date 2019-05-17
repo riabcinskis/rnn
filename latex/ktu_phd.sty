@@ -1,0 +1,184 @@
+%
+% All things related to behaviour goes here.
+%
+
+
+%%
+%% Figure, table numbering
+%%
+% \@addtoreset {figure}{section}
+% \@addtoreset {table}{section}
+
+
+%%
+%% Packages for math
+%%
+
+%
+% For number sets.
+% Usage: \mathbb{R}
+%
+% Alternative package: amssymb
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{adjustbox}
+
+\usepackage{hhline}
+\usepackage{comment}
+
+\usepackage{stackengine}
+
+\usepackage{booktabs}
+\usepackage{bbm}
+
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+\usepackage{hyperref}
+\usepackage{xr}
+
+\newlength{\Oldarrayrulewidth}
+\newcommand{\Cline}[2]{%
+  \noalign{\global\setlength{\Oldarrayrulewidth}{\arrayrulewidth}}%
+  \noalign{\global\setlength{\arrayrulewidth}{#1}}\cline{#2}%
+  \noalign{\global\setlength{\arrayrulewidth}{\Oldarrayrulewidth}}}
+
+\newcommand\ChangeRT[1]{\noalign{\hrule height #1}}
+
+\newcommand\tableTop{\noalign{\hrule height 1.0pt}}
+\newcommand\tableHeader{\noalign{\hrule height 0.6pt}}
+\newcommand\tableHor{\noalign{\hrule height 0.4pt}}
+\newcommand\tableHorCline[1]{\Cline{0.4pt}{#1}}
+
+
+
+\newcommand\tableVer{\vrule width 0.4pt}
+
+\newcommand\stack[2]{{\begin{smallmatrix} #2 \\ #1\end{smallmatrix}}}
+
+
+
+% declaration of the new block
+% \algblock{ParFor}{EndParFor}
+
+% customising the new block
+% \algnewcommand\algorithmicparfor{\textbf{parallel for}}
+% \algnewcommand\algorithmicpardo{\textbf{do}}
+% \algnewcommand\algorithmicendparfor{\textbf{end\ parallel for}}
+% \algrenewtext{ParFor}[1]{\algorithmicparfor\ #1\ \algorithmicpardo}
+% \algrenewtext{EndParFor}{\algorithmicendparfor}
+%
+% \algnewcommand\algorithmicforeach{\textbf{for each}}
+% \algnewcommand\algorithmicforeachdo{\textbf{do}}
+% \algnewcommand\algorithmicforeachin{\textbf{in}}
+% \algnewcommand\algorithmicendforeach{\textbf{end\ for each}}
+%
+% \algblock{ForEach}{EndForEach}
+% \algrenewtext{ForEach}[1]{\textbf{for each}\ #1\ \textbf{do}}
+% \algrenewtext{EndForEach}{\textbf{end\ for each}}
+
+
+
+%%
+%%
+%%
+
+
+\algsetup{
+  linenodelimiter=.,
+  %indent=5em,
+}
+\renewcommand{\algorithmicensure}{\textbf{procedure}}
+\renewcommand{\algorithmicrequire}{\textbf{end procedure}}
+\renewcommand{\algorithmicforall}{\textbf{parallel for}}
+%\renewcommand{\algorithmicendforall}{\textbf{end parallel for}}
+% \renewcommand{\COMMENT}[2][.5\linewidth]{%
+%   \leavevmode\hfill\makebox[#1][l]{//~#2}}
+% \algnewcommand\algorithmicto{\textbf{to}}
+% \algnewcommand\RETURN{\STATE \textbf{return} }
+% \newcommand{\ISTATE}[1][1]{\STATE\hspace{#1\algorithmicindent}}
+
+
+% \newlength\myindent
+% \setlength\myindent{2em}
+% \newcommand\bindent{%
+%   \begingroup
+%   \setlength{\itemindent}{\myindent}
+%   \addtolength{\algorithmicindent}{\myindent}
+% }
+% \newcommand\eindent{\endgroup}
+
+%%
+%%
+%%
+
+\DeclareSymbolFont{Symbols}{OMS}{cmsy}{m}{n}
+\SetSymbolFont{Symbols}{bold}{OMS}{cmsy}{b}{n}
+\DeclareMathSymbol{\Setminus}{\mathbin}{Symbols}{"6E}
+
+\newcommand{\0}{\mathbbm{0}}
+
+
+
+\newcommand*\br[1]{$(#1)$}
+
+
+
+
+\renewcommand{\bold}[1]{\text{\boldmath $#1$}}
+\newcommand{\I}{\mx{I}}
+
+\newcommand*\parstart[1]{\iota_{#1}}
+
+\usepackage{framed}
+
+\usepackage{pgfplots}
+
+\pgfplotsset{width=8cm,compat=1.9}
+\usepgfplotslibrary{external}
+\usetikzlibrary{positioning}
+\usepgfplotslibrary{statistics}
+
+\pgfplotsset{
+  tick label style={font=\footnotesize},
+  label style = {font=\small},
+  legend style={font=\small, at={(0.5,-0.1)},anchor=north},
+}
+
+
+%%
+%% Definition for math
+%%
+\newcommand{\1}{\mathbbm{1}}
+
+\newcommand{\bigO}{\mathcal{O}}
+
+\renewcommand{\vec}[1]{\mx{#1}}
+
+\newcommand{\mx}[1]{\text{\boldmath $#1$}}
+
+
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\set}[1]{\mx{\mathcal{#1}}}
+
+\newcommand{\E}[1]{E\!\left(#1\right)}
+\newcommand{\EE}[1]{E^2\!\left(#1\right)}
+
+\newcommand{\one}{\mathbbm{1}}
+
+
+
+
+
+
+\newcommand{\prob}{\mathbb{P}}
+\newcommand{\expc}{\mathbb{E}}
+
+\newcommand{\todo}[1]{{\color{red}< TODO: #1 >}}

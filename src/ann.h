@@ -111,7 +111,7 @@ private:
   double * dWh;
 
 
-  double * nG;
+  int * nG;
   int * sG;//pazieti kurie int kurie double
   double * G;
 
@@ -145,13 +145,16 @@ private:
   int layerToGIndex(int L, int l);
 
 
-  int vi(int v, int s, int i, int j, int k);
-  int vhi(int v, int i, int j, int k);
+  // int vi(int v, int s, int i, int j, int k);
+  // int vhi(int v, int i, int j, int k);
 
   double d(int i, int j);
 
 
 public:
+  int vi(int v, int s, int i, int j, int k);
+  int vhi(int v, int i, int j, int k);
+
   void setWeights(double *W, double *Wh);
 
 
