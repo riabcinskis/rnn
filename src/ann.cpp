@@ -184,9 +184,9 @@ void AnnSerial::prepare(Topology **top){
 
   int G_count = obtainGCount(L);
 
-  if(G_count > 0){
+
   nG = new int[G_count];
-  sG = new int[G_count];//cia pazieti
+  sG = new int[G_count];
 
   int count = 0;
   int l2;
@@ -196,12 +196,15 @@ void AnnSerial::prepare(Topology **top){
     count += nG[gl];
   }
 
-  sG[0] = 0;
-  for(int gl = 1; gl > G_count; gl++)
-    sG[gl] = sG[gl-1] + nG[gl-1];
+
+  for(int gl = 0; gl < G_count; gl++){
+    if(gl == 0)
+      sG[0] = 0;
+    else
+      sG[gl] = sG[gl-1] + nG[gl-1];
+  }
 
   G = new double[count];
-}
 
 
 	//gjl = new double[neuronCount];
@@ -312,16 +315,12 @@ void AnnSerial::copyOutput(double *a){
 		a[i] = a_arr[s[L - 1] + i];
 }
 
-void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out, double *a){
+void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out){
 
-  calc_feedForward();
   calcG();
 
   for(int v = 0; v < V; v++)
     calcDerivatives(v, deriv_in[v],  deriv_out[v]);
-
-  copyOutput(a);
-
 }
 
 void AnnSerial::calcG(){

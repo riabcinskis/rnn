@@ -10,20 +10,20 @@
 /* Class definitions here. */
 void run_cuda_sample();
 
-class rnnConfig{
+class RnnConfig{
 private:
   Topology** cTopology;
   int mM;
-  int mV;
+
 
 public:
-  void setTopology(Topology **top);
+  void setTopologies(Topology **top);
   void setM(int M);
-  void setV(int V);
 
-  Topology** getTopology();
+
+  Topology** getTopologies();
   int getM();
-  int getV();
+
 };
 
 template <typename T>
@@ -44,14 +44,18 @@ class RnnSerial : public RnnBase<double> {
     int M;
     int V;
 
-    AnnSerial ** anns;
+    AnnSerial** anns;
+    AnnSerial* ann_forget; // 0
+    AnnSerial* ann_input; // 1
+    AnnSerial* ann_gate; // 2
+    AnnSerial* ann_output; // 3
 
-    double * c_current;
-    double * c_new;
-    double * h_current;
-    double * h_new;
-    double * b;
-    double ** a_outputs;
+    double* c_current;
+    double* c_new;
+    double* h_current;
+    double* h_new;
+    double* b;
+    double** a_outputs;
 
   public:
   	 void train(double *a, double *b, double alpha, double eta){};

@@ -1,6 +1,4 @@
 
-#include <stdio.h>
-#include "rnn.h"
 #include "tests.h"
 
 
@@ -70,125 +68,78 @@ int WeightIO::whij(int i, int j){
 //DerivIO
 //
 
-DerivIO::DerivIO(Topology **top, int M, int V, int u){
-  this->V = V;
+DerivIO::DerivIO(Topology *top, int M){
   this->cTopology = top;
   this->M = M;
-  this->u = u;
 
-  vsW = new int*[V];
-  for(int v = 0; v < V; v++)
-    vsW[v] = new int[top[v]->getLayerCount()-1];
+  sW = new int[top->getLayerCount()-1];
 
-    assert(vsW[0][0] == 0);
-    assert(vsW[1][0] == 0);
+  obtainSW(top, sW);
 
-  for(int v = 0; v < V; v++){
-    obtainSW(top[v], vsW[v]);
-  }
-  assert(vsW[0][0] == 0);
-  assert(vsW[1][0] == 0);
+  assert(sW[0] == 0);
 
-  deriv_in = new Derivatives*[V];
-  for(int i = 0; i < V; i++){
-    deriv_in[i] = new Derivatives();
-    deriv_in[i]->v = new double[V*((top[0]->getLayerSize(0)+1)*M*M)];
-    deriv_in[i]->vh = new double[V*(M*M*M)];
-  }
-  deriv_out = new Derivatives*[V];
-  for(int i = 0; i < V; i++){
-    deriv_out[i] = new Derivatives();
-    deriv_out[i]->v = new double[V*((top[0]->getLayerSize(0)+1)*M*M)];
-    deriv_out[i]->vh = new double[V*(M*M*M)];
-  }
+  deriv = new Derivatives;
+  deriv->v = new double[top->obtainWeightCount()*M];
+  deriv->vh = new double[M*top->getLayerSize(1)*M];
 
-  int L = top[u]->getLayerCount();
+printf("deriv->vh[0] =%f \n", deriv->vh[0]);
+
+
+  int L = top->getLayerCount();
 
   assert(L > 1);
-  assert(M == top[u]->getLayerSize(L-1));
-
+  assert(M == top->getLayerSize(L-1));
 }
 
 DerivIO::~DerivIO(){
-//  delete [] sW;
+  delete [] sW;
 }
 
-void DerivIO::setHDeriv(int v, int i, int j, int k, double deriv){
+void DerivIO::setHDeriv(int i, int j, int k, double deriv){
   assert(i >= 0);
   assert(j >= 0);
-  assert(v >= 0);
   assert(k >= 0);
 
-  assert(v < V);
   assert(i < M);
-  assert(j < cTopology[v]->getLayerSize(1));
-  assert(k < cTopology[v]->getLayerSize(1));
+  assert(j < cTopology->getLayerSize(1));
+  assert(k < M);
 
-  deriv_in[v]->vh[vhi(v,i,j,k)] = deriv;
+  this->deriv->vh[vhi(i, j, k)] = deriv;
 }
 
-void DerivIO::setDeriv(int v,int s,int i, int j, int k, double deriv){
+void DerivIO::setDeriv(int s, int i, int j, int k, double deriv){
 
   assert(i >= 0);
   assert(j >= 0);
-  assert(v >= 0);
   assert(k >= 0);
   assert(s >= 0);
-  assert(v < V);
-  assert(s < cTopology[v]->getLayerCount()-1);
-  assert(i < cTopology[v]->getLayerSize(s)+1);
-  assert(j < cTopology[v]->getLayerSize(s+1));
-  assert(k < cTopology[v]->getLayerSize(s+1));
+  assert(s < cTopology->getLayerCount()-1);
+  assert(i < cTopology->getLayerSize(s)+1);
+  assert(j < cTopology->getLayerSize(s+1));
+  assert(k < cTopology->getLayerSize(L-1));
 
-  deriv_in[v]->v[vi(v,s,i,j,k)] = deriv;
+  this->deriv->v[vi(s, i, j, k)] = deriv;
 }
 
-Derivatives** DerivIO::getDeriv_in(){
-  return deriv_in;
+Derivatives* DerivIO::getDerivatives(){
+  return deriv;
 }
 
-Derivatives** DerivIO::getDeriv_out(){
-  return deriv_out;
+double DerivIO::getDeriv(int s, int i, int j, int k){
+  return deriv->v[vi(s, i, j, k)];
 }
 
-double DerivIO::getDerivInValue(int v,int s,int i, int j, int k){
-  return deriv_in[v]->v[vi(v,s,i,j,k)];
+double DerivIO::getHDeriv(int i, int j, int k){
+  return deriv->vh[vhi(i, j, k)];
 }
 
-double DerivIO::getDerivInValueH(int v,int i, int j, int k){
-  return deriv_in[v]->vh[vhi(v,i,j,k)];
+int DerivIO::vi(int s, int i, int j, int k){
+  return (sW[s] + i*(cTopology->getLayerSize(s+1)) + j)*M + k;
 }
 
-double DerivIO::getDerivOutValue(int v,int s,int i, int j, int k){
-  return deriv_out[v]->v[vi(v,s,i,j,k)];
+int DerivIO::vhi(int i, int j, int k){
+  return  (i*(cTopology->getLayerSize(1)) + j)*M + k;
 }
-
-double DerivIO::getDerivOutValueH(int v,int i, int j, int k){
-  return deriv_out[v]->vh[vhi(v,i,j,k)];
-}
-
-
-int DerivIO::deriv(int l, int i, int j){
-  return vsW[u][l] + i*cTopology[u]->getLayerSize(l+1) + j;
-}
-
-int DerivIO::hderiv(int i, int j){
-  return i*cTopology[u]->getLayerSize(1) + j;
-}
-
-int DerivIO::vi(int v, int s, int i, int j, int k){
-  return (vsW[v][s] + i*(cTopology[v]->getLayerSize(s+1)) + j)*M + k;
-}
-
-int DerivIO::vhi(int v, int i, int j, int k){
-  return  (i*(cTopology[v]->getLayerSize(1)) + j)*M + k;
-}
-
-
-
-
-
-
 
 
 bool test_topology(){
@@ -316,7 +267,8 @@ bool test_backprogg(){
   topology[1]->addLayer(2);
   topology[1]->addLayer(2);//
 
-  int M = 2;
+  int I = 2; // number of inputs
+  int M = 2; // number of outputs
   int V = 2;
 
   WeightIO* weightIO = new WeightIO(topology[0], M);
@@ -336,31 +288,24 @@ bool test_backprogg(){
   weightIO->setHWeight(1, 0, 0.3); // wharr[idxh++] = 0.3;
   weightIO->setHWeight(1, 1, 0.1); // wharr[idxh++] = 0.1;
 
-  rnnConfig *conf = new rnnConfig();
-  conf->setTopology(topology);
-  conf->setM(M);
-  conf->setV(2);
 
-  RnnSerial *rnn = new RnnSerial(conf);
+  AnnSerial *ann = new AnnSerial(V, 0, M, topology, f, f_deriv);
+  ann->setWeights(weightIO->getWeights(), weightIO->getHWeights());
 
 
-  rnn->getANN(0)->setWeights(weightIO->getWeights(), weightIO->getHWeights());
 
-  rnn->getANN(1)->setWeights(weightIO->getWeights(), weightIO->getHWeights());
   double *h_input = new double[M];
   h_input[0] = 3;
   h_input[1] = 4;
 
-  double *input = new double[2];
+  double *input = new double[I];
   input[0] = 1;
   input[1] = 2;
 
   double *output = new double[M];
 
-  ///
-  ///1
-  ///
-  rnn->getANN(0)->feedForward(h_input,input, output);
+
+  ann->feedForward(h_input, input, output);
   // printf("output = %.20f\n", output[0]);
    //printf("output = %.20f\n", output[1]);
 
@@ -370,58 +315,75 @@ bool test_backprogg(){
   //              0.908877038985144
   if(output[1] != 0.90887703898514382583) return false;
 
-  if(rnn->getANN(0)->getA()[2] != 1) return false;
-
-  ///
-  ///2
-  ///
-  rnn->getANN(1)->feedForward(h_input,input, output);
-  // printf("output = %.20f\n", output[0]);
-  // printf("output = %.20f\n", output[1]);
-
-
-  //              0.964428810727364
-  if(output[0] != 0.96442881072736386106) return false;
-  //              0.908877038985144
-  if(output[1] != 0.90887703898514382583) return false;
-
-  if(rnn->getANN(1)->getA()[2] != 1) return false;
+  if(ann->getA()[2] != 1) return false;
 
 
 
+  DerivIO* derivIO_in0 = new DerivIO(topology[0], M);
+  DerivIO* derivIO_in1 = new DerivIO(topology[1], M);
 
-  DerivIO* derivIO0 = new DerivIO(topology, M, V, 0);
-  DerivIO* derivIO1 = new DerivIO(topology, M, V, 1);
-
-  derivIO0->setDeriv(0,0,0,0,0,0.05);
-  derivIO0->setDeriv(0,0,0,1,0,0.1);
-  derivIO0->setDeriv(0,0,1,0,0,0.15);
-  derivIO0->setDeriv(0,0,1,1,0,0.2);
-  derivIO0->setDeriv(0,0,2,0,0,0.25);
-  derivIO0->setDeriv(0,0,2,1,0,0.3);
+  DerivIO* derivIO_out0 = new DerivIO(topology[0], M);
+  DerivIO* derivIO_out1 = new DerivIO(topology[1], M);
 
 
-  derivIO0->setHDeriv(0,0,0,0,0.35);
-  derivIO0->setHDeriv(0,0,1,0,0.4);
-  derivIO0->setHDeriv(0,1,0,0,0.45);
-  derivIO0->setHDeriv(0,1,1,0,0.5);
+  derivIO_in0->setDeriv(0, 0, 0, 0, -0.05);
+  derivIO_in0->setDeriv(0, 0, 0, 1, -0.15);
 
-  rnn->backPropagation(h_input, input, derivIO0->getDeriv_in(), derivIO0->getDeriv_out());
+  derivIO_in0->setDeriv(0, 0, 1, 0, 0.1);
+  derivIO_in0->setDeriv(0, 0, 1, 1, 0.03);
+
+  derivIO_in0->setDeriv(0, 1, 0, 0, -0.19);
+  derivIO_in0->setDeriv(0, 1, 0, 1, 0.31);
+
+  derivIO_in0->setDeriv(0, 1, 1, 0, 0.17);
+  derivIO_in0->setDeriv(0, 1, 1, 1, 0.4);
+
+  derivIO_in0->setDeriv(0, 2, 0, 0, -0.7);
+  derivIO_in0->setDeriv(0, 2, 0, 1, 0.1);
+
+  derivIO_in0->setDeriv(0, 2, 1, 0, 0.23);
+  derivIO_in0->setDeriv(0, 2, 1, 1, 0.39);
+
+
+  derivIO_in0->setHDeriv(0, 0, 0, 0.71);
+  derivIO_in0->setHDeriv(0, 0, 1, 0.35);
+
+  derivIO_in0->setHDeriv(0, 1, 0, 0.21);
+  derivIO_in0->setHDeriv(0, 1, 1, -0.11);
+
+  derivIO_in0->setHDeriv(1, 0, 0, 0.2);
+  derivIO_in0->setHDeriv(1, 0, 1, -0.63);
+
+  derivIO_in0->setHDeriv(1, 1, 0, 0.1);
+  derivIO_in0->setHDeriv(1, 1, 1, 0.01);
+
+
+
+  Derivatives **deriv_in = new Derivatives*[2];
+  Derivatives **deriv_out = new Derivatives*[2];
+
+  deriv_in[0] =  derivIO_in0->getDerivatives();
+  deriv_in[1] =  derivIO_in1->getDerivatives();
+
+  deriv_out[0] =  derivIO_out0->getDerivatives();
+  deriv_out[1] =  derivIO_out1->getDerivatives();
+
+
+  ann->backPropagation( deriv_in, deriv_out);
 
 
 
 
 
 
-  rnn->destroy();
+  ann->destroy();
 
 
   delete [] h_input;
   delete [] input;
   delete [] output;
   delete [] topology;
-  delete conf;
-  delete rnn;
+  delete ann;
   return true;
 }
 

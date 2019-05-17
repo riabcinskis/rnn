@@ -72,7 +72,7 @@ class AnnBase {
   	//virtual void train(T *a, T *b, T alpha, T eta) = 0;
 
     virtual void feedForward(T *h_input, T *a, T *b) = 0; // MB: h, a->x, b->a
-    virtual void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out, double *a);
+    virtual void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
     virtual void destroy() = 0;
   	//virtual T obtainError(T *b) = 0;
 
@@ -126,7 +126,7 @@ public:
   void destroy();
 
   void feedForward(double *h_input, double *a, double *b); // ...
-  void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out, double *a);
+  void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
 
 
 private:

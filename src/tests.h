@@ -1,6 +1,12 @@
 #ifndef TESTS_HEADER
 #define TESTS_HEADER
 
+
+#include <stdio.h>
+#include "rnn.h"
+
+struct Derivatives;
+
 bool run_tests();
 
 class WeightIO {
@@ -31,42 +37,31 @@ class WeightIO {
 
 class DerivIO {
   private:
-    int u;
-    int V;
     int M;
-    Topology **cTopology;
+    Topology *cTopology;
 
-    int **vsW;
-    int **vl;
-    int *vL;
+    int *sW;
+    int *l;
+    int L;
 
-    Derivatives ** deriv_in;
-    Derivatives ** deriv_out;
+    Derivatives *deriv;
 
   public:
-    DerivIO(Topology **top, int M, int V, int u);
+    DerivIO(Topology *top, int M);
 
     ~DerivIO();
 
-    void setDeriv(int v,int s,int i, int j, int k, double deriv);
-    void setHDeriv(int v, int i, int j, int k, double deriv);
+    void setDeriv(int s, int i, int j, int k, double deriv);
+    void setHDeriv(int i, int j, int k, double deriv);
 
-    Derivatives** getDeriv_in();
-    Derivatives** getDeriv_out();
+    Derivatives* getDerivatives();
 
-    double getDerivInValue(int v,int s,int i, int j, int k);
-    double getDerivInValueH(int v,int i, int j, int k);
-    double getDerivOutValue(int v,int s,int i, int j, int k);
-    double getDerivOutValueH(int v,int i, int j, int k);
-
-
-    int deriv(int l, int i, int j);
-
-    int hderiv(int i, int j);
+    double getDeriv(int s, int i, int j, int k);
+    double getHDeriv(int i, int j, int k);
 
   private:
-    int vi(int v, int s, int i, int j, int k);
-    int vhi(int v, int i, int j, int k);
+    int vi(int s, int i, int j, int k);
+    int vhi(int i, int j, int k);
 };
 
 

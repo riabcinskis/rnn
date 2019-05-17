@@ -25,13 +25,12 @@ int rnnConfig::getV(){
   return mV;
 }
 
-//***********************************
 //
-//RnnSerialDBL
+// RnnSerialDBL
 //
-void RnnSerial::prepare(rnnConfig *mRnnConf){
-  M = mRnnConf->getM();
-  V = mRnnConf->getV();
+void RnnSerial::prepare(int M, Topology **top){
+  this->M = M;
+  V = 4;
 
   double (*func)(double);
   double (*func_deriv)(double);
@@ -47,13 +46,21 @@ void RnnSerial::prepare(rnnConfig *mRnnConf){
 
 
   anns = new AnnSerial*[V];
-  for(int i = 0; i < V; i++){
-    if(i==2){
-      anns[i] = new AnnSerial(V,i,M,mRnnConf->getTopology(),func_tanh,func_tanh_deriv);
+  for(int v = 0; v < V; v++){
+    if(v==2){
+      anns[v] = new AnnSerial(V, v, M, top, func_tanh, func_tanh_deriv);
     } else {
-      anns[i] = new AnnSerial(V,i,M,mRnnConf->getTopology(),func,func_deriv);
+      anns[v] = new AnnSerial(V, v, M, top, func, func_deriv);
     }
   }
+
+  ann_forget = anns[0];
+  ann_input = anns[1];
+  ann_gate = anns[2];
+  ann_output = anns[3];
+
+
+
 
   b = new double[M];
   c_current = new double[M];
@@ -62,59 +69,46 @@ void RnnSerial::prepare(rnnConfig *mRnnConf){
   h_new = new double[M];
 
   a_outputs = new double*[V];
-  for(int i = 0; i < V; i++){
-    a_outputs[i] = new double[M];
+  for(int v = 0; v < V; v++){
+    a_outputs[v] = new double[M];
   }
 }
 
 
 void RnnSerial::init(FILE * pFile=NULL){
 
-  for(int i=0; i<M;i++){
+  for(int i=0; i<M; i++){
     c_current[i] = 0;
     h_current[i] = 0;
   }
 
 }
 
-void RnnSerial::feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out){
+void RnnSerial::feedForward(double *h_in, double *c_in, double *a_in, double *c_out, double *h_out){
 
-  for(int i = 0; i < V; i++)
-    anns[i]->feedForward(h_in,a,a_outputs[i]);
+  for(int v = 0; v < V; v++)
+    anns[v]->feedForward(h_in, a_in, a_outputs[v]);
 
-  double temp= 0;
+  for(int i=0; i < M; i++){
+    c_out[i] = c_in[i] * a_outputs[0][i] + a_outputs[1][i] * a_outputs[2][i];
+    b[i] = tanh(c_out[i])* a_outputs[3][i];
+  }
 
-  // for(int i=0; i < M; i++){
-  //   temp = c_in[i] * a1_output[i] + a2_output[i] * a3_output[i];
-  //   c_out[i] = temp;
-  //   temp = tanh(temp);
-  //   b[i] = temp * a4_output[i];
-  // }
+  double sumB = 0;
+  for(int i = 0; i < M; i++)
+    sumB += exp(b[i]);
 
-  // double sumB = 0;
-  // for(int i = 0; i < M; i++){
-  //   sumB+= b[i];
-  // }
-  //
-  // for(int i = 0; i < M; i++){
-  //   h_out[i] = b[i] / sumB;
-  // }
+  for(int i = 0; i < M; i++)
+    h_out[i] = exp(b[i]) / sumB;
+
 }
 
 
-void RnnSerial::backPropagation(double *h_in, double *a, Derivatives **deriv_in, Derivatives **deriv_out){
-  for(int i = 0; i < V; i++)
-    anns[i]->feedForward(h_in,a,a_outputs[i]);
+void RnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out){
 
+  for(int v = 0; v < V; v++)
+    anns[v]->backPropagation(deriv_in[v], deriv_out[v]);
 
-  double *aoutput = new double[M];
-
-  for(int i = 0; i < V; i++)
-    anns[i]->backPropagation(deriv_in, deriv_out, aoutput);
-
-
-
-    printf("%.20f\n", deriv_out[0]->v[anns[0]->vi(0,0,0,0,0)]);
 
 
 }
