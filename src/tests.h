@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 #include "rnn.h"
+#include "app.h"
+
 
 struct Derivatives;
 

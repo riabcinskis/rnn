@@ -144,10 +144,6 @@ private:
   int obtainGCount(int L);
   int layerToGIndex(int L, int l);
 
-
-  // int vi(int v, int s, int i, int j, int k);
-  // int vhi(int v, int i, int j, int k);
-
   double d(int i, int j);
 
 
@@ -163,6 +159,8 @@ public:
   double* getDWeights();
   double* getDHWeights();
   double* getA();
+  double getOutput(int k);
+  
   Topology* getTopology();
 };
 

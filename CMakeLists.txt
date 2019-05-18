@@ -18,6 +18,8 @@ SET ( CPP_SOURCES
 	"${CMAKE_SOURCE_DIR}/src/tests.cpp"
 	"${CMAKE_SOURCE_DIR}/src/ann.cpp"
   "${CMAKE_SOURCE_DIR}/src/rnn.cpp"
+	"${CMAKE_SOURCE_DIR}/src/app.cpp"
+
 
 	"${CMAKE_SOURCE_DIR}/src/rnn-demo.cpp"
 

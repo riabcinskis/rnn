@@ -95,7 +95,7 @@ AnnSerial::AnnSerial(int V, int u, int M, Topology **top, double (*f)(double), d
   assert(M == top[u]->getOutputNeuronCount());
   prepare(top);
 
-  init(top,NULL);
+  init(top, NULL);
 }
 
 void AnnSerial::destroy(){
@@ -176,7 +176,7 @@ void AnnSerial::prepare(Topology **top){
 	W = new double[weightCount];
 	dW = new double[weightCount];
 
-  int second_layer_size = cTopology->getLayerSize(2);
+  int second_layer_size = cTopology->getLayerSize(1);
   int h_weightCount = second_layer_size * M;
 
   Wh = new double[h_weightCount];
@@ -253,9 +253,14 @@ void AnnSerial::init(Topology **top,FILE * pFile=NULL){
   if (pFile==NULL) {
     for (int i = 0; i < L - 1; i++)
       for (int j = 0; j < W[i]; j++) {
-        W[sW[i] + j] =(rnd->next()*2-1); // (double)rand() / double(RAND_MAX);
+        W[sW[i] + j] = (rnd->next()*2-1); // (double)rand() / double(RAND_MAX);
         dW[sW[i] + j] = 0.0;
     }
+
+    int second_layer_size = cTopology->getLayerSize(1);
+    int h_weightCount = second_layer_size * M;
+    for(int i = 0; i < h_weightCount; i++)
+      Wh[i] = (rnd->next()*2-1);
   }
   else {
   //  readf_Network(pFile);
@@ -467,7 +472,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
                   sum += Wh[(l[ll]-1)*n + k]*deriv_in->vh[vhi(v, wi, wj, n)];
                 if(u == v /*gal sita&& ss == ll*/) sum += ah_arr[wi];
                 vec1[k] = f_deriv(z[s[ll] + k])*sum;
-            
+
               }
 
             }else {
@@ -570,6 +575,11 @@ double* AnnSerial::getDHWeights(){
 double* AnnSerial::getA(){
 	return a_arr;
 }
+
+double AnnSerial::getOutput(int k){
+  return a_arr[s[L-1]+k];
+}
+
 
 Topology* AnnSerial::getTopology(){
   return cTopology;

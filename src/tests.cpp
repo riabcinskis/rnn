@@ -1012,6 +1012,64 @@ bool test_backprogg(){
 //   return true;
 // }
 
+// bool test__char_to_vec(){
+//
+//     double *vec0 =  char_to_vec(" abcd", ' ');
+//     double *vec1 =  char_to_vec(" abcd", 'b');
+//     double *vec2 =  char_to_vec(" abcd", 'd');
+//
+//     printf("vec0 : ");
+//     for(int i = 0; i < 5; i++)
+//       printf("%.1f; ", vec0[i]);
+//     printf("\n");
+//
+//     printf("vec1 : ");
+//     for(int i = 0; i < 5; i++)
+//       printf("%.1f; ", vec1[i]);
+//     printf("\n");
+//
+//     printf("vec2 : ");
+//     for(int i = 0; i < 5; i++)
+//       printf("%.1f; ", vec2[i]);
+//     printf("\n");
+//
+//     return true;
+// }
+
+bool test__vec_to_char(){
+
+    double *vec = new double[5];
+    vec[0] = 0.1;
+    vec[1] = 0.1;
+    vec[2] = 0.5;
+    vec[3] = 0.1;
+    vec[4] = 0.2;
+
+    char c = vec_to_char(" abcd", vec);
+    printf("c = %c\n", c);
+
+return true;
+}
+
+bool test__str_to_nodes(){
+  char abc[64]=" abcd";
+
+  DataNode* node = str_to_nodes(abc, "cc dba");
+  DataNode* q = node;
+  int index = 0;
+  do{
+    printf("[%d] : %c\n", index++, vec_to_char(abc, q->vec));
+    q = q->next;
+  }while(q != NULL);
+
+  char str[64]="";
+  nodes_to_str(abc, node, str);
+
+  printf("got back: |%s|\n", str);
+
+  return true;
+}
+
 
 
 bool run_tests(){
@@ -1026,6 +1084,7 @@ bool run_tests(){
   passed = test_ann_feedforward(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_feedforward\n", passed ? "PASSED" : "FAILED");
   printf("%s\n", "---------------------");
+
   // passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
   // printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
   // printf("%s\n", "---------------------");
@@ -1035,6 +1094,18 @@ bool run_tests(){
 
   passed = test_backprogg(); failCount += passed ? 0 : 1;
   printf("%s - test_backprogg\n", passed ? "PASSED" : "FAILED");
+
+  // passed = test__char_to_vec(); failCount += passed ? 0 : 1;
+  // printf("%s - test__char_to_vec\n", passed ? "PASSED" : "FAILED");
+
+  passed = test__vec_to_char(); failCount += passed ? 0 : 1;
+  printf("%s - test__vec_to_char\n", passed ? "PASSED" : "FAILED");
+
+
+  passed = test__str_to_nodes(); failCount += passed ? 0 : 1;
+  printf("%s - test__str_to_nodes\n", passed ? "PASSED" : "FAILED");
+
+
 
 
   printf("\n");

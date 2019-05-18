@@ -26,6 +26,13 @@ public:
 
 };
 
+
+
+struct RnnDerivatives {
+  Derivatives **hderiv;
+  Derivatives **cderiv;
+};
+
 template <typename T>
 class RnnBase {
   public:
@@ -38,7 +45,7 @@ class RnnBase {
 };
 
 
-class RnnSerial : public RnnBase<double> {
+class RnnCell {
   private:
 
     int M;
@@ -57,16 +64,16 @@ class RnnSerial : public RnnBase<double> {
     double* b;
     double** a_outputs;
 
-  public:
-  	 void train(double *a, double *b, double alpha, double eta){};
-  	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
+    Derivatives ***aderiv;
 
-    RnnSerial(int M, Topology **top) {
+  public:
+
+    RnnCell(int M, Topology **top) {
       prepare(M, top);
       init(NULL);
     };
 
-  	RnnSerial(string filename) {
+    RnnCell(string filename) {
         // FILE * p1File;
         // p1File = fopen(filename.c_str(), "rb");
         // Topology *top=new Topology();
@@ -75,18 +82,86 @@ class RnnSerial : public RnnBase<double> {
         // init(p1File);
         // fclose (p1File);
     };
+    
+     void train(double *a, double *b, double alpha, double eta){};
+  	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
+
+
 
     //
     AnnSerial* getANN(int v);
 
 
-    void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
+    void backPropagation( RnnDerivatives *deriv_in, RnnDerivatives *deriv_out);
 
 
     void destroy();
   private:
     void prepare(int M, Topology **top);
     void init(FILE *pFile);
+
+};
+
+
+class OutputLimit {
+  public:
+    virtual void reset() = 0;
+    virtual bool check(double *vec) = 0;
+};
+
+class SecondMarkLimit : public OutputLimit {
+  private:
+    int M;
+    int count;
+    int markIndex;
+
+  public:
+    SecondMarkLimit(int markIndex, int M);
+
+    void reset();
+    bool check(double *vec);
+};
+
+struct DataNode{
+  DataNode(int M);
+  double* vec;
+  DataNode *next;
+};
+
+
+
+
+
+
+class Rnn {
+  private:
+    int I;
+    int M;
+    RnnCell* cRnnCell;
+
+    RnnDerivatives* deriv_in;
+    RnnDerivatives* deriv_out;
+    double *h_in;
+    double *h_out;
+    double *c_in;
+    double *c_out;
+
+
+
+  public:
+    Rnn(int I, int M, RnnCell *rnnCell);
+
+    DataNode *feedForward(DataNode* input, OutputLimit *outputLimit);
+
+
+
+
+  private:
+    RnnDerivatives* allocateRnnDerivatives(RnnDerivatives* deriv);
+    RnnDerivatives* deallocateRnnDerivatives(RnnDerivatives* deriv);
+    void initRnnDerivatives(RnnDerivatives* deriv);
+    void copyRnnDerivatives(RnnDerivatives* deri_b, RnnDerivatives* deriv_a);
+    void copyVector(double* vec_b, double *vec_a, int n);
 
 };
 
