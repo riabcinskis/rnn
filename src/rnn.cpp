@@ -1,29 +1,23 @@
 #include "rnn.h"
 
 /* C++ code here. */
-void rnnConfig::setTopology(Topology **top){
+void RnnConfig::setTopologies(Topology **top){
   cTopology = top;
 }
 
-void rnnConfig::setM(int M){
+void RnnConfig::setM(int M){
   mM=M;
 }
 
-void rnnConfig::setV(int V){
-  mV=V;
-}
 
-Topology** rnnConfig::getTopology(){
+Topology** RnnConfig::getTopologies(){
   return cTopology;
 }
 
-int rnnConfig::getM(){
+int RnnConfig::getM(){
   return mM;
 }
 
-int rnnConfig::getV(){
-  return mV;
-}
 
 //
 // RnnSerialDBL
@@ -107,7 +101,7 @@ void RnnSerial::feedForward(double *h_in, double *c_in, double *a_in, double *c_
 void RnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out){
 
   for(int v = 0; v < V; v++)
-    anns[v]->backPropagation(deriv_in[v], deriv_out[v]);
+    anns[v]->backPropagation(deriv_in, deriv_out);//[v]./
 
 
 

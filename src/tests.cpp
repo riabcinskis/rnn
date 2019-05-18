@@ -82,7 +82,7 @@ DerivIO::DerivIO(Topology *top, int M){
   deriv->v = new double[top->obtainWeightCount()*M];
   deriv->vh = new double[M*top->getLayerSize(1)*M];
 
-printf("deriv->vh[0] =%f \n", deriv->vh[0]);
+  // printf("deriv->vh[0] =%f \n", deriv->vh[0]);
 
 
   int L = top->getLayerCount();
@@ -116,7 +116,7 @@ void DerivIO::setDeriv(int s, int i, int j, int k, double deriv){
   assert(s < cTopology->getLayerCount()-1);
   assert(i < cTopology->getLayerSize(s)+1);
   assert(j < cTopology->getLayerSize(s+1));
-  assert(k < cTopology->getLayerSize(L-1));
+  assert(k < M);
 
   this->deriv->v[vi(s, i, j, k)] = deriv;
 }
@@ -325,7 +325,7 @@ bool test_backprogg(){
   DerivIO* derivIO_out0 = new DerivIO(topology[0], M);
   DerivIO* derivIO_out1 = new DerivIO(topology[1], M);
 
-
+  ///                   s  i  j  k  val
   derivIO_in0->setDeriv(0, 0, 0, 0, -0.05);
   derivIO_in0->setDeriv(0, 0, 0, 1, -0.15);
 
@@ -359,6 +359,44 @@ bool test_backprogg(){
 
 
 
+
+
+
+
+
+  derivIO_in1->setDeriv(0, 0, 0, 0, 0.05);
+  derivIO_in1->setDeriv(0, 0, 0, 1, 0.15);
+
+  derivIO_in1->setDeriv(0, 0, 1, 0, 0.5);
+  derivIO_in1->setDeriv(0, 0, 1, 1, 0.13);
+
+  derivIO_in1->setDeriv(0, 1, 0, 0, -0.18);
+  derivIO_in1->setDeriv(0, 1, 0, 1, -0.31);
+
+  derivIO_in1->setDeriv(0, 1, 1, 0, 0.32);
+  derivIO_in1->setDeriv(0, 1, 1, 1, 0.02);
+
+  derivIO_in1->setDeriv(0, 2, 0, 0, -0.22);
+  derivIO_in1->setDeriv(0, 2, 0, 1, 0.14);
+
+  derivIO_in1->setDeriv(0, 2, 1, 0, 0.43);
+  derivIO_in1->setDeriv(0, 2, 1, 1, 0.34);
+
+
+  derivIO_in1->setHDeriv(0, 0, 0, -0.71);
+  derivIO_in1->setHDeriv(0, 0, 1, 0.53);
+
+  derivIO_in1->setHDeriv(0, 1, 0, 0.35);
+  derivIO_in1->setHDeriv(0, 1, 1, -0.35);
+
+  derivIO_in1->setHDeriv(1, 0, 0, 0.2);
+  derivIO_in1->setHDeriv(1, 0, 1, -0.24);
+
+  derivIO_in1->setHDeriv(1, 1, 0, 0.22);
+  derivIO_in1->setHDeriv(1, 1, 1, 0.01);
+
+
+
   Derivatives **deriv_in = new Derivatives*[2];
   Derivatives **deriv_out = new Derivatives*[2];
 
@@ -371,9 +409,74 @@ bool test_backprogg(){
 
   ann->backPropagation( deriv_in, deriv_out);
 
+  if(derivIO_out0->getDeriv(0, 0, 0, 0) != 0.03224752698038448745) return false;
+  if(derivIO_out0->getDeriv(0, 0, 0, 1) != 0.08116317565092628916) return false;
+
+  if(derivIO_out0->getDeriv(0, 0, 1, 0) != 0.03564380907725477055) return false;
+  if(derivIO_out0->getDeriv(0, 0, 1, 1) != 0.08389622136162074029) return false;
+
+  if(derivIO_out0->getDeriv(0, 1, 0, 0) != 0.06984677120432215836) return false;
+  if(derivIO_out0->getDeriv(0, 1, 0, 1) != 0.16663296878537112167) return false;
+
+  if(derivIO_out0->getDeriv(0, 1, 1, 0) != 0.07447806497278162963) return false;
+  if(derivIO_out0->getDeriv(0, 1, 1, 1) != 0.17035984929995445780) return false;
+
+  if(derivIO_out0->getDeriv(0, 2, 0, 0) != 0.02813082140842051646) return false;
+  if(derivIO_out0->getDeriv(0, 2, 0, 1) != 0.07785039297129664471) return false;
+
+  if(derivIO_out0->getDeriv(0, 2, 1, 0) != 0.04068677340291064481) return false;
+  if(derivIO_out0->getDeriv(0, 2, 1, 1) != 0.08795438014416706585) return false;
+
+
+  if(derivIO_out0->getHDeriv(0, 0, 0) != 0.11382690906480398552) return false;
+  if(derivIO_out0->getHDeriv(0, 0, 1) != 0.25723757507324190863) return false;
+
+  if(derivIO_out0->getHDeriv(0, 1, 0) != 0.10394681569209043848) return false;
+  if(derivIO_out0->getHDeriv(0, 1, 1) != 0.24928689664213071753) return false;
+
+  if(derivIO_out0->getHDeriv(1, 0, 0) != 0.13279806057560464283) return false;
+  if(derivIO_out0->getHDeriv(1, 0, 1) != 0.32771702658236256944) return false;
+
+  if(derivIO_out0->getHDeriv(1, 1, 0) != 0.13835561309775604166) return false;
+  if(derivIO_out0->getHDeriv(1, 1, 1) != 0.33218928319986262832) return false;
 
 
 
+
+
+
+
+
+  if(derivIO_out1->getDeriv(0, 0, 0, 0) != 0.00205835278598198897) return false;
+  if(derivIO_out1->getDeriv(0, 0, 0, 1) != 0.00165639133981482223) return false;
+
+  if(derivIO_out1->getDeriv(0, 0, 1, 0) != 0.00648381127584326481) return false;
+  if(derivIO_out1->getDeriv(0, 0, 1, 1) != 0.00521763272041668967) return false;
+
+  if(derivIO_out1->getDeriv(0, 1, 0, 0) != -0.00504296432565587253) return false;
+  if(derivIO_out1->getDeriv(0, 1, 0, 1) != -0.00405815878254631428) return false;
+
+  if(derivIO_out1->getDeriv(0, 1, 1, 0) != 0.00349919973616938124) return false;
+  if(derivIO_out1->getDeriv(0, 1, 1, 1) != 0.00281586527768519805) return false;
+
+  if(derivIO_out1->getDeriv(0, 2, 0, 0) != -0.00082334111439279559) return false;
+  if(derivIO_out1->getDeriv(0, 2, 0, 1) != -0.00066255653592592887) return false;
+
+  if(derivIO_out1->getDeriv(0, 2, 1, 0) != 0.00792465822603065709) return false;
+  if(derivIO_out1->getDeriv(0, 2, 1, 1) != 0.00637710665828706679) return false;
+
+
+  if(derivIO_out1->getHDeriv(0, 0, 0) != -0.00185251750738378985) return false;
+  if(derivIO_out1->getHDeriv(0, 0, 1) != -0.00149075220583333901) return false;
+
+  if(derivIO_out1->getHDeriv(0, 1, 0) != 0.0) return false;
+  if(derivIO_out1->getHDeriv(0, 1, 1) != 0.0) return false;
+
+  if(derivIO_out1->getHDeriv(1, 0, 0) != -0.00041167055719639768) return false;
+  if(derivIO_out1->getHDeriv(1, 0, 1) != -0.00033127826796296416) return false;
+
+  if(derivIO_out1->getHDeriv(1, 1, 0) != 0.00236710570387928731) return false;
+  if(derivIO_out1->getHDeriv(1, 1, 1) != 0.00190485004078704587) return false;
 
 
   ann->destroy();

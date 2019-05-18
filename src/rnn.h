@@ -61,8 +61,8 @@ class RnnSerial : public RnnBase<double> {
   	 void train(double *a, double *b, double alpha, double eta){};
   	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
 
-    RnnSerial(rnnConfig *mRnnConf) {
-      prepare(mRnnConf);
+    RnnSerial(int M, Topology **top) {
+      prepare(M, top);
       init(NULL);
     };
 
@@ -80,12 +80,12 @@ class RnnSerial : public RnnBase<double> {
     AnnSerial* getANN(int v);
 
 
-    void backPropagation(double *h_in, double *a, Derivatives **deriv_in, Derivatives **deriv_out);
+    void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
 
 
     void destroy();
   private:
-    void prepare(rnnConfig *mRnnConf);
+    void prepare(int M, Topology **top);
     void init(FILE *pFile);
 
 };
