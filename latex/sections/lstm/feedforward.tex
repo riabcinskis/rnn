@@ -1,5 +1,3 @@
-Feed forward'as
-
 Norint apmokyti tinklą ar prognozuoti išvesties reikšmes yra daromas įvesties reikšmių perleidimas per tinklą(angl. \textit{Feed forward}). Pradiniai duomenys ir prieš tai buvusio žingsnio išvesties reikšmės yra paduodamos, kaip įvesties reikšmės į visus keturis rekurentiniame tinkle esamus neuroninius tinklus. Kiekvienas neuroninis tinklas apskaičiuoja išvesties reikšmes pagal atitinkamuose tinkluose esamus svorius ir juose naudojamas sigmoidines(nezinau kaip) funkcijas.
 
 Pirmo sluoksnio \begin{math}a_k^{(u,1)}\end{math} ir \begin{math}h_k^{(u)}\end{math} reikšmės yra pradinės įvesties reikšmės, todėl jos yra paduodamos tiesiogiai.
@@ -48,24 +46,3 @@ Gautoms \begin{math}b_k^{(t)}\end{math} reikšmėms pritaikome "softmax" funkcij
 \begin{equation}\label{eq:h_new_calc}
   h_k^{(t)} = \frac{e^{b_k^{(t)}}}{\sum_{m=1}^M e^{b_m^{(t)}}}
 \end{equation}
-
-
-
-
-
-
-\begin{equation} \label{eq:forward}
-  \vec{a}_i = \sum_{k=0}^{M} \frac{\partial a_{k}^{(u,l)}}{\partial \mx{W}_{i,j}^{(v,s)}}
-\end{equation}
-
-
-Šitoje formulėje (\ref{forward})
-
-cia kazkas(\ref{temp})
-
-
-
-
-%\sum_{k=1}^{M}
-%\partial w_{ij}^{(v,s)}
-%\frac{\partial h_n^{(t)}}{\partial w_{ij}^{(v,s)}

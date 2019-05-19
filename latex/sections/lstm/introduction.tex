@@ -1,13 +1,22 @@
 Apžvelgsime rekurentinio neuroninio tinklo, LSTM (angl. \textit{Long Short Term Memory}), veikimo principus.
 Rekurentinis neuroninis tinklas turi savyje atmintį(t.y. tinklas išvesdamas apskaičiuotas reikšmes atsižvelgia į tai kas vyko praeityje).
 
-Rekurentiniai neuroniniai tinklai, kitaip, nei paprasti neuroniniai tinklai turi grįštamuosius ryšius. Tai reiškia, kad šie tinklai apskaičiuodami naujas tinklo išvesties reikšmes atsižvelgia į praeitį. Šiam tikslui pasiekti rekurentiniai neuroniai tinklai savyje turi atmintį, kuri priklauso nuo prieš tai, kas vyko praeityje. Taip pat šis tinklas kaip įvesties reikšmes priema ne tik esamame laiko žingsnyje esamas įvesties reikšmes, bet ir praeito žingsnio išvesties reikšmes(būsenas), kas dar labiau padeda tinklui prognozuoti išvesties reikšmes priklausomai nuo praeities reikšmių.
+Rekurentiniai neuroniniai tinklai, kitaip, nei paprasti neuroniniai tinklai turi grįštamuosius ryšius. Tai reiškia, kad šie tinklai apskaičiuodami naujas tinklo išvesties reikšmes atsižvelgia į praeitį. Šiam tikslui pasiekti rekurentiniai neuroniai tinklai savyje turi atmintį, kuri priklauso nuo prieš tai, kas vyko praeityje. Taip pat šis tinklas kaip įvesties reikšmes priema ne tik esamame laiko žingsnyje esamas įvesties reikšmes, bet ir praeito žingsnio išvesties reikšmes(būsenas), kas padeda tinklui tiksliau prognozuoti išvesties reikšmes priklausomai nuo praeities reikšmių.
 
-Šie rekurentiniai neuroniai tinklai savyje turi keturis paprastus neuroninius tinlus, kur kiekvienas iš jų atlieka savo paskirtį. Pirmasis neuroninis tinklas veikia, taip kad jo išvesties reikšmės nurodo kokią informaciją reikia pamiršti(t.y informaciją, kuri yra nereikšminga). Antrasis neuroninis tinklas kontroliuoja kiek naujos informacijos iš įvesties reikšmių reikia pridėti prie esamos informacijos. Trečiasis neuroninis tinklas dar papildomai pakoreguoja kiek naujos informacijos reikia išsisaugoti. Ketvirtasis neuroninis tinklas kontroliuoja kiek esamos informacijos turi būti perduodama apskaičiuojant naują tinklo išvesties reikšmę(būseną).
+Šie rekurentiniai neuroniai tinklai savyje turi keturis paprastus neuroninius tinlus, kur kiekvienas iš jų atlieka savo paskirtį. Pirmasis neuroninis tinklas veikia, taip kad jo išvesties reikšmės nurodo kokią informaciją reikia pamiršti(t.y informaciją, kuri yra nereikšminga). Antrasis neuroninis tinklas kontroliuoja kiek naujos informacijos iš įvesties reikšmių reikia pridėti prie esamos informacijos. Trečiasis neuroninis tinklas dar papildomai pakoreguoja kiek naujos informacijos reikia išsisaugoti. Ketvirtasis neuroninis tinklas kontroliuoja kiek esamos informacijos turi būti perduodama apskaičiuojant naują tinklo išvesties reikšmę(būseną) ir kiek jos turi būti perduodama tolimesniem žingsniam.
 
 Reukurentinio neuroninio tinklo apmokymas vyksta į tinklą paduodant tam tikrus rinkinius duomenų. Tie rinkiniai sudaryti iš įvesties reikšmių ir reikšmių, kurias tikimasi gauti iš tinklo. Iš pradžių duomenys yra praleidžiami pro tinklą (angl. \textit{Feed forward}) ir poto atliekamas baudos funkcijos paklaidos mažinimas anti-gradientinio nusileidimo metodu (angl \textit{Back Propogation}).
 
-Kiekvieno neuroninio tinklo sluoksnio neuronų kiekis yra vienetu didesnis, nei yra nurodyta tinklo topologijoje, dėl to, kad paskutinis atitinkamo sluoksnio neuronas yra pridedamas, kuris padeda greičiau apmokyti tinklą. Šis neuronas yra vadinamas "Bias" neuronu ir jo reikšmė visada yra lygi 1.
+Rekurentinio neuroninio tinklo veikimo principas yra tas, kad
+
+
+Kiekvieno neuroninio tinklo sluoksnio neuronų kiekis yra vienetu didesnis, nei yra nurodyta tinklo topologijoje, dėl to, kad paskutinis atitinkamo sluoksnio neuronas yra pridedamas, kuris padeda greičiau apmokyti tinklą. Šis neuronas yra vadinamas "Bias" neuronu ir jo reikšmė visada yra lygi 1(\begin{math}a_{K(u,l)+1}^{(u,l)}=1\end{math}).
+
+Kiekvienas neuroninis tinklas turi po du svorių rinkinius. Vienas svorių rinkinys, kuris jungia praeito žingsnio tinklo išvesties reikšmes su atitinkamo neuroninio tinklo antrojo sluoksnio neuronais. Antrasis svorių rinkinys jungia visus likusius atitinkamo neuroninio tinklo neuronus tarpusavyje.
+
+Kiekvieno neuroninio tinklo atitinkamų dviejų gretimų sluoksnių neuronai yra apjungti svoriais. Kiekvienas žemesnio sluoksnio neuronas(įskaitant Bias neuroną) yra sujungtas su kiekvienu didesnio sluoksnio neuronu(išskyrus Bias neuroną) atitinkamu svoriu(\begin{math}w_{ij}^{u,l}\end{math} svoris jungia \begin{math}a_i^{(u,l)}\end{math} neuroną su \begin{math}a_j^{(u,l+1)}\end{math} neuronu).
+
+Rekurentiniame neuroniniame tinkle esantys keturi neuroniai tinklai naudoja atitinkamas sigmoidines funkcijas. Šiuo atveju pirmasis, antrasis ir ketvirtasis neuroniai tinklai naudoja logistinę sigmoidinę funkciją (\begin{math}f(x) = \frac{1}{1+e^{-x}}\end{math}), o trečiasis tinklas naudoja hiperbolinio tangento funkciją(\begin{math}f(x) = tanh(x)\end{math}). Tinklo apmokymui yra naudojamos atitinkamų funkcijų išvestinės funkcijos.
 
 h\textss{(t)}
 
