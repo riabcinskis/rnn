@@ -10,33 +10,31 @@ Reukurentinio neuroninio tinklo apmokymas vyksta į tinklą paduodant tam tikrus
 Rekurentinio neuroninio tinklo veikimo principas yra tas, kad
 
 
-Kiekvieno neuroninio tinklo sluoksnio neuronų kiekis yra vienetu didesnis, nei yra nurodyta tinklo topologijoje, dėl to, kad paskutinis atitinkamo sluoksnio neuronas yra pridedamas, kuris padeda greičiau apmokyti tinklą. Šis neuronas yra vadinamas "Bias" neuronu ir jo reikšmė visada yra lygi 1(\begin{math}a_{K(u,l)+1}^{(u,l)}=1\end{math}).
+Kiekvieno neuroninio tinklo sluoksnio neuronų kiekis yra vienetu didesnis, nei yra nurodyta tinklo topologijoje, dėl to, kad paskutinis atitinkamo sluoksnio neuronas yra pridedamas, kuris padeda greičiau apmokyti tinklą. Šis neuronas yra vadinamas "Bias" neuronu ir jo reikšmė visada yra lygi 1($a_{K(u,l)+1}^{(u,l)}=1$).
 
 Kiekvienas neuroninis tinklas turi po du svorių rinkinius. Vienas svorių rinkinys, kuris jungia praeito žingsnio tinklo išvesties reikšmes su atitinkamo neuroninio tinklo antrojo sluoksnio neuronais. Antrasis svorių rinkinys jungia visus likusius atitinkamo neuroninio tinklo neuronus tarpusavyje.
 
-Kiekvieno neuroninio tinklo atitinkamų dviejų gretimų sluoksnių neuronai yra apjungti svoriais. Kiekvienas žemesnio sluoksnio neuronas(įskaitant Bias neuroną) yra sujungtas su kiekvienu didesnio sluoksnio neuronu(išskyrus Bias neuroną) atitinkamu svoriu(\begin{math}w_{ij}^{u,l}\end{math} svoris jungia \begin{math}a_i^{(u,l)}\end{math} neuroną su \begin{math}a_j^{(u,l+1)}\end{math} neuronu).
+Kiekvieno neuroninio tinklo atitinkamų dviejų gretimų sluoksnių neuronai yra apjungti svoriais. Kiekvienas žemesnio sluoksnio neuronas(įskaitant Bias neuroną) yra sujungtas su kiekvienu didesnio sluoksnio neuronu(išskyrus Bias neuroną) atitinkamu svoriu($w_{ij}^{u,l}$ svoris jungia $a_i^{(u,l)}$ neuroną su $a_j^{(u,l+1)}$ neuronu).
 
-Rekurentiniame neuroniniame tinkle esantys keturi neuroniai tinklai naudoja atitinkamas aktyvacijos funkcijas. Šiuo atveju pirmasis, antrasis ir ketvirtasis neuroniai tinklai naudoja logistinę sigmoidinę funkciją (\begin{math}f(x) = \frac{1}{1+e^{-x}}\end{math}), o trečiasis tinklas naudoja hiperbolinio tangento funkciją(\begin{math}f(x) = tanh(x)\end{math}). Tinklo apmokymui yra naudojamos atitinkamų funkcijų išvestinės funkcijos.
+Rekurentiniame neuroniniame tinkle esantys keturi neuroniai tinklai naudoja atitinkamas aktyvacijos funkcijas. Šiuo atveju pirmasis, antrasis ir ketvirtasis neuroniai tinklai naudoja logistinę sigmoidinę funkciją ($f(x) = \frac{1}{1+e^{-x}}$), o trečiasis tinklas naudoja hiperbolinio tangento funkciją($f(x) = tanh(x)$). Tinklo apmokymui yra naudojamos atitinkamų funkcijų išvestinės funkcijos.
 
-h\textss{(t)}
 
-\begin{aligned}
-  \begin{math}h_i^{(t)}\end{math} - vektorius, kuris saugo t laiko momentu gautas tinklo išvesties reikšmes.\\
-  \begin{math}c_k^{(t)}\end{math} - vektorius, kuris saugo t laiko momentu gautas tinklo atminties reikšmes.\\
-  \begin{math}M\end{math} - išvesties ir atminties vektorių ilgis.\\
-  \begin{math}I\end{math} - įvesties reikšmių vektoriaus ilgis.\\
-  \begin{math}L\end{math} - nurodo kiek sluoksnių yra atitinkamame tinkle.\\
-  \begin{math}l\end{math} - nurodo kiek neuronų yra atitinkamo tinklo l-ame sluoksnyje.\\
-  \begin{math}w_{ij}^{(v,s)}\end{math} - nurodo v-ojo tinklo svorį iš s-ojo sluoksnio i-ojo neurono į (s+1)-ojo sluoksnio j-ąjį neuroną.\\
-  \begin{math}a_k^{(u,l)}\end{math} - nurodo u-ojo tinklo, l-ojo sluoksnio, k-ojo neurono reikšmę.\\
-  \begin{math}z_k^{(u,l)}\end{math} - nurodo u-ojo tinklo, l-ojo sluoksnio, k-ojo neurono sumą.\\
-  \begin{math}K(u,l)\end{math} - nurodo u-ojo tinklo, l-ojo sluoksnio neuronų kiekį. \\
-  \begin{math}b_k^{(t)}\end{math} - nurodo tarpines k-asias išvesties reikšmes.\\
-  \begin{math}E^{(t)}\end{math} - tinklo baudos funkcija.\\
-  \begin{math}\delta_{u,v}\end{math} - delta funkcija, kuri gražina vienetą, jei kintamieji u ir v sutampa. \\
-  \begin{math}\end{math}
-  \begin{math}\end{math}
-\end{aligned}
+
+
+  $h_i^{(t)}$ - vektorius, kuris saugo t laiko momentu gautas tinklo išvesties reikšmes.\\
+  $c_k^{(t)}$ - vektorius, kuris saugo t laiko momentu gautas tinklo atminties reikšmes.\\
+  $M$ - išvesties ir atminties vektorių ilgis.\\
+  $I$ - įvesties reikšmių vektoriaus ilgis.\\
+  $L$ - nurodo kiek sluoksnių yra atitinkamame tinkle.\\
+  $l$ - nurodo kiek neuronų yra atitinkamo tinklo l-ame sluoksnyje.\\
+  $w_{ij}^{(v,s)}$ - nurodo v-ojo tinklo svorį iš s-ojo sluoksnio i-ojo neurono į (s+1)-ojo sluoksnio j-ąjį neuroną.\\
+  $a_k^{(u,l)}$ - nurodo u-ojo tinklo, l-ojo sluoksnio, k-ojo neurono reikšmę.\\
+  $z_k^{(u,l)}$ - nurodo u-ojo tinklo, l-ojo sluoksnio, k-ojo neurono sumą.\\
+  $K(u,l)$ - nurodo u-ojo tinklo, l-ojo sluoksnio neuronų kiekį. \\
+  $b_k^{(t)}$ - nurodo tarpines k-asias išvesties reikšmes.\\
+  $E^{(t)}$ - tinklo baudos funkcija.\\
+  $\delta_{u,v}$ - delta funkcija, kuri gražina vienetą, jei kintamieji u ir v sutampa. \\
+
 
 
 

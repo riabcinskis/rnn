@@ -18,6 +18,10 @@
 
 using namespace std;
 
+#include "rnn.h"
+
+struct ErrorDerivatives;
+
 //
 // Random
 //
@@ -128,13 +132,13 @@ public:
   void feedForward(double *h_input, double *a, double *b); // ...
   void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
 
+  void updateWeights(ErrorDerivatives *errDeriv, double alpha, double eta);
 
 private:
 
   void prepare(Topology **top);
   void init(Topology **top,FILE *pFile);
 
-  void reset();
   void calc_feedForward();
   void copyOutput(double *a);
 
@@ -147,9 +151,15 @@ private:
   double d(int i, int j);
 
 
+
+
 public:
   int vi(int v, int s, int i, int j, int k);
   int vhi(int v, int i, int j, int k);
+
+  int vi(int v, int s, int i, int j);
+  int vhi(int v, int i, int j);
+
 
   void setWeights(double *W, double *Wh);
 
@@ -160,7 +170,7 @@ public:
   double* getDHWeights();
   double* getA();
   double getOutput(int k);
-  
+
   Topology* getTopology();
 };
 

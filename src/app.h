@@ -4,6 +4,8 @@
 #include "rnn.h"
 
 #include <cstring>
+#include <vector>
+#include <cstdlib>
 
 class LanguageModel {
   private:
@@ -11,6 +13,10 @@ class LanguageModel {
     LanguageModel();
 
     void doSomething();
+
+  private:
+    std::vector<DataNode*>* loadFromFile(const char *abc, const char *filename);
+
 };
 
 double* char_to_vec(const char* abc, char c);

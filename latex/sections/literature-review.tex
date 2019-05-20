@@ -18,24 +18,32 @@ Esminis neuroninio tinklo elementas yra dirbtinis neuronas. Šį neuroną sudaro
 \caption{Testuojam jpg įtraukimą.}
 \end{figure}
 
-\begin{figure}
+\begin{figure} \label{fig:perceptron}
   \centering
 \scalebox{0.5}{\includegraphics{images/perceptron_pvz.png}}
 \caption{Dirbtinio neurono modelis (Perceptronas).}
 \end{figure}
 
-Paveiksle pavaizduoto Perceptrono reikšmė apskaičiuojama pagal formulę \begin{math}y = f(\sum_{k=1}^{n} x_k * W_k)\end{math}, čia f - aktyvavimo funkcija.
+Paveiksle pavaizduoto Perceptrono reikšmė apskaičiuojama pagal formulę
+\begin{equation*}
+  y = f \left(\sum_{k=1}^{n} x_k W_k \right),
+\end{equation*}
 
-Paveiksle pavaizduoto neurono veikimo principas:
-1. Neuronas gauna įvesties reikšmes \begin{math}x_1, x_2, ... , x_n\end{math}. Kiekviena iš reikšmių turi savo perdavimo koeficientą į neuroną (svorį) \begin{math}W_1, W_2, ... , W_n\end{math}.
-2. Skaičiuojama įvesties reikšmių ir atitinkamų svorių sandaugų suma(žymima z):
-  \begin{math}z = \sum_{k=1}^{n} x_k * W_k\end{math}
-3. Neurono išvesties reikšmė(žymima a) yra apskaičiuojama įvesties reikšmių ir atitinkamų svorių sandaugų sumai pritaikius aktyvacijos funkciją(žymima f).
-  \begin{math}a = f(z) = f(\sum_{k=1}^{n} x_k * W_k)\end{math}
+čia f - aktyvavimo funkcija.
 
-    \subsection{Sužadinimo signalai(angl. \textit{Bias neuron})}
-Dažniausiai įvesties reikšmių yra vienetu daugiau, nei yra paduodama įvesties reikšmių. Ši įvestis yra vadinama sužadinimo signalu (angl. \textit{Bias neuron}). Šio signalo reikšmė yra pastovi ir visada lygi vienetui(\begin{math}x_{n+1} = 1\end{math}). Taip pat yra pridedamas papildomas svoris \begin{math}W_{n+1}\end{math} jungiantis šį signalą su neuronu.\cite{Ieva2012}
-Šis sužadinimo signalas padeda lengvai koreguoti neurono išvesties reikšmę, kadangi įvesties reikšmė yra vienetas, tuomet sandauga, kuri yra prisumuojama priklauso tik nuo svorio jungiančio sužadinimo signalą su neuronu. Ji yra lygi  \begin{math}W_{n+1}\end{math}. Naudojant sužadinimo signalus neuroniai tinklai yra daug sparčiau apmokinami, kadangi šie signalai gali laisvai koreguoti perduodamą reikšmę į neuronus.
+Paveiksle \ref{fig:perceptron} pavaizduoto neurono veikimo principas:
+\begin{enumerate}
+
+\item Neuronas gauna įvesties reikšmes $x_1, x_2, ... , x_n$. Kiekviena iš reikšmių turi savo perdavimo koeficientą į neuroną (svorį) $W_1, W_2, ... , W_n$.
+\item  Skaičiuojama įvesties reikšmių ir atitinkamų svorių sandaugų suma(žymima z):
+  $z = \sum_{k=1}^{n} x_k * W_k$
+\item  Neurono išvesties reikšmė(žymima a) yra apskaičiuojama įvesties reikšmių ir atitinkamų svorių sandaugų sumai pritaikius aktyvacijos funkciją(žymima f).
+  $a = f(z) = f(\sum_{k=1}^{n} x_k * W_k)$
+\end{enumerate}
+
+\subsection{Sužadinimo signalai(angl. \textit{Bias neuron})}
+Dažniausiai įvesties reikšmių yra vienetu daugiau, nei yra paduodama įvesties reikšmių. Ši įvestis yra vadinama sužadinimo signalu (angl. \textit{Bias neuron}). Šio signalo reikšmė yra pastovi ir visada lygi vienetui($x_{n+1} = 1$). Taip pat yra pridedamas papildomas svoris $W_{n+1}$ jungiantis šį signalą su neuronu.\cite{Ieva2012}
+Šis sužadinimo signalas padeda lengvai koreguoti neurono išvesties reikšmę, kadangi įvesties reikšmė yra vienetas, tuomet sandauga, kuri yra prisumuojama priklauso tik nuo svorio jungiančio sužadinimo signalą su neuronu. Ji yra lygi  $W_{n+1}$. Naudojant sužadinimo signalus neuroniai tinklai yra daug sparčiau apmokinami, kadangi šie signalai gali laisvai koreguoti perduodamą reikšmę į neuronus.
   \subsection{Aktyvacijos funkcijos(angl. \textit{Activation function})}
 Neurono išvesties reikšmei apskaičiuoti naudojamų aktyvacijos funkcijų yra visokiausių tipų.
 

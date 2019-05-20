@@ -6,12 +6,48 @@ LanguageModel::LanguageModel(){
 
 void LanguageModel::doSomething(){
 
-  char abc[64]=" abcdefghijklmnopqrstuvwxyz";
+   char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
+  //
+  // int M = strlen(abc);
+  // int I = strlen(abc);
+  //
+  // int V = 4;
+  // Topology **topology = new Topology*[V];
+  // for(int v = 0; v < V; v++){
+  //   topology[v] = new Topology();
+  //   topology[v]->addLayer(I);
+  //   topology[v]->addLayer(M);
+  // }
+  //
+  //
+  // RnnCell *rnnCell = new RnnCell(M, topology);
+  // Rnn* rnn = new Rnn(I, M, rnnCell);
+  //
+  // SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
+  //
+  // DataNode *inputNodes = str_to_nodes(abc, "labai prasau veik ");
+  // DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
+  //
+  // char str[512]="";
+  // nodes_to_str(abc, outputNodes, str);
+  //
+  // printf("%s", str);
+
+  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data.txt");
+
+  char str[512]="";
+  for(int i = 0; i < nodeVector->size(); i++){
+    nodes_to_str(abc, (*nodeVector)[i], str);
+    printf("[%d] : %s\n", i, str);
+  }
+
+
+  double alpha = 0.8;
+  double eta = 0.2;
 
   int M = strlen(abc);
-  int I = strlen(abc);
-
   int V = 4;
+  int I = strlen(abc);
   Topology **topology = new Topology*[V];
   for(int v = 0; v < V; v++){
     topology[v] = new Topology();
@@ -19,20 +55,97 @@ void LanguageModel::doSomething(){
     topology[v]->addLayer(M);
   }
 
-
   RnnCell *rnnCell = new RnnCell(M, topology);
-  Rnn* rnn = new Rnn(I, M, rnnCell);
+  Rnn *rnn = new Rnn(I, M, rnnCell);
 
   SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
 
-  DataNode *inputNodes = str_to_nodes(abc, "labai prasau veik ");
-  DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
 
-  char str[512]="";
-  nodes_to_str(abc, outputNodes, str);
+  for(int n = 0; n < 10; n++){
 
-  printf("%s", str);
+    double iterError = 0;
+    for(int i = 0; i < nodeVector->size(); i++){
+      DataNode* input = (*nodeVector)[i];
 
+      DataNode* startOutput = input;
+      for(int i = 0; i < 3; i++)
+        startOutput = startOutput->next;
+
+
+      DataNode* output = startOutput;
+      int offset = 0;
+
+      int partCount = 0;
+      double sentenceError = 0.0;
+
+
+      do{
+        double partError;
+        for(int i = 0; i < offset; i++)
+          output = output->next;
+
+        if(rnn->backPropagation(input, output, markLimit, partError) == false){
+          rnn->resetErrorDerivatives();
+          break;
+        }
+
+        rnn->updateWeights(alpha, eta);
+        rnn->resetErrorDerivatives();
+
+        sentenceError += partError;
+        partCount++;
+
+
+        offset++;
+      }while(true);
+
+      sentenceError = sentenceError / (double)partCount;
+      iterError += sentenceError;
+    }
+
+    printf("iter=%d, error=%.4e\n", n, iterError);
+
+  }
+
+
+
+  ////
+  ////
+  ////
+  // DataNode *inputNodes = str_to_nodes(abc, "there is no sin");
+  // DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
+  //
+  // char str[512]="";
+  // nodes_to_str(abc, outputNodes, str);
+  //
+  // printf(">>>>>>>>%s", str);
+
+
+
+
+}
+
+std::vector<DataNode*>* LanguageModel::loadFromFile(const char *abc, const char *filename){
+  FILE* file = fopen("../files/data.txt", "r");
+
+  char* line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  std::vector<DataNode*>* vector = new std::vector<DataNode*>();
+
+  while ((read = getline(&line, &len, file)) != -1) {
+    printf("\n\n");
+    printf("%s", line);
+
+    DataNode* node = str_to_nodes(abc, line);
+    vector->push_back(node);
+
+
+  }
+
+  fclose(file);
+  return vector;
 }
 
 //

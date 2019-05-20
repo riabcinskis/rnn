@@ -4,13 +4,21 @@
 
 \ProvidesClass{ktu_phd_summary}[2018/07/03 KTU PhD thesis summary class]
 \NeedsTeXFormat{LaTeX2e}
-\LoadClass[10pt, a5paper]{article}
+\LoadClass[12pt, a5paper]{article}
 
 %%
 %% System
 %%
 \RequirePackage{afterpackage} % for configuring loaded packages
 
+\RequirePackage{setspace}
+
+\AfterPackage{setspace}{
+  \onehalfspacing
+  %\doublespacing
+}
+
+\RequirePackage{xcolor}
 
 \RequirePackage{geometry} % for page format
 \RequirePackage{fancyhdr} % for header, footer formating
@@ -36,7 +44,9 @@
   \newcommand{\fontXI}{\fontsize{11}{13.2}\selectfont}
   \newcommand{\fontXII}{\fontsize{12}{14.4}\selectfont}
   \newcommand{\fontXIII}{\fontsize{13}{15.6}\selectfont}
+  \newcommand{\fontXIV}{\fontsize{14}{16.8}\selectfont}
   \newcommand{\fontXV}{\fontsize{15}{18}\selectfont}
+
 
   \newcommand{\fontXVIII}{\fontsize{18}{21.6}\selectfont}
 }
@@ -67,7 +77,7 @@
 %%
 %% Paragraph indentation
 %%
-\AfterPackage{parskip}{\setlength\parindent{0.9cm}}
+\AfterPackage{parskip}{\setlength\parindent{0.0cm}}
 \RequirePackage{parskip}
 
 %%
@@ -89,7 +99,7 @@
 
   \captionsetup[figure]{
     font={small},
-     labelfont={bf},
+     %labelfont={bf},
      format={figureFormat},
      labelformat={figureLabelFormat},
      labelsep=period,
@@ -233,18 +243,18 @@
 
 \geometry{
    includehead={false},
-   includefoot={false},
+   includefoot={true},
    layouthoffset={0mm},
    layoutvoffset={0mm},
    %b5paper,  % gives 176mm x 250mm
-   paperwidth={148mm},
-   paperheight={210mm},
-   twoside,
-   left={15mm},
-   right={18mm},
-   top={18mm},
-   bottom={18mm},
-   footskip={10mm},
+   paperwidth={210mm},
+   paperheight={297mm},
+   %twoside,
+   left={1.18in},
+   right={0.39in},
+   top={0.79in},
+   bottom={0.5in},
+   footskip={0.25in},
 }
 
 %%
@@ -279,7 +289,7 @@
 %    \raggedright
 \titleformat{\section}
    %[hang] % <shape>
-   {\bf\uppercase} % <format>
+   {\bf} % <format>
    {\thetitle.\quad} % <label>
    {0em} % <sep>
    {} % <before-code>

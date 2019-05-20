@@ -492,7 +492,7 @@ bool test_backprogg(){
 
 
 bool test_rnn_feedforward_full(){
-  int M = 2
+  int M = 2;
   int V = 4;
   int I = 2;
   Topology **topology = new Topology*[V];
@@ -587,7 +587,7 @@ bool test_rnn_feedforward_full(){
   rnnCell->getANN(3)->setWeights(weightIO4->getWeights(), weightIO4->getHWeights());
 
 
-  Rnn* rnn = new Rnn(I,N,rnnCell)
+
 
 
   DerivIO* derivIO_in0 = new DerivIO(topology[0], M);
@@ -780,7 +780,7 @@ bool test_rnn_feedforward_full(){
   ///
   ///1
   ///
-  	serialDBL->getANN1()->feedForward(h_input,input, output1);
+  	rnnCell->getANN(0)->feedForward(h_input,input, output1);
   //              0.689589607251556
   if(output1[0] != 0.68958960725155571403) return false;
   //              0.74958548419844700000
@@ -789,7 +789,7 @@ bool test_rnn_feedforward_full(){
   ///
   ///2
   ///
-	serialDBL->getANN2()->feedForward(h_input,input, output2);
+	rnnCell->getANN(1)->feedForward(h_input,input, output2);
   //              0.84085944955203300000
   if(output2[0] != 0.84085944955203295592) return false;
   //              0.74789281328782
@@ -798,7 +798,7 @@ bool test_rnn_feedforward_full(){
   ///
   ///3
   ///
-	serialDBL->getANN3()->feedForward(h_input,input, output3);
+	rnnCell->getANN(2)->feedForward(h_input,input, output3);
 
 
   //              0.79996904340460500000
@@ -809,7 +809,7 @@ bool test_rnn_feedforward_full(){
   ///
   ///4
   ///
-	serialDBL->getANN4()->feedForward(h_input,input, output4);
+	rnnCell->getANN(3)->feedForward(h_input,input, output4);
 
   //              0.645914426127551
   if(output4[0] != 0.64591442612755145536) return false;
@@ -821,7 +821,7 @@ bool test_rnn_feedforward_full(){
   c_in[1] = 0.3;
   double *c_out = new double[2];
   double *h_out = new double[2];
-  serialDBL->feedForward(h_input,c_in,input,c_out, h_out);
+  rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
 
   //             1.01745633312164000000
   if(c_out[0] != 1.01745633312164018847) return false;
@@ -837,7 +837,7 @@ bool test_rnn_feedforward_full(){
   h_input[0] = h_out[0];
   h_input[1] = h_out[1];
 
-  serialDBL->feedForward(h_input,c_in,input,c_out, h_out);
+  rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
 
   //             1.33881207992600000000
   if(c_out[0] != 1.33881207992600104184) return false;
@@ -849,7 +849,7 @@ bool test_rnn_feedforward_full(){
   if(h_out[1] != 0.54630719921292447694) return false;
 
 
-  serialDBL->destroy();
+  rnnCell->destroy();
   // delete [] warr1;
   // delete [] wharr1;
   //
@@ -870,8 +870,8 @@ bool test_rnn_feedforward_full(){
   delete [] output3;
   delete [] output4;
   delete [] topology;
-  delete conf;
-  delete serialDBL;
+  
+  delete rnnCell;
   return true;
 }
 

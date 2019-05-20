@@ -270,9 +270,17 @@ void AnnSerial::init(Topology **top,FILE * pFile=NULL){
 
 }
 
-void AnnSerial::reset(){
+void AnnSerial::updateWeights(ErrorDerivatives *errDeriv, double alpha, double eta){
 
+  for(int k = 0; k < cTopology->obtainWeightCount(); k++){
+    dW[k] = -eta*errDeriv->v[k] + alpha*dW[k];
+    W[k] = W[k] + dW[k];
+  }
 
+  for(int k = 0; k < cTopology->getLayerSize(1)*M; k++){
+    dWh[k] = -eta*errDeriv->vh[k] + alpha*dWh[k];
+    Wh[k] = Wh[k] + dWh[k];
+  }
 
 }
 
@@ -544,6 +552,14 @@ int AnnSerial::vi(int v, int s, int i, int j, int k){
 
 int AnnSerial::vhi(int v, int i, int j, int k){
   return  (i*(vl[v][1]-1) + j)*M + k;
+}
+
+int AnnSerial::vi(int v, int s, int i, int j){
+  return vsW[v][s] + i*(vl[v][s+1]-1) + j;
+}
+
+int AnnSerial::vhi(int v, int i, int j){
+  return  i*(vl[v][1]-1) + j;
 }
 
 double AnnSerial::d(int i, int j){

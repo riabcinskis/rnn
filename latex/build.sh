@@ -6,6 +6,8 @@ mkdir build
 cd build
 mkdir images
 mkdir sections
+mkdir pages
+
 
 
 
@@ -13,6 +15,8 @@ cd ..
 
 cp -a ./images/. ./build/images/
 cp -a ./sections/. ./build/sections/
+cp -a ./pages/. ./build/pages/
+
 
 
 

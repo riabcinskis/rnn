@@ -6,6 +6,9 @@
 
 #include <cmath>
 
+class Topology;
+class AnnSerial;
+struct Derivatives;
 
 /* Class definitions here. */
 void run_cuda_sample();
@@ -31,6 +34,11 @@ public:
 struct RnnDerivatives {
   Derivatives **hderiv;
   Derivatives **cderiv;
+};
+
+struct ErrorDerivatives {
+  double *v;
+  double *vh;
 };
 
 template <typename T>
@@ -66,6 +74,9 @@ class RnnCell {
 
     Derivatives ***aderiv;
 
+
+
+
   public:
 
     RnnCell(int M, Topology **top) {
@@ -82,9 +93,10 @@ class RnnCell {
         // init(p1File);
         // fclose (p1File);
     };
-    
+
      void train(double *a, double *b, double alpha, double eta){};
   	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
+     void backPropagation( RnnDerivatives *deriv_in, RnnDerivatives *deriv_out);
 
 
 
@@ -92,7 +104,6 @@ class RnnCell {
     AnnSerial* getANN(int v);
 
 
-    void backPropagation( RnnDerivatives *deriv_in, RnnDerivatives *deriv_out);
 
 
     void destroy();
@@ -137,31 +148,42 @@ class Rnn {
   private:
     int I;
     int M;
+    int V;
     RnnCell* cRnnCell;
 
-    RnnDerivatives* deriv_in;
-    RnnDerivatives* deriv_out;
+
     double *h_in;
     double *h_out;
     double *c_in;
     double *c_out;
+
+    ErrorDerivatives** errDeriv;
+    RnnDerivatives **rnnDeriv;
 
 
 
   public:
     Rnn(int I, int M, RnnCell *rnnCell);
 
-    DataNode *feedForward(DataNode* input, OutputLimit *outputLimit);
+    DataNode* feedForward(DataNode* input, OutputLimit *outputLimit);
+    bool backPropagation(DataNode* input, DataNode* output, OutputLimit *outputLimit, double &error);
 
+    void updateWeights(double alpha, double eta);
+    void resetErrorDerivatives();
 
 
 
   private:
+
     RnnDerivatives* allocateRnnDerivatives(RnnDerivatives* deriv);
-    RnnDerivatives* deallocateRnnDerivatives(RnnDerivatives* deriv);
+    //RnnDerivatives* deallocateRnnDerivatives(RnnDerivatives* deriv);
     void initRnnDerivatives(RnnDerivatives* deriv);
     void copyRnnDerivatives(RnnDerivatives* deri_b, RnnDerivatives* deriv_a);
     void copyVector(double* vec_b, double *vec_a, int n);
+
+    void sumErrorDerivatives(double *h, Derivatives **hderiv, double *y);
+    double calcError(double *h, double *y);
+
 
 };
 

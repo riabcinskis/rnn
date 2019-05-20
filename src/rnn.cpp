@@ -288,33 +288,43 @@ DataNode::DataNode(int M){
 Rnn::Rnn(int I, int M, RnnCell *rnnCell){
   this->I = I;
   this->M = M;
+  this->V = 4;
   cRnnCell = rnnCell;
-  allocateRnnDerivatives(deriv_in);
-  allocateRnnDerivatives(deriv_out);
+
 
   h_in = new double[M];
   h_out = new double[M];
   c_in = new double[M];
   c_out = new double[M];
 
+  rnnDeriv = new RnnDerivatives*[2];
+  rnnDeriv[0] = new RnnDerivatives;
+  rnnDeriv[1] = new RnnDerivatives;
+  allocateRnnDerivatives(rnnDeriv[0]);
+  allocateRnnDerivatives(rnnDeriv[1]);
+
+  errDeriv = new ErrorDerivatives*[V];
+
+
+  for(int v = 0; v < V; v++){
+    errDeriv[v] = new ErrorDerivatives;
+    errDeriv[v]->v = new double[cRnnCell->getANN(v)->getTopology()->obtainWeightCount()];
+    errDeriv[v]->vh = new double[cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M];
+  }
+
+
 }
 
 DataNode* Rnn::feedForward(DataNode* input, OutputLimit *outputLimit){
-
-
 
   for(int k = 0; k < M; k++){
     h_in[k] = 0;
     c_in[k] = 0;
   }
 
-
-
-
   DataNode* p = input;
-  int c = 0;
   while(p->next != NULL){
-    printf("c=%d\n", c++);
+
 
     cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
     copyVector(h_in, h_out, M);
@@ -339,9 +349,8 @@ DataNode* Rnn::feedForward(DataNode* input, OutputLimit *outputLimit){
  for(int i = 0; i < I; i++)
   empty_input[i] = 0;
 
-int index = 0;
   do{
-printf("index=%d\n", index++);
+
     cRnnCell->feedForward(h_in, c_in, empty_input, c_out, h_out);
     copyVector(h_in, h_out, M);
     copyVector(c_in, c_out, M);
@@ -352,7 +361,7 @@ printf("index=%d\n", index++);
 
 
 
-if(index == 10) break;
+
   }while(outputLimit->check(q->vec) == false);
 
   delete [] empty_input;
@@ -360,26 +369,154 @@ if(index == 10) break;
   return out;
 }
 
-// PRIVATE
-RnnDerivatives* Rnn::allocateRnnDerivatives(RnnDerivatives* deriv){
+bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *outputLimit, double &error){
+
+  for(int k = 0; k < M; k++){
+    h_in[k] = 0;
+    c_in[k] = 0;
+  }
+
+  error = 0;
+
+  int derivIndex = 0;
+  initRnnDerivatives(rnnDeriv[derivIndex]);
+
+  DataNode* p = input;
+
+  while(p->next != output){
+
+
+    cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+    cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
+
+    copyVector(h_in, h_out, M);
+    copyVector(c_in, c_out, M);
+    p = p->next;
+    derivIndex = 1 - derivIndex;
+  }
+
+
+
+  cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+  cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
+  copyVector(h_in, h_out, M);
+  copyVector(c_in, c_out, M);
+
+  sumErrorDerivatives(h_out, rnnDeriv[1-derivIndex]->hderiv, output->vec);
+  error += calcError(h_out, output->vec);
+  int outputCount = 1;
+
+
+  derivIndex = 1 - derivIndex;
+  DataNode* q = output;
+
+  double* empty_input = new double[I];
+  for(int i = 0; i < I; i++)
+   empty_input[i] = 0;
+
+   do{
+     q = q->next;
+     if(q == NULL) {
+
+       delete [] empty_input;
+       return false;
+     }
+
+     cRnnCell->feedForward(h_in, c_in, empty_input, c_out, h_out);
+     cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
+     copyVector(h_in, h_out, M);
+     copyVector(c_in, c_out, M);
+
+     sumErrorDerivatives(h_out, rnnDeriv[1-derivIndex]->hderiv, q->vec);
+     error += calcError(h_out, q->vec);
+     outputCount++;
+
+     derivIndex = 1 - derivIndex;
+
+   }while(outputLimit->check(q->vec) == false);
+
+   delete [] empty_input;
+
+   error = error / (double)outputCount;
+   
+   return true;
 
 }
 
-RnnDerivatives* Rnn::deallocateRnnDerivatives(RnnDerivatives* deriv){
+void Rnn::updateWeights(double alpha, double eta){
+  for(int v = 0; v < V; v++)
+    cRnnCell->getANN(v)->updateWeights(errDeriv[v], alpha, eta);
+}
 
+void Rnn::resetErrorDerivatives(){
+  for(int v = 0; v < V; v++){
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount(); k++)
+      errDeriv[v]->v[k] = 0.0;
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M; k++)
+      errDeriv[v]->vh[k] = 0.0;
+  }
+}
+
+
+// PRIVATE
+
+
+RnnDerivatives* Rnn::allocateRnnDerivatives(RnnDerivatives* deriv){
+  deriv->hderiv = new Derivatives*[V];
+  deriv->cderiv = new Derivatives*[V];
+
+  for(int v = 0; v < V; v++){
+    deriv->hderiv[v] = new Derivatives;
+    deriv->hderiv[v]->v = new double[cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M];
+    deriv->hderiv[v]->vh = new double[cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M];
+
+    deriv->cderiv[v] = new Derivatives;
+    deriv->cderiv[v]->v = new double[cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M];
+    deriv->cderiv[v]->vh = new double[cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M];
+  }
 }
 
 void Rnn::initRnnDerivatives(RnnDerivatives* deriv){
-
+  for(int v = 0; v < V; v++){
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M; k++){
+      deriv->hderiv[v]->v[k] = 0.0;
+      deriv->cderiv[v]->v[k] = 0.0;
+    }
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M; k++){
+      deriv->hderiv[v]->vh[k] = 0.0;
+      deriv->cderiv[v]->vh[k] = 0.0;
+    }
+  }
 }
 
-void Rnn::copyRnnDerivatives(RnnDerivatives* deri_b, RnnDerivatives* deriv_a){
 
-}
 
 void Rnn::copyVector(double* vec_b, double *vec_a, int n){
   for(int k = 0; k < n; k++)
     vec_b[k] = vec_a[k];
+}
+
+void Rnn::sumErrorDerivatives(double *h, Derivatives **hderiv, double *y){
+  for(int v = 0; v < V; v++){
+    Topology *top = cRnnCell->getANN(v)->getTopology();
+    for(int s = 0; s < top->getLayerCount()-1; s++){
+      for(int wi = 0; wi < top->getLayerSize(s)+1; wi++){
+        for(int wj = 0; wj < top->getLayerSize(s+1); wj++){
+          double sum = 0;
+          for(int n = 0; n < M; n++)
+            sum += (y[n]-h[n])*hderiv[v]->v[cRnnCell->getANN(v)->vi(v, s, wi, wj, n)];
+          errDeriv[v]->v[cRnnCell->getANN(v)->vi(v, s, wi, wj)] = sum;
+        }
+      }
+    }
+  }
+}
+
+double Rnn::calcError(double *h, double *y){
+  double error = 0;
+  for(int k = 0; k < M; k++)
+    error += 0.5*(h[k] - y[k])*(h[k] - y[k]);
+  return error;
 }
 
 double f(double x){
