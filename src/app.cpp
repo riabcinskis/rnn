@@ -61,11 +61,11 @@ void LanguageModel::doSomething(){
   }
 
   RnnCell *rnnCell = new RnnCell(M, topology);
-  Rnn *rnn = new Rnn(I, M, rnnCell, RNN_APPROX_BACKPROPAGATION);
+  Rnn *rnn = new Rnn(I, M, rnnCell, RNN_FULL_BACKPROPAGATION);
 
   SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
 
-  for(int n = 0; n < 10; n++){
+  for(int n = 0; n < 100; n++){
     double iterError = 0;
     for(int i = 0; i < nodeVector->size(); i++){
       DataNode* input = (*nodeVector)[i];
@@ -107,7 +107,7 @@ void LanguageModel::doSomething(){
       iterError += sentenceError;
     }
 
-     printf("iter=%d, error=%.4e\n", n, iterError);
+     printf("%.10f\n",iterError);
 
 
   }

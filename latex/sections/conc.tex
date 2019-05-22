@@ -1,4 +1,11 @@
 \begin{enumerate}
-  \item LSTM veikia
-  \item LSTM gerai veikia
+  \item Buvo sudarytos ir išvestos LSTM rekurentinio neuroninio tinklo formulės. Pavyko išvesti bendrąsias tinklo apmokymo formules gradientinio nusileidimo metodu. Šios formulės buvo optimizuotos, naudojant algoritmų analizės dinaminio programavimo metodą, kai tinklo išvesčių reikšmių išvestinės apskaičiuojamos nenaudojant rekurencijos "top-down" metodika, o naudojama "bottom-up" metodika, kai iš pradžių yra apskaičiuojamos tarpinės reikšmės ir jos išsaugomos.
+  \item Tinklas buvo realizuotas programiškai. Tinklas implementuotas taip, kad būtų galima patogiai keisti įvesties ir išvesties vektorių ilgius, būtų galima pasirinkti kiekvieno viduje esančio neuroninio tinklo individualias topologijas, nustatyti šių tinklų naudojamas aktyvacijos funkcijas ir pasirinkti apmokymui naudojamų parametrų reikšmes.
+  \item Dar nepilnai padaryta žodžio užbaigimo ir sekančio žodžio prognozės implementacija.
+  \item Tinklas dar nėra pilnai optimizuotas, tam reikia skaičiavimus perkelti į vaizdo plokštę ir paskirstyti skaičiavimus taip, kad gijos esančios vaizdo plokštėje būtų kuo efektyviau išnaudojamos.
+  \item
+  \begin{enumerate}
+    \item Apmokant tinklą nėra būtina perduoti naujai apskaičiuotų išvestinių į tolimesnių žingsnių apmokymus, kadangi tinklas yra apmokomas vienodai abiejais atvejais.
+    \item (Dar bus daroma)
+  \end{enumerate}
 \end{enumerate}

@@ -216,7 +216,7 @@ Toliau iškėlus $\delta_{u,v}a_i^{(u,L-2)}$ iš sandaugos, poto sukeitus skaič
 \begin{equation}\label{eq:naujalygybesupakeista}
   \begin{aligned}
     \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-2)}} = &
-      \sum_{p=1}^{K(u,L-2)} \left ( \frac{ \partial a_p^{(u,L-2)} }{ \partial w_{ij}^{(u,L)} }\frac{ \partial f(z_k^{(u,L)}) }{ \partial z_k^{(u,L)} } \sum_{n=1}^{K(u,L-1)}\left( w_{pn}^{(u,L-2)}w_{nk}^{(u,L-1)}\frac{ \partial f(z_n^{(u,L-1)}) }{ \partial z_n^{(u,L-1)}} \right ) \right  )+\\
+      \sum_{p=1}^{K(u,L-2)} ( \frac{ \partial a_p^{(u,L-2)} }{ \partial w_{ij}^{(u,L)} }\frac{ \partial f(z_k^{(u,L)}) }{ \partial z_k^{(u,L)} } \sum_{n=1}^{K(u,L-1)}( w_{pn}^{(u,L-2)}w_{nk}^{(u,L-1)}\frac{ \partial f(z_n^{(u,L-1)}) }{ \partial z_n^{(u,L-1)}}))+\\
        &\delta_{u,v}a_i^{(u,L-2)}\frac{\partial f(z_k^{(u,L)})}{\partial z_k^{(u,L)}}\sum_{n=1}^{K(u,L-1)+1} w_{nk}^{(u,L-1)} \frac{\partial f(z_n^{(u,L-1)})}{\partial z_n^{(u,L-1)}}
   \end{aligned}
 \end{equation}
