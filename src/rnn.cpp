@@ -115,15 +115,25 @@ void RnnCell::feedForward(double *h_in, double *c_in, double *a_in, double *c_ou
 
 void RnnCell::backPropagation(RnnDerivatives *deriv_in, RnnDerivatives *deriv_out){
 
+
+
   for(int u = 0; u < V; u++)
     anns[u]->backPropagation(deriv_in->hderiv, aderiv[u]);
 
+
+
   for(int v = 0; v < V; v++){
+
     Topology *vtop = anns[v]->getTopology();
     for(int s = 0; s < vtop->getLayerCount()-1; s++){
+
       for(int wi = 0; wi < vtop->getLayerSize(s)+1; wi++){
+
         for(int wj = 0; wj < vtop->getLayerSize(s+1); wj++){
+
+
           for(int k = 0; k < M; k++){
+
             double cderiv = deriv_in->cderiv[v]->v[anns[v]->vi(v, s, wi, wj, k)];
             double a_forget = ann_forget->getOutput(k);
             double c = c_current[k];
@@ -143,7 +153,9 @@ void RnnCell::backPropagation(RnnDerivatives *deriv_in, RnnDerivatives *deriv_ou
 
     for(int wi = 0; wi < M /*vtop->getLayerSize(0)*/; wi++){
       for(int wj = 0; wj < vtop->getLayerSize(1); wj++){
+
         for(int k = 0; k < M; k++){
+
           double cderiv = deriv_in->cderiv[v]->vh[anns[v]->vhi(v, wi, wj, k)];
           double a_forget = ann_forget->getOutput(k);
           double c = c_current[k];
@@ -378,18 +390,18 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
 
   error = 0;
 
+  outputLimit->reset();
+
   int derivIndex = 0;
   initRnnDerivatives(rnnDeriv[derivIndex]);
-  initRnnDerivatives(rnnDeriv[1 - derivIndex]);
+  //initRnnDerivatives(rnnDeriv[1 - derivIndex]);
 
   DataNode* p = input;
 
+
+
   while(p->next != output){
 
-    for(int i=0; i<28; i++){
-      printf("%.0f", p->vec[i]);
-    }
-    printf("%s\n", "");
     cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
     cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
 

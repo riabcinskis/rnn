@@ -330,8 +330,8 @@ void AnnSerial::copyOutput(double *a){
 void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out){
 
   calcG();
-printf("%s\n", "veik");
-  for(int v = 0; v < 2; v++)
+
+  for(int v = 0; v < V; v++)
     calcDerivatives(v, deriv_in[v],  deriv_out[v]);
 }
 
@@ -381,7 +381,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
   int max_layer_size = 0;
   for(int i = 0; i < L; i++)
-    max_layer_size = l[i] > max_layer_size? l[i]: max_layer_size;
+    max_layer_size = (l[i]-1) > max_layer_size ? l[i]-1 : max_layer_size;
 
   // vec0 -> vec1
   double *vec0 = new double[max_layer_size];
@@ -389,19 +389,12 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
 
   int start_l = L%2 == 1 ? 0 : 1;
-// printf("%d\n", L);
-// printf("%d\n", vL[v]);
-// printf("%d\n", vl[v][1]);
-// printf("%d\n", vl[v][0+1]-1);
 
-    for(int ss = 0; ss < vL[v]; ss++){//kiek sluoksniu tinkle
-      // printf("%s\n", "11");
+    for(int ss = 0; ss < vL[v]-1; ss++){//kiek sluoksniu tinkle
       for(int wi = 0; wi < vl[v][ss]; wi++){//kiek neuronu
-            // printf("%s\n", "22");
         for(int wj = 0; wj < vl[v][ss+1]-1; wj++){//kiek sekanciame neuronu
-              // printf("%s\n", "33");
-          for(int ll = start_l; ll <= L; ll=ll+2){//per G reiksmes  cia gal maziau tik
-    // printf("%s\n", "44");
+          for(int ll = start_l; ll < L; ll=ll+2){//per G reiksmes  cia gal maziau tik
+
             if(ll == 0){
 
               for(int k = 0; k < M; k++)
@@ -412,13 +405,10 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
               for(int k = 0; k < l[ll]-1;k++){
                 double sum = 0;
                 for(int n = 0; n < M; n++){
-                  //sum += W[sW[ll] + l[ll]*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
                   sum += Wh[(l[ll]-1)*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
-
                 }
-                //   printf("sum %.20f\n", sum);
 
-                if(u == v /*gal sita&& ss == ll*/) sum += a_arr[wi];
+                if(u == v) sum += a_arr[wi];
 
                 vec1[k] = f_deriv(z[s[ll] + k])*sum;
               }
@@ -429,7 +419,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
               int gl = layerToGIndex(L, ll);
               double sum = 0;
-              int to_p = ll == 2 ? M : l[ll-2];//-1 gal
+              int to_p = ll == 2 ? M : l[ll-2]-1;//-1 gal
 
 
               for(int k = 0; k < l[ll]-1;k++){
@@ -441,7 +431,6 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
                 if(u == v){
                   if(ll == ss+1)
                     sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-1] + wi];
-                    //int ghh=0;
                   else if(ll == ss+2){
                       double sum2 = 0;
                       for(int n = 0; n < l[ll-1]; n++)
@@ -454,12 +443,10 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
             int to_k = ll == 0 ? M : l[ll]-1;
             for(int k = 0; k < to_k; k++) vec0[k] = vec1[k];
 
-            // for(int abc=0; abc<max_layer_size; abc++) printf("%.20f\n",vec0[abc] );
           }
           for(int k = 0; k < M /*l[L-1]-1*/; k++){
             deriv_out->v[vi(v, ss, wi, wj, k)] = vec1[k];
 
-            // printf("%.20f\n", deriv_out->vh[vhi(v, wi, wj, k)]);
           }
         }
       }
@@ -467,7 +454,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
       for(int wi = 0; wi < M; wi++){//kiek neuronu
         for(int wj = 0; wj < vl[v][1]-1; wj++){//kiek sekanciame neuronu
-          for(int ll = start_l; ll <= L; ll=ll+2){//per G reiksmes  cia gal maziau tik
+          for(int ll = start_l; ll < L; ll=ll+2){//per G reiksmes  cia gal maziau tik
             if(ll == 0){
 
               for(int k = 0; k < M; k++)
@@ -478,9 +465,8 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
               for(int k = 0; k < l[ll]-1;k++){
                 double sum = 0;
                 for(int n = 0; n < M; n++)
-                  //sum += W[sW[ll] + l[ll]*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
                   sum += Wh[(l[ll]-1)*n + k]*deriv_in->vh[vhi(v, wi, wj, n)];
-                if(u == v /*gal sita&& ss == ll*/) sum += ah_arr[wi];
+                if(u == v ) sum += ah_arr[wi];
                 vec1[k] = f_deriv(z[s[ll] + k])*sum;
 
               }
@@ -490,7 +476,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
               int gl = layerToGIndex(L, ll);
               double sum = 0;
-              int to_p = ll == 2 ? M : l[ll-2];//-1 gal
+              int to_p = ll == 2 ? M : l[ll-2]-1;//-1 gal
 
 
               for(int k = 0; k < l[ll]-1;k++){
@@ -500,15 +486,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
 
 
                 if(u == v){
-                  // if(ll == 1)
-                  //   sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-1] + wi];
-                  //   //int ghh=0;
-                  // else if(ll == 2){
-                  //     double sum2 = 0;
-                  //     for(int n = 0; n < l[ll-1]; n++)
-                  //      sum2 += W[sW[ll-1] + (l[ll]-1)*n + k] * f_deriv(z[s[ll-1] + n]);
-                  //     sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-2] + wi]*sum2
-                  // }
+
                   if(ll == 2){
                     double sum2 = 0;
                     for(int n = 0; n < l[ll-1]; n++)
@@ -518,18 +496,19 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
                 }
               }
             }
+
             int to_k = ll == 0 ? M : l[ll]-1;
             for(int k = 0; k < to_k; k++) vec0[k] = vec1[k];
           }
+
           for(int k = 0; k < M /*l[L-1]-1*/; k++){
             deriv_out->vh[vhi(v, wi, wj, k)] = vec1[k];
-            // printf("%.20f\n", deriv_out->vh[vhi(v, wi, wj, k)]);
           }
         }
       }
 
-  delete vec0;
-  delete vec1;
+  delete [] vec0;
+  delete [] vec1;
 
 }
 

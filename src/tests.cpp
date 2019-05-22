@@ -1,6 +1,7 @@
 
 #include "tests.h"
 
+
 //
 // WeightIO
 //
@@ -150,23 +151,6 @@ bool test_topology(){
 
   if(topology->obtainNeuronCount() != 7) return false;
   if(topology->obtainWeightCount() != 9) return false;
-
-
-  // for(int i = 0; i < 100; i++){
-  //   for(int j = 0;j < 100; j++){
-  //     int x = 0;
-  //     int sum=1000;
-  //     int M = i;
-  //     int I = j;
-  //     x = sum - M;
-  //     int sum2= 2*M + I + 1;
-  //     double y = x* 1.0 / sum2;
-  //     if((y- floor(y)) == 0) printf("%d  %d  %.20f\n", i, j , y);
-  //
-  //
-  //
-  //   }
-  // }
 
   delete topology;
   return true;
@@ -422,8 +406,8 @@ bool test_backprogg(){
   deriv_out[0] =  derivIO_out0->getDerivatives();
   deriv_out[1] =  derivIO_out1->getDerivatives();
 
+
   ann->backPropagation( deriv_in, deriv_out);
-  printf("%s\n", "veikia");
 
   if(derivIO_out0->getDeriv(0, 0, 0, 0) != 0.03224752698038448745) return false;
   if(derivIO_out0->getDeriv(0, 0, 0, 1) != 0.08116317565092628916) return false;
@@ -506,190 +490,8 @@ bool test_backprogg(){
   return true;
 }
 
-bool test_backprogg22(){
 
-  Topology **topology = new Topology*[2];
-  topology[0] = new Topology();
-  topology[0]->addLayer(2);
-  topology[0]->addLayer(2);//
-
-  topology[1] = new Topology();
-  topology[1]->addLayer(2);
-  topology[1]->addLayer(2);//
-
-  int I = 2; // number of inputs
-  int M = 2; // number of outputs
-  int V = 2;
-
-  WeightIO* weightIO = new WeightIO(topology[0], M);
-
-  weightIO->setWeight(0, 0, 0, 0.1); // warr[idx++] = 0.5;
-  weightIO->setWeight(0, 0, 1, 0.2); // warr[idx++] = 0.2;
-
-  weightIO->setWeight(0, 1, 0, 0.3); // warr[idx++] = 0.5;
-  weightIO->setWeight(0, 1, 1, 0.4); // warr[idx++] = 0.2;
-
-  weightIO->setWeight(0, 2, 0, 0.5); // warr[idx++] = 0.5;
-  weightIO->setWeight(0, 2, 1, 0.6); // warr[idx++] = 0.2;
-
-  weightIO->setHWeight(0, 0, 0.3); // wharr[idxh++] = 0.3;
-  weightIO->setHWeight(0, 1, 0.1); // wharr[idxh++] = 0.1;
-
-  weightIO->setHWeight(1, 0, 0.3); // wharr[idxh++] = 0.3;
-  weightIO->setHWeight(1, 1, 0.1); // wharr[idxh++] = 0.1;
-
-
-  AnnSerial *ann = new AnnSerial(V, 0, M, topology, f, f_deriv);
-  ann->setWeights(weightIO->getWeights(), weightIO->getHWeights());
-
-
-
-  double *h_input = new double[M];
-  h_input[0] = 3;
-  h_input[1] = 4;
-
-  double *input = new double[I];
-  input[0] = 1;
-  input[1] = 2;
-
-  double *output = new double[M];
-
-
-  ann->feedForward(h_input, input, output);
-  // printf("output = %.20f\n", output[0]);
-   //printf("output = %.20f\n", output[1]);
-
-
-  //              0.964428810727364
-  if(output[0] != 0.96442881072736386106) return false;
-  //              0.908877038985144
-  if(output[1] != 0.90887703898514382583) return false;
-
-  if(ann->getA()[2] != 1) return false;
-
-
-
-  DerivIO* derivIO_in0 = new DerivIO(topology[0], M);
-  DerivIO* derivIO_in1 = new DerivIO(topology[1], M);
-
-  DerivIO* derivIO_out0 = new DerivIO(topology[0], M);
-  DerivIO* derivIO_out1 = new DerivIO(topology[1], M);
-
-  ///                   s  i  j  k  val
-  derivIO_in0->setDeriv(0, 0, 0, 0, -0.05);
-  derivIO_in0->setDeriv(0, 0, 0, 1, -0.15);
-
-  derivIO_in0->setDeriv(0, 0, 1, 0, 0.1);
-  derivIO_in0->setDeriv(0, 0, 1, 1, 0.03);
-
-  derivIO_in0->setDeriv(0, 1, 0, 0, -0.19);
-  derivIO_in0->setDeriv(0, 1, 0, 1, 0.31);
-
-  derivIO_in0->setDeriv(0, 1, 1, 0, 0.17);
-  derivIO_in0->setDeriv(0, 1, 1, 1, 0.4);
-
-  derivIO_in0->setDeriv(0, 2, 0, 0, -0.7);
-  derivIO_in0->setDeriv(0, 2, 0, 1, 0.1);
-
-  derivIO_in0->setDeriv(0, 2, 1, 0, 0.23);
-  derivIO_in0->setDeriv(0, 2, 1, 1, 0.39);
-
-
-  derivIO_in0->setHDeriv(0, 0, 0, 0.71);
-  derivIO_in0->setHDeriv(0, 0, 1, 0.35);
-
-  derivIO_in0->setHDeriv(0, 1, 0, 0.21);
-  derivIO_in0->setHDeriv(0, 1, 1, -0.11);
-
-  derivIO_in0->setHDeriv(1, 0, 0, 0.2);
-  derivIO_in0->setHDeriv(1, 0, 1, -0.63);
-
-  derivIO_in0->setHDeriv(1, 1, 0, 0.1);
-  derivIO_in0->setHDeriv(1, 1, 1, 0.01);
-
-
-
-
-
-
-
-
-  derivIO_in1->setDeriv(0, 0, 0, 0, 0.05);
-  derivIO_in1->setDeriv(0, 0, 0, 1, 0.15);
-
-  derivIO_in1->setDeriv(0, 0, 1, 0, 0.5);
-  derivIO_in1->setDeriv(0, 0, 1, 1, 0.13);
-
-  derivIO_in1->setDeriv(0, 1, 0, 0, -0.18);
-  derivIO_in1->setDeriv(0, 1, 0, 1, -0.31);
-
-  derivIO_in1->setDeriv(0, 1, 1, 0, 0.32);
-  derivIO_in1->setDeriv(0, 1, 1, 1, 0.02);
-
-  derivIO_in1->setDeriv(0, 2, 0, 0, -0.22);
-  derivIO_in1->setDeriv(0, 2, 0, 1, 0.14);
-
-  derivIO_in1->setDeriv(0, 2, 1, 0, 0.43);
-  derivIO_in1->setDeriv(0, 2, 1, 1, 0.34);
-
-
-  derivIO_in1->setHDeriv(0, 0, 0, -0.71);
-  derivIO_in1->setHDeriv(0, 0, 1, 0.53);
-
-  derivIO_in1->setHDeriv(0, 1, 0, 0.35);
-  derivIO_in1->setHDeriv(0, 1, 1, -0.35);
-
-  derivIO_in1->setHDeriv(1, 0, 0, 0.2);
-  derivIO_in1->setHDeriv(1, 0, 1, -0.24);
-
-  derivIO_in1->setHDeriv(1, 1, 0, 0.22);
-  derivIO_in1->setHDeriv(1, 1, 1, 0.01);
-
-
-
-  Derivatives **deriv_in = new Derivatives*[2];
-  Derivatives **deriv_out = new Derivatives*[2];
-
-  deriv_in[0] =  derivIO_in0->getDerivatives();
-  deriv_in[1] =  derivIO_in1->getDerivatives();
-
-  deriv_out[0] =  derivIO_out0->getDerivatives();
-  deriv_out[1] =  derivIO_out1->getDerivatives();
-
-
-
-
-  std::clock_t start;
-  double duration;
-
-  start = std::clock();
-
-  for(int i = 0; i < 200; i++){
-    ann->backPropagation( deriv_in, deriv_out);
-
-    deriv_in[0] = derivIO_out0->getDerivatives();
-
-    deriv_in[1] = derivIO_out1->getDerivatives();
-  }
-
-  duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-
-  printf("%.20f time\n", duration);
-
-
-  ann->destroy();
-
-
-  delete [] h_input;
-  delete [] input;
-  delete [] output;
-  delete [] topology;
-  delete ann;
-  return true;
-}
-
-
-bool test_rnn_feedforward_full(){
+bool test_rnn_cell_feedforward_full(){
   int M = 2;
   int V = 4;
   int I = 2;
@@ -954,6 +756,12 @@ bool test_rnn_feedforward_full(){
   deriv_out[3] =  derivIO_out3->getDerivatives();
 
 
+
+
+
+
+
+
   //serialDBL->printf_Network("w_and_dw_tests.bin");
   double *h_input = new double[2];
   h_input[0] = 3;
@@ -968,46 +776,45 @@ bool test_rnn_feedforward_full(){
   double *output3 = new double[2];
   double *output4 = new double[2];
 
+
   ///
   ///1
   ///
   	rnnCell->getANN(0)->feedForward(h_input,input, output1);
-
-  //               0.937026643943003
-  if(output1[0] != 0.93702664394300350104) return false;
-  //               0.978118729063869
-  if(output1[1] != 0.97811872906386942983) return false;
+  //              0.689589607251556
+  if(output1[0] != 0.68958960725155571403) return false;
+  //              0.74958548419844700000
+  if(output1[1] != 0.74958548419844750477) return false;
 
   ///
   ///2
   ///
 	rnnCell->getANN(1)->feedForward(h_input,input, output2);
-
-  //               0.997806366643291
-  if(output2[0] != 0.99780636664329125374) return false;
-  //               0.989748227726628
-  if(output2[1] != 0.98974822772662796044) return false;
+  //              0.84085944955203300000
+  if(output2[0] != 0.84085944955203295592) return false;
+  //              0.74789281328782
+  if(output2[1] != 0.74789281328782009073) return false;
 
   ///
   ///3
   ///
 	rnnCell->getANN(2)->feedForward(h_input,input, output3);
 
-  //               0.997637499691042
-  if(output3[0] != 0.99763749969104176252) return false;
-  //               0.998566404814467
-  if(output3[1] != 0.99856640481446723445) return false;
+
+  //              0.79996904340460500000
+  if(output3[0] != 0.79996904340460495142) return false;
+  //              0.934733066362687
+  if(output3[1] != 0.93473306636268660430) return false;
 
   ///
   ///4
   ///
 	rnnCell->getANN(3)->feedForward(h_input,input, output4);
-  // printf("%.20f\n", output4[0]);
-  // printf("%.20f\n", output4[1]);
-  //               0.953469525485268
-  if(output4[0] != 0.95346952548526853199) return false;
-  //               0.97996429096637
-  if(output4[1] != 0.97996429096637027722) return false;
+
+  //              0.645914426127551
+  if(output4[0] != 0.64591442612755145536) return false;
+  //              0.771312387165297
+  if(output4[1] != 0.77131238716529726407) return false;
 
   double *c_in = new double[2];
   c_in[0] = 0.5;
@@ -1015,14 +822,15 @@ bool test_rnn_feedforward_full(){
   double *c_out = new double[2];
   double *h_out = new double[2];
   rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
-  //             1.46396237076532
-  if(c_out[0] != 1.46396237076531776644) return false;
-  //             1.28176494815163
-  if(c_out[1] != 1.28176494815163022345) return false;
-  //             0.504207600189669
-  if(h_out[0] != 0.50420760018966914728) return false;
-  //             0.495792399810331
-  if(h_out[1] != 0.49579239981033090823) return false;
+
+  //             1.01745633312164000000
+  if(c_out[0] != 1.01745633312164018847) return false;
+  //             0.923955787934675
+  if(c_out[1] != 0.92395578793467447731) return false;
+  //             0.469404624141351
+  if(h_out[0] != 0.46940462414135097902) return false;
+  //             0.530595375858649
+  if(h_out[1] != 0.53059537585864913201) return false;
 
   c_in[0] = c_out[0];
   c_in[1] = c_out[1];
@@ -1031,17 +839,28 @@ bool test_rnn_feedforward_full(){
 
   rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
 
-  //             2.01116057873215
-  if(c_out[0] != 2.01116057873215092755) return false;
-  //             1.94017427000603
-  if(c_out[1] != 1.94017427000602626919) return false;
-  //             0.489699562799289
-  if(h_out[0] != 0.48969956279928888998) return false;
-  //             0.510300437200711
-  if(h_out[1] != 0.51030043720071105451) return false;
+  //             1.33881207992600000000
+  if(c_out[0] != 1.33881207992600104184) return false;
+  //             1.3692467644635
+  if(c_out[1] != 1.36924676446350157555) return false;
+  //             0.453692800787076
+  if(h_out[0] != 0.45369280078707552306) return false;
+  //             0.546307199212925
+  if(h_out[1] != 0.54630719921292447694) return false;
 
 
   rnnCell->destroy();
+  // delete [] warr1;
+  // delete [] wharr1;
+  //
+  // delete [] warr2;
+  // delete [] wharr2;
+  //
+  // delete [] warr3;
+  // delete [] wharr3;
+  //
+  // delete [] warr4;
+  // delete [] wharr4;
 
   delete [] h_input;
   delete [] input;
@@ -1056,86 +875,6 @@ bool test_rnn_feedforward_full(){
   return true;
 }
 
-
-
-bool test_rnn_feedforward_full22(){
-  int M = 96;
-  int V = 4;
-  int I = 33;
-  Topology **topology = new Topology*[V];
-  for(int v = 0; v < V; v++){
-    topology[v] = new Topology();
-    topology[v]->addLayer(I);
-    topology[v]->addLayer(4);
-    topology[v]->addLayer(M);
-  }
-
-
-  RnnCell *rnnCell = new RnnCell(M, topology);
-
-
-  //serialDBL->printf_Network("w_and_dw_tests.bin");
-  double *h_input = new double[2];
-  h_input[0] = 3;
-  h_input[1] = 4;
-
-  double *input = new double[2];
-  input[0] = 1;
-  input[1] = 2;
-
-  double *output1 = new double[2];
-  double *output2 = new double[2];
-  double *output3 = new double[2];
-  double *output4 = new double[2];
-
-
-
-  double *c_in = new double[2];
-  c_in[0] = 0.5;
-  c_in[1] = 0.3;
-  double *c_out = new double[2];
-  double *h_out = new double[2];
-
-  std::clock_t start;
-  double duration;
-
-  start = std::clock();
-
-
-  for(int i = 0; i < 5; i++){
-    c_in[0] = c_out[0];
-    c_in[1] = c_out[1];
-    h_input[0] = h_out[0];
-    h_input[1] = h_out[1];
-
-    rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
-
-
-    h_input[0] = 3;
-    h_input[1] = 4;
-    c_in[0] = 0.5;
-    c_in[1] = 0.3;
-  }
-
-
-  duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-
-  //printf("%.20f time\n", duration);
-
-  rnnCell->destroy();
-
-  delete [] h_input;
-  delete [] input;
-
-  delete [] output1;
-  delete [] output2;
-  delete [] output3;
-  delete [] output4;
-  delete [] topology;
-
-  delete rnnCell;
-  return true;
-}
 // bool test__char_to_vec(){
 //
 //     double *vec0 =  char_to_vec(" abcd", ' ');
@@ -1172,7 +911,7 @@ bool test__vec_to_char(){
     char c = vec_to_char(" abcd", vec);
     printf("c = %c\n", c);
 
-    return true;
+return true;
 }
 
 bool test__str_to_nodes(){
@@ -1209,19 +948,15 @@ bool run_tests(){
   printf("%s - test_ann_feedforward\n", passed ? "PASSED" : "FAILED");
   printf("%s\n", "---------------------");
 
-  passed = test_rnn_feedforward_full(); failCount += passed ? 0 : 1;
-  printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
+  // passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
+  // printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
   // printf("%s\n", "---------------------");
-  // passed = test_rnn_feedforward_full22(); failCount += passed ? 0 : 1;
-  // printf("%s - test_rnn_feedforwards_full\n", passed ? "PASSED" : "FAILED");
+  // passed = test_rnn_cell_feedforward_full(); failCount += passed ? 0 : 1;
+  // printf("%s - test_rnn_cell_feedforward_full\n", passed ? "PASSED" : "FAILED");
 
 
   passed = test_backprogg(); failCount += passed ? 0 : 1;
   printf("%s - test_backprogg\n", passed ? "PASSED" : "FAILED");
-
-
-    // passed = test_backprogg22(); failCount += passed ? 0 : 1;
-    // printf("%s - test_backprogg\n", passed ? "PASSED" : "FAILED");
 
   // passed = test__char_to_vec(); failCount += passed ? 0 : 1;
   // printf("%s - test__char_to_vec\n", passed ? "PASSED" : "FAILED");
