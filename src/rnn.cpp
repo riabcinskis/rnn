@@ -298,10 +298,16 @@ DataNode::DataNode(int M){
 //
 
 Rnn::Rnn(int I, int M, RnnCell *rnnCell){
+  impl = RNN_FULL_BACKPROPAGATION;
+  Rnn(I, M, rnnCell);
+}
+
+Rnn::Rnn(int I, int M, RnnCell *rnnCell, int impl){
   this->I = I;
   this->M = M;
   this->V = 4;
   cRnnCell = rnnCell;
+  this->impl = impl;
 
 
   h_in = new double[M];
@@ -393,16 +399,20 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
   outputLimit->reset();
 
   int derivIndex = 0;
-  initRnnDerivatives(rnnDeriv[derivIndex]);
+  resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
+  resetCDerivatives(rnnDeriv[derivIndex]->cderiv);
+
   //initRnnDerivatives(rnnDeriv[1 - derivIndex]);
 
   DataNode* p = input;
 
 
+//printf("----------------\n");
 
   while(p->next != output){
-
+    //printf("A");
     cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+    if(impl == RNN_APPROX_BACKPROPAGATION)resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
     cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
 
     copyVector(h_in, h_out, M);
@@ -414,6 +424,7 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
 
 
   cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+  if(impl == RNN_APPROX_BACKPROPAGATION)resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
   cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
   copyVector(h_in, h_out, M);
   copyVector(c_in, c_out, M);
@@ -430,8 +441,14 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
   for(int i = 0; i < I; i++)
    empty_input[i] = 0;
 
+   //char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
+   //char abc[64]=" 0123456789";
+
    do{
+
      q = q->next;
+     //printf("%c", vec_to_char(abc, q->vec));
+    // printf("B");
      if(q == NULL) {
 
        delete [] empty_input;
@@ -439,6 +456,7 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
      }
 
      cRnnCell->feedForward(h_in, c_in, empty_input, c_out, h_out);
+     if(impl == RNN_APPROX_BACKPROPAGATION)resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
      cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
      copyVector(h_in, h_out, M);
      copyVector(c_in, c_out, M);
@@ -450,6 +468,7 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
      derivIndex = 1 - derivIndex;
 
    }while(outputLimit->check(q->vec) == false);
+
 
    delete [] empty_input;
 
@@ -492,19 +511,27 @@ RnnDerivatives* Rnn::allocateRnnDerivatives(RnnDerivatives* deriv){
   }
 }
 
-void Rnn::initRnnDerivatives(RnnDerivatives* deriv){
+
+void Rnn::resetHDerivatives(Derivatives** hderiv){
   for(int v = 0; v < V; v++){
-    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M; k++){
-      deriv->hderiv[v]->v[k] = 0.0;
-      deriv->cderiv[v]->v[k] = 0.0;
-    }
-    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M; k++){
-      deriv->hderiv[v]->vh[k] = 0.0;
-      deriv->cderiv[v]->vh[k] = 0.0;
-    }
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M; k++)
+      hderiv[v]->v[k] = 0.0;
+
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M; k++)
+      hderiv[v]->vh[k] = 0.0;
+
   }
 }
+void Rnn::resetCDerivatives(Derivatives** cderiv){
+  for(int v = 0; v < V; v++){
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M; k++)
+      cderiv[v]->v[k] = 0.0;
 
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M; k++)
+      cderiv[v]->vh[k] = 0.0;
+
+  }
+}
 
 
 void Rnn::copyVector(double* vec_b, double *vec_a, int n){

@@ -251,16 +251,20 @@ void AnnSerial::init(Topology **top,FILE * pFile=NULL){
 
 
   if (pFile==NULL) {
-    for (int i = 0; i < L - 1; i++)
-      for (int j = 0; j < W[i]; j++) {
-        W[sW[i] + j] = (rnd->next()*2-1); // (double)rand() / double(RAND_MAX);
-        dW[sW[i] + j] = 0.0;
-    }
+    for (int ll = 0; ll < L - 1; ll++)
+      for (int i = 0; i < l[ll]; i++)
+        for (int j = 0; j < l[ll+1]-1; j++){
+          W[sW[ll] + i*(l[ll+1]-1) + j] = (rnd->next()*2-1);
+          dW[sW[ll] + i*(l[ll+1]-1) + j] = 0.0;
+        }
+
 
     int second_layer_size = cTopology->getLayerSize(1);
     int h_weightCount = second_layer_size * M;
-    for(int i = 0; i < h_weightCount; i++)
-      Wh[i] = (rnd->next()*2-1);
+    for(int i = 0; i < M; i++)
+      for(int j = 0; j < l[1]-1; j++)
+        Wh[i*(l[1]-1) + j] = (rnd->next()*2-1);
+
   }
   else {
   //  readf_Network(pFile);

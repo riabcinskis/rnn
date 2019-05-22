@@ -6,7 +6,9 @@ LanguageModel::LanguageModel(){
 
 void LanguageModel::doSomething(){
 
-   char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
+   //char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
+   char abc[64]=" 0123456789";
+
   //
   // int M = strlen(abc);
   // int I = strlen(abc);
@@ -59,7 +61,7 @@ void LanguageModel::doSomething(){
   }
 
   RnnCell *rnnCell = new RnnCell(M, topology);
-  Rnn *rnn = new Rnn(I, M, rnnCell);
+  Rnn *rnn = new Rnn(I, M, rnnCell, RNN_APPROX_BACKPROPAGATION);
 
   SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
 
@@ -100,10 +102,13 @@ void LanguageModel::doSomething(){
         offset++;
       }while(true);
       sentenceError = sentenceError / (double)partCount;
+      //printf("  error=%.4e\n", sentenceError);
+
       iterError += sentenceError;
     }
 
      printf("iter=%d, error=%.4e\n", n, iterError);
+
 
   }
 

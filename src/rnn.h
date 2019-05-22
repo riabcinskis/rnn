@@ -1,8 +1,15 @@
 #ifndef RNN_HEADER
 #define RNN_HEADER
 
+#define RNN_FULL_BACKPROPAGATION 0
+#define RNN_APPROX_BACKPROPAGATION 1
+
+
 //#include <helper_cuda.h>
 #include "ann.h"
+#include "rnn.h"
+
+
 
 #include <cmath>
 
@@ -133,6 +140,7 @@ class Rnn {
     int I;
     int M;
     int V;
+
     RnnCell* cRnnCell;
 
 
@@ -144,9 +152,10 @@ class Rnn {
     ErrorDerivatives** errDeriv;
     RnnDerivatives **rnnDeriv;
 
-
+    int impl;
 
   public:
+    Rnn(int I, int M, RnnCell *rnnCell, int impl);
     Rnn(int I, int M, RnnCell *rnnCell);
 
     DataNode* feedForward(DataNode* input, OutputLimit *outputLimit);
@@ -161,7 +170,10 @@ class Rnn {
 
     RnnDerivatives* allocateRnnDerivatives(RnnDerivatives* deriv);
     //RnnDerivatives* deallocateRnnDerivatives(RnnDerivatives* deriv);
-    void initRnnDerivatives(RnnDerivatives* deriv);
+    void resetHDerivatives(Derivatives** hderiv);
+    void resetCDerivatives(Derivatives** cderiv);
+
+
     void copyRnnDerivatives(RnnDerivatives* deri_b, RnnDerivatives* deriv_a);
     void copyVector(double* vec_b, double *vec_a, int n);
 

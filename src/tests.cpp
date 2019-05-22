@@ -256,6 +256,40 @@ bool test_ann_feedforward(){
 }
 
 
+bool test_ann_random_weights(){
+
+  int M = 2;
+
+  Topology **topology = new Topology*[1];
+  topology[0] = new Topology();
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(2);
+  topology[0]->addLayer(M);
+
+  //printf("%.20f\n", f(2.0));
+  double (*func)(double);
+  double (*func_deriv)(double);
+  func = f;
+  func_deriv = f_deriv;
+
+
+
+
+  AnnSerial *serialDBL = new AnnSerial(1, 0, M, topology, func, func_deriv);
+
+  double *weights = serialDBL->getWeights();
+  for(int i = 0; i < topology[0]->obtainWeightCount(); i++)
+    printf("weight[%d] = %.5f\n", i, weights[i]);
+
+printf("\n");
+    double *hweights = serialDBL->getHWeights();
+    for(int i = 0; i < M*topology[0]->getLayerSize(1); i++)
+      printf("hweights[%d] = %.5f\n", i, hweights[i]);
+
+  delete serialDBL;
+  return true;
+}
+
 bool test_backprogg(){
 
   Topology **topology = new Topology*[2];
@@ -953,6 +987,11 @@ bool run_tests(){
   // printf("%s\n", "---------------------");
   // passed = test_rnn_cell_feedforward_full(); failCount += passed ? 0 : 1;
   // printf("%s - test_rnn_cell_feedforward_full\n", passed ? "PASSED" : "FAILED");
+
+
+
+  passed = test_ann_random_weights(); failCount += passed ? 0 : 1;
+  printf("%s - test_ann_random_weights\n", passed ? "PASSED" : "FAILED");
 
 
   passed = test_backprogg(); failCount += passed ? 0 : 1;

@@ -1,5 +1,3 @@
-there is no single text on the market that covers the emerging technologies of document retrieval information extraction and text categorization in a coherent fashion
-this book seeks to satisfy a genuine need on the part of technology practitioners in the internet space who are faced with having to make difficult decisions as to what research has been done and what the best practices are
-it is not intended as a vendor guide such things are quickly out of date or as a recipe for building applications such recipes are very context-dependent
-but it does identify the key technologies the issues involved and the strengths and weaknesses of the various approaches
-there is also a strong emphasis on evaluation in every chapter both in terms of methodology how to evaluate and what controlled experimentation and industrial experience have to tell us
+12389 1224 4687 
+1102 4875 66654 778 
+13577 8998 787456 
