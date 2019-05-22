@@ -48,6 +48,7 @@ void LanguageModel::doSomething(){
   int M = strlen(abc);
   int V = 4;
   int I = strlen(abc);
+  printf("%d\n", M);
   Topology **topology = new Topology*[V];
   for(int v = 0; v < V; v++){
     topology[v] = new Topology();
@@ -61,13 +62,15 @@ void LanguageModel::doSomething(){
   SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
 
 
-  for(int n = 0; n < 10; n++){
+  for(int n = 0; n < 1; n++){
 
     double iterError = 0;
     for(int i = 0; i < nodeVector->size(); i++){
       DataNode* input = (*nodeVector)[i];
 
+
       DataNode* startOutput = input;
+      
       for(int i = 0; i < 3; i++)
         startOutput = startOutput->next;
 
@@ -77,18 +80,20 @@ void LanguageModel::doSomething(){
 
       int partCount = 0;
       double sentenceError = 0.0;
-
+printf("2ndmark\n");
 
       do{
         double partError;
         for(int i = 0; i < offset; i++)
           output = output->next;
-
+printf("2ndmark\n");
         if(rnn->backPropagation(input, output, markLimit, partError) == false){
+          printf("3ndmark\n");
           rnn->resetErrorDerivatives();
+          printf("4ndmark\n");
           break;
         }
-
+printf("2ndmark\n");
         rnn->updateWeights(alpha, eta);
         rnn->resetErrorDerivatives();
 
@@ -98,12 +103,12 @@ void LanguageModel::doSomething(){
 
         offset++;
       }while(true);
-
+printf("2ndmark\n");
       sentenceError = sentenceError / (double)partCount;
       iterError += sentenceError;
     }
 
-    printf("iter=%d, error=%.4e\n", n, iterError);
+    // printf("iter=%d, error=%.4e\n", n, iterError);
 
   }
 

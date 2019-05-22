@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "rnn.h"
 #include "app.h"
+#include <cmath>
+#include <ctime>
 
 
 struct Derivatives;

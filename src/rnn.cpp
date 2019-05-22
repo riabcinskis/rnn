@@ -380,12 +380,16 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
 
   int derivIndex = 0;
   initRnnDerivatives(rnnDeriv[derivIndex]);
+  initRnnDerivatives(rnnDeriv[1 - derivIndex]);
 
   DataNode* p = input;
 
   while(p->next != output){
 
-
+    for(int i=0; i<28; i++){
+      printf("%.0f", p->vec[i]);
+    }
+    printf("%s\n", "");
     cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
     cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
 
@@ -438,7 +442,7 @@ bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *output
    delete [] empty_input;
 
    error = error / (double)outputCount;
-   
+
    return true;
 
 }
@@ -507,6 +511,16 @@ void Rnn::sumErrorDerivatives(double *h, Derivatives **hderiv, double *y){
             sum += (y[n]-h[n])*hderiv[v]->v[cRnnCell->getANN(v)->vi(v, s, wi, wj, n)];
           errDeriv[v]->v[cRnnCell->getANN(v)->vi(v, s, wi, wj)] = sum;
         }
+      }
+    }
+
+
+    for(int wi = 0; wi < M; wi++){
+      for(int wj = 0; wj < top->getLayerSize(1); wj++){
+        double sum = 0;
+        for(int n = 0; n < M; n++)
+          sum += (y[n]-h[n])*hderiv[v]->vh[cRnnCell->getANN(v)->vhi(v, wi, wj, n)];
+        errDeriv[v]->vh[cRnnCell->getANN(v)->vhi(v, wi, wj)] = sum;
       }
     }
   }

@@ -330,8 +330,8 @@ void AnnSerial::copyOutput(double *a){
 void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out){
 
   calcG();
-
-  for(int v = 0; v < V; v++)
+printf("%s\n", "veik");
+  for(int v = 0; v < 2; v++)
     calcDerivatives(v, deriv_in[v],  deriv_out[v]);
 }
 
@@ -414,6 +414,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
                 for(int n = 0; n < M; n++){
                   //sum += W[sW[ll] + l[ll]*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
                   sum += Wh[(l[ll]-1)*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
+
                 }
                 //   printf("sum %.20f\n", sum);
 
@@ -457,6 +458,7 @@ void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv
           }
           for(int k = 0; k < M /*l[L-1]-1*/; k++){
             deriv_out->v[vi(v, ss, wi, wj, k)] = vec1[k];
+
             // printf("%.20f\n", deriv_out->vh[vhi(v, wi, wj, k)]);
           }
         }

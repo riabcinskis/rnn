@@ -1,5 +1,5 @@
-Backpropagation metodas
-
+% Backpropagation metodas
+% \mx{W}
 Atliktus įvesties reikšmių perleidimą per tinklą yra skaičiuojamas baudos funkcijos reikšmė, kuri yra lygi vidutinei kvadratinei tinklo paklaidai. Jos formulė yra (\ref{eq:Ett}).
 
 %
@@ -18,7 +18,7 @@ Atliktus įvesties reikšmių perleidimą per tinklą yra skaičiuojamas baudos 
 
 \begin{equation} \label{eq:Ett}
   \begin{aligned}
-  E^{(t)} = \sum_{k=1}^{M} \frac{1}{2}(y_k^{(t)} - h_k^{(t)})^{2}
+  E^{(t)} = \sum_{k=1}^{M} \frac{1}{2}(y_k^{(t)} - h_k^{(t)})^{2},
   \end{aligned}
 \end{equation}
 čia $h_k^{(t)}$ - tinklo išvesties reikšmė, o $y_k^{(t)}$ - prognozuojama reikšmė, kurią turime gauti.
@@ -29,7 +29,7 @@ Apmokymo tikslas yra mažinti baudos funkcijos reikšmę, tam yra naudojamas gra
 
 
 \begin{equation}\label{eq:weightupdate}
-  \Delta w_{ij}^{(u,l)} = -\eta*\frac{\partial E^{(t)}}{\partial w_{ij}^{(u,l)}} + \alpha*\Delta w_{ij}^{(u,l)}
+  \Delta w_{ij}^{(u,l)} = -\eta\frac{\partial E^{(t)}}{\partial w_{ij}^{(u,l)}} + \alpha\Delta w_{ij}^{(u,l)},
 \end{equation}
 čia $\alpha$ - inercija, $\eta$ - apmokymo greitis.
 
@@ -41,7 +41,7 @@ Tada bendra svorio atnaujinimo gaunama formulė yra (\ref{eq:weightsupdate}) :
 
 \begin{equation} \label{eq:E_deriv}
   \begin{aligned}
-  \frac{\partial E^{(t)}}{\partial w_{ij}^{(v,s)}} = \sum_{n=1}^{M} \frac{\partial (\sum_{k=1}^{M} \frac{1}{2}(y_m^{(t)} - h_m^{(t)})^{2})}{\partial h_n^{(t)}} * \frac{\partial h_n^{(t)}}{\partial w_{ij}^{(v,s)}}
+  \frac{\partial E^{(t)}}{\partial w_{ij}^{(v,s)}} = \sum_{n=1}^{M} \frac{\partial (\sum_{k=1}^{M} \frac{1}{2}(y_m^{(t)} - h_m^{(t)})^{2})}{\partial h_n^{(t)}} \frac{\partial h_n^{(t)}}{\partial w_{ij}^{(v,s)}},
   \end{aligned}
 \end{equation}
 čia $\frac{\partial h_k^{(t)}}{\partial w_{ij}^{(v,s)}}$ yra apskaičiuojama pagal formulę (\ref{eq:hn}).
@@ -54,8 +54,7 @@ Tada bendra svorio atnaujinimo gaunama formulė yra (\ref{eq:weightsupdate}) :
   \sum_{n=1}^{M}
   \frac{\partial (\frac{e^{b_k^{(t)}}}{\sum_{m=1}^{M} e^{b_m^{(t)}}})}
   {\partial b_n^{(t)}}
-  *
-   \frac{\partial b_n^{(t)}}{\partial w_{ij}^{(v,s)}}
+   \frac{\partial b_n^{(t)}}{\partial w_{ij}^{(v,s)}},
    \end{aligned}
 \end{equation}
 čia $\frac{\partial b_n^{(t)}}{\partial w_{ij}^{(v,s)}}$ yra apskaičiuojama pagal formulę (\ref{eq:bn}).
@@ -70,7 +69,7 @@ Tada bendra svorio atnaujinimo gaunama formulė yra (\ref{eq:weightsupdate}) :
   \frac{\partial (a_k^{(o,L)} tanh(c_k^{(t)}))}{\partial w_{ij}^{(v,s)}}
   =
   \frac{\partial a_k^{(o,L)}}{\partial w_{ij}^{(v,s)}} tanh(c_k^{(t)}) +
-  a_k^{(o,L)} * \frac{\partial tanh(c_k^{(t)})}{\partial w_{ij}^{(v,s)}}
+  a_k^{(o,L)} \frac{\partial tanh(c_k^{(t)})}{\partial w_{ij}^{(v,s)}},
   \end{aligned}
 \end{equation}
 čia išskiriam dvi išvestines $\frac{\partial a_k^{(o,L)}}{\partial w_{ij}^{(v,s)}}$ ir $\frac{\partial tanh(c_k^{(t)})}{\partial w_{ij}^{(v,s)}}$, kurios yra apskaičiuojamos pagal formules (\ref{eq:a_derivl-1}) ir (\ref{eq:tanh_deriv_byc}) atitinkamai.
@@ -80,7 +79,7 @@ Tada bendra svorio atnaujinimo gaunama formulė yra (\ref{eq:weightsupdate}) :
   \begin{aligned}
   \frac{\partial tanh(c_k^{(t)})}{\partial w_{ij}^{(v,s)}} =
   \frac{\partial tanh(c_k^{(t)})}{\partial c_k^{(t)}}
-  \frac{\partial c_k^{(t)}}{\partial w_{ij}^{(v,s)}}
+  \frac{\partial c_k^{(t)}}{\partial w_{ij}^{(v,s)}},
   \end{aligned}
 \end{equation}
 čia $\frac{\partial c_k^{(t)}}{\partial w_{ij}^{(v,s)}}$ yra apskaičiuojama pagal formulę (\ref{eq:c_deriv}).
@@ -97,7 +96,7 @@ Tada bendra svorio atnaujinimo gaunama formulė yra (\ref{eq:weightsupdate}) :
   \end{aligned}
 \end{equation}
 
-Toliau išvesime bendrąją $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}}$ formulę, kuria būtų galima apskaičiuoti bet kurio tinklo $a_k^{(u, l)}$ reikšmės išvestinę pagal bet kurį $w_{ij}^{(v,s)}$ (refffff cia veliau reikės).
+Toliau išvesime bendrąją $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}}$ formulę, kuria būtų galima apskaičiuoti bet kurio tinklo $a_k^{(u, l)}$ reikšmės išvestinę pagal bet kurį $w_{ij}^{(v,s)}$ (\ref{eq:gkv}).
 
 Norint tai atlikti iš pradžių reikia apskaičiuoti bet kurio tinklo paskutiniojo sluoksnio $a_k^{(u, L)}$ išvestinę pagal vienu žemiau esančio sluoksnio svorį $w_{ij}^{(v,L-1)}$ (\ref{eq:a_derivl-1}).
 
@@ -107,8 +106,7 @@ Pastaba! Tinklų išvesties reikšmės $a_k^{(u, l)}$ yra funkcijos, kurios prik
   \begin{aligned}
   \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-1)}} =
   \frac{\partial f(z_k^{(u, L)})}{\partial w_{ij}^{(v,L-1)}} =
-  \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} *
-  \frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-1)}} \\
+  \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} \frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-1)}},
   \end{aligned}
 \end{equation}
 čia u ir v - nurodo, kad tinklai, kuriose yra kintamieji $a_k^{(u, L)}$ ir $w_{ij}^{(v,L-1)}$ nebūtinai turi sutapti.
@@ -118,16 +116,14 @@ Toliau apskaičiuojame $\frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-2)}}$ 
 \begin{equation} \label{eq:z_deriv}
   \begin{aligned}
     \frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-1)}} =& \sum_{n=1}^{K(u, L-1)+1}
-      \frac{ \partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1)} * a_m^{(u,L-1)} ) }{ \partial a_n^{(u,L-1)} } *
-      \frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}} + \\
+      \frac{ \partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1)} a_m^{(u,L-1)} ) }{ \partial a_n^{(u,L-1)} }  \frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}} + \\
       &\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1)a_m^{(u,L-1)}} )}{\partial w_{nk}^{(v,L-1)}}
       \frac{\partial w_{nk}^{(v,L-1)}}{\partial w_{ij}^{(v,L-1)}} = \\
-      &\sum_{n=1}^{K(u, L-1)+1} w_{nk}^{(u,L-1)} *   \frac{\partial a_k^{(u, L-1)}}{\partial w_{ij}^{(v,L-1)}}  +  \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} * \delta_{u,v} a_i^{(u,L-1)}
+      &\sum_{n=1}^{K(u, L-1)+1} w_{nk}^{(u,L-1)}  \frac{\partial a_k^{(u, L-1)}}{\partial w_{ij}^{(v,L-1)}}  +  \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}}  \delta_{u,v} a_i^{(u,L-1)}
   \end{aligned}
 \end{equation}
 
-Iš čia gauname, kad sumoje $\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1) * a_m^{(u,L-1)}} )}{\partial a_n^{(u,L-1)}} *
-\frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}}$, kai n=K(u,L-1)+1 skaičiuojame Bias neurono išvestinę, pagal svorį. Kadangi Bias neurono reikšmė nepriklauso nuo tinklo svorių, tai $\frac{\partial a_{K(u,L-1)+1}^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}} = 0$, todėl skaičiuojant šias sumas, neįtrauksime Bias neurono(t.y. n=[1;K(u,L)]).
+Iš čia gauname, kad sumoje $\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1) a_m^{(u,L-1)}} )}{\partial a_n^{(u,L-1)}} \frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}}$, kai n=K(u,L-1)+1 skaičiuojame Bias neurono išvestinę, pagal svorį. Kadangi Bias neurono reikšmė nepriklauso nuo tinklo svorių, tai $\frac{\partial a_{K(u,L-1)+1}^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}} = 0$, todėl skaičiuojant šias sumas, neįtrauksime Bias neurono(t.y. n=[1;K(u,L-1)]).
 
 Įstačius išvestinę $\frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-1)}}$ į formulę (\ref{eq:z_deriv}) ir formulę (\ref{eq:z_deriv}) įstačius į formulę (\ref{eq:a_derivl-1}) gauname formulę (\ref{eq:a_deriv_2}).
 
@@ -136,9 +132,8 @@ Iš čia gauname, kad sumoje $\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1
   \begin{aligned}
     \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-1)}} = &
       \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}}\sum_{n=1}^{K(u, L-1)} w_{nk}^{(u,L-1)} \frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}} \\
-    &\sum_{p=1}^{K(u, L-2)} w_{pn}^{(u,L-2)} *
-    \frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-1)}} +
-    \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} * \delta_{u,v}a_i^{(u,L-1)}
+    &\sum_{p=1}^{K(u, L-2)} w_{pn}^{(u,L-2)} \frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-1)}} +
+    \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} \delta_{u,v}a_i^{(u,L-1)}
   \end{aligned}
 \end{equation}
 
@@ -150,15 +145,13 @@ Iš čia gauname, kad sumoje $\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1
     \begin{aligned}
       \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-1)}} = &
         \sum_{p=1}^{K(u, L-2)}
-        \frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-1)}}\frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}}  \sum_{n=1}^{K(u, L-1)} w_{pn}^{(u,L-2)} * w_{nk}^{(u,L-1)}\frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}} + \\
+        \frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-1)}}\frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}}  \sum_{n=1}^{K(u, L-1)} w_{pn}^{(u,L-2)} w_{nk}^{(u,L-1)}\frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}} + \\
       & + \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} \delta_{u,v}a_i^{(u,L-1)}
    \end{aligned}
 \end{equation}
 
 Šioje lygybėje įsivedame žymėjimą $G_{pk}^{(u,L)} =
-\frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}}
-*
-\sum_{n=1}^{K(u, L-1)} w_{pn}^{(u,L-2)} * w_{nk}^{(u,L-1)} * \frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}}$.
+\frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} \sum_{n=1}^{K(u, L-1)} w_{pn}^{(u,L-2)} w_{nk}^{(u,L-1)} \frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}}$.
 
 Tuomet gauta nauja lygybė bus (\ref{eq:naujalyg}).
 
@@ -177,8 +170,7 @@ Toliau skaičiuojame $a_k^{(u, L)}$ pagal dviem sluoksniais žemiau esančiais s
   \begin{aligned}
   \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-2)}} =
   \frac{\partial f(z_k^{(u, L)})}{\partial w_{ij}^{(v,L-2)}} =
-  \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} *
-  \frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-2)}}
+  \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}} \frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-2)}},
   \end{aligned}
 \end{equation}
 čia u ir v - nurodo, kad tinklai, kuriose yra kintamieji $a_k^{(u, L)}$ ir $w_{ij}^{(v,L-2)}$ nebūtinai turi sutapti.
@@ -188,15 +180,14 @@ Toliau apskaičiuojame $\frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-2)}}$ 
 \begin{equation} \label{eq:z_deriv_2}
   \begin{aligned}
     \frac{\partial z_k^{(u,L)}}{\partial w_{ij}^{(v,L-2)}} =&
-      \sum_{n=1}^{K(u, L-1)} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1)} * a_m^{(u,L-1)} )}{\partial a_n^{(u,L-1)}}
+      \sum_{n=1}^{K(u, L-1)} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1)} a_m^{(u,L-1)} )}{\partial a_n^{(u,L-1)}}
       \frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-2)}} + \\
-      &\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1}  w_{mk}^{(u,L-1) * a_m^{(u,L-1)}} )}{\partial w_{nk}^{(v,L-1)}}
+      &\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1}  w_{mk}^{(u,L-1) a_m^{(u,L-1)}} )}{\partial w_{nk}^{(v,L-1)}}
       \frac{\partial w_{nk}^{(v,L-1)}}{\partial w_{ij}^{(v,L-2)}} =\\
     &\sum_{n=1}^{K(u, L-1)+1} w_{nk}^{(u,L-1)} \frac{\partial a_k^{(u, L-1)}}{\partial w_{ij}^{(v,L-2)}},
   \end{aligned}
 \end{equation}
-čia suma $\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1) * a_m^{(u,L-1)}} )}{\partial w_{nk}^{(v,L-1)}} *
-\frac{\partial w_{nk}^{(v,L-1)}}{\partial w_{ij}^{(v,L-2)}}$ pasinaikina, nes $\frac{\partial w_{nk}^{(v,L-1)}}{\partial w_{ij}^{(v,L-2)}}=0$
+čia suma $\sum_{n=1}^{K(u, L-1)+1} \frac{\partial (\sum_{m=1}^{K(u,L-1)+1} w_{mk}^{(u,L-1) a_m^{(u,L-1)}} )}{\partial w_{nk}^{(v,L-1)}} \frac{\partial w_{nk}^{(v,L-1)}}{\partial w_{ij}^{(v,L-2)}}$ pasinaikina, nes $\frac{\partial w_{nk}^{(v,L-1)}}{\partial w_{ij}^{(v,L-2)}}=0$
 
 Taip pat kaip ir prieš tai įstačius išvestinę $\frac{\partial a_n^{(u,L-1)}}{\partial w_{ij}^{(v,L-2)}}$ į formulę (\ref{eq:z_deriv_2}) ir poto formulę (\ref{eq:z_deriv_2}) įstačius į formulę (\ref{eq:a_derivl-2}) gauname formulę (\ref{eq:a_deriv_22}).
 
@@ -209,16 +200,16 @@ Taip pat kaip ir prieš tai įstačius išvestinę $\frac{\partial a_n^{(u,L-1)}
       (\sum_{p=1}^{K(u, L-2)} w_{pn}^{(u,L-2)}
       \frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}} \\
     &+ \sum_{d=1}^{K(u,L-2)+1} \frac{\partial (\sum_{m=1}^{K(u,L-2)+1} w_{mn}^{K(u,L-2)} a_m^{K(u,L-2)})}{\partial w_{dn}^{(u,L-2)}}
-      \frac{w_{dn}^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}})
+      \frac{w_{dn}^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}}),
   \end{aligned}
 \end{equation}
+čia
+\begin{equation*}
+  \begin{aligned}
+    \sum_{d=1}^{K(u,L-2)+1} \frac{\partial (\sum_{m=1}^{K(u,L-2)+1} w_{mn}^{K(u,L-2)} a_m^{K(u,L-2)})}{\partial w_{dn}^{(u,L-2)}} \frac{w_{dn}^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}}=\delta_{u,v}a_i^{(u,L-2)}
+  \end{aligned}
+\end{equation*}
 
-
-
-
-
-čia $ \sum_{d=1}^{K(u,L-2)+1} \frac{\partial (\sum_{m=1}^{K(u,L-2)+1} w_{mn}^{K(u,L-2)} a_m^{K(u,L-2)})}{\partial w_{dn}^{(u,L-2)}} *
-\frac{w_{dn}^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}}$ yra lygu $\delta_{u,v}a_i^{(u,L-2)}$
 
 Toliau iškėlus $\delta_{u,v}a_i^{(u,L-2)}$ iš sandaugos, poto sukeitus skaičiavimų tvarką, kaip ir formulėje (\ref{eq:pakeista_tvarka}) gauname naują lygybę (\ref{eq:naujalygybesupakeista}) ir taip pat panaikiname iš sumos skaičiavimą su bias neuronais, kaip ir formulėje (\ref{eq:a_deriv_2}).
 
@@ -233,40 +224,32 @@ Toliau iškėlus $\delta_{u,v}a_i^{(u,L-2)}$ iš sandaugos, poto sukeitus skaič
 
 Šioje lygybėje įsivedame žymėjimą $G_{pk}^{(u,L)} =
 \frac{\partial f(z_k^{(u, L)})}{\partial z_k^{(u,L)}}
-*
-\sum_{n=1}^{K(u, L-1)} w_{pn}^{(u,L-2)} * w_{nk}^{(u,L-1)} * \frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}}$.
+\sum_{n=1}^{K(u, L-1)} w_{pn}^{(u,L-2)} w_{nk}^{(u,L-1)} \frac{\partial f(z_n^{(u, L-1)})}{\partial z_n^{(u,L-1)}}$.
 
 Kadangi, gavome taip, kad šitoje lygybėje galime įsivesti tokį patį žymėjimą, kaip ir (\ref{eq:naujalyg}). Tauomet gausime naują formulę (\ref{eq:nauja_lygybe2}).
 
 
 \begin{equation}\label{eq:nauja_lygybe2}
   \begin{aligned}
-    \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-2)}} = \\
-    \sum_{p=1}^{K(u,L-2)}
-    \frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}}G_{pk}^{(u,L)} +    \delta_{u,v}a_i^{(u,L-2)}\frac{\partial f(z_k^{(u,L)})}{\partial z_k^{(u,L)}}*
-      \sum_{n=1}^{K(u,L-1)+1} w_{nk}^{(u,L-1)} \frac{\partial f(z_n^{(u,L-1)})}{\partial z_n^{(u,L-1)}}
+    \frac{\partial a_k^{(u, L)}}{\partial w_{ij}^{(v,L-2)}} = &
+      \sum_{p=1}^{K(u,L-2)}\frac{\partial a_p^{(u,L-2)}}{\partial w_{ij}^{(v,L-2)}}G_{pk}^{(u,L)} +\\
+      &+ \delta_{u,v}a_i^{(u,L-2)}\frac{\partial f(z_k^{(u,L)})}{\partial z_k^{(u,L)}} \sum_{n=1}^{K(u,L-1)+1} w_{nk}^{(u,L-1)} \frac{\partial f(z_n^{(u,L-1)})}{\partial z_n^{(u,L-1)}}
   \end{aligned}
 \end{equation}
 
-Turint formules (\ref{eq:naujalyg}) ir (\ref{eq:nauja_lygybe2}) galime išvesti bendrą $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}}$ formulę ().
+Turint formules (\ref{eq:naujalyg}) ir (\ref{eq:nauja_lygybe2}) galime išvesti bendrą $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}}$ formulę (\ref{eq:gkv}).
 
 Išskirsime kelis atvejus, sudarant bendrąją formulę.
 
-1. Kai l = 1, skaičiuojame pirmojo sluoksnio neuronų $a_k^{(u,1)}$ išvestines pagal visus svorius. Pirmąjame sluoksnyje turime du įvesties rinkinius: praeito žingsnio tinklo išvesties reikšmių rinkinys($h_k^{(t-1)}$) ir dabarties įvesties rinkinys($a_k^{(u,1)}$). Kadangi $a_k^{(u,1)}$ rinkinio reikšmės yra konstantos, tai jų išvestinės bus $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}} =0$. Tuomet pirmojo sluoksnio išvestinės bus lygios (\ref{math:miau}).
-
-$\label{math:miau}
-  \frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}} = \frac{\partial h_k^{(t-1)}}{\partial w_{ij}^{(v,s)}}
-$
+1. Kai l = 1, skaičiuojame pirmojo sluoksnio neuronų $a_k^{(u,1)}$ išvestines pagal visus svorius. Pirmąjame sluoksnyje turime du įvesties rinkinius: praeito žingsnio tinklo išvesties reikšmių rinkinys($h_k^{(t-1)}$) ir dabarties įvesties rinkinys($a_k^{(u,1)}$). Kadangi $a_k^{(u,1)}$ rinkinio reikšmės yra konstantos, tai jų išvestinės bus $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}}=0$. Tuomet pirmojo sluoksnio išvestinės bus lygios $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}} = \frac{\partial h_k^{(t-1)}}{\partial w_{ij}^{(v,s)}}$.
 
 2. Kai l = 2, skaičiuojame antrojo sluoksnio neuronų $a_k^{(u,1)}$ išvestines pagal visus svorius. Antrojo sluoksnio išvestinės yra skaičiuojamos pagal formulę (\ref{}).
 Kadangi $a_k^{(u,2)}$ yra apskaičiuojamos pagal formulę (\ref{eq:a_calc}), tai skaičiuojame šios funkcijos išvestinę (\ref{eq:antro_isvestine}).
 
 \begin{equation}\label{eq:antro_isvestine}
   \begin{aligned}
-    \frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}} = \frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}
-    *
-    \sum_{n=0}^M w_{nk}^u * \frac{\partial h_n^{(t-1)}}{\partial w_{ij}^{(v,s)}} +
-    \delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}a_i^{(u,l-1)}
+    \frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v,s)}} = \frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}\sum_{n=0}^M w_{nk}^u \frac{\partial h_n^{(t-1)}}{\partial w_{ij}^{(v,s)}} +
+    \delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}a_i^{(u,l-1)}
   \end{aligned}
 \end{equation}
 
@@ -285,8 +268,7 @@ Iš išvestų formulių (\ref{eq:naujalyg}) ir (\ref{eq:nauja_lygybe2}) galime p
   Esant šiam atvejui iš formulės (\ref{eq:nauja_lygybe2}) galime pastebėti, kad prie išvestinės reikšmės turime pridėti $a_i^{(u,l-1)}$, kai sutampa tinklai(u=v), tačiau kitaip nei atveju a) svoris pagal kurį yra skaičiuojama išvestinė yra dviem sluoksniais žemiau(s+2=l). Todėl įsivedame delta funkciją, kuri tai realizuoja (\ref{eq:deltauv2}).
   \begin{equation}\label{eq:deltauv2}
     \begin{aligned}
-      \delta_{u,v}\delta_{s+2,l}a_i^{(u,l-2)}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}*
-        \sum_{n=1}^{K(u,l-1)+1} w_{nk}^{(u,l-1)} \frac{\partial f(z_n^{(u,l-1)})}{\partial z_n^{(u,l-1)}}
+      \delta_{u,v}\delta_{s+2,l}a_i^{(u,l-2)}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}} \sum_{n=1}^{K(u,l-1)+1} w_{nk}^{(u,l-1)} \frac{\partial f(z_n^{(u,l-1)})}{\partial z_n^{(u,l-1)}}
     \end{aligned}
   \end{equation}
 
@@ -301,42 +283,49 @@ Apibendrinus šituos tris punktus gaunama $\frac{\partial a_k^{(u,l)}}{\partial 
     \frac{\partial a_k^{(u,l)}}{\partial w_{ij}^{(v,s)}} = \left \{
     \begin{aligned}
       \text{kai } l=1 \quad& \frac{\partial h_k^{(t-1)}}{\partial w_{ij}^{(v,s)}}\\
-      \text{kai } l=2 \quad& \frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}
-        \sum_{n=0}^M w_{nk}^u * \frac{\partial h_n^{(t-1)}}{\partial w_{ij}^{(v,s)}} +
-        \delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}a_i^{(u,l-1)}\\
+      \text{kai } l=2 \quad& \frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}
+        \sum_{n=0}^M w_{nk}^u \frac{\partial h_n^{(t-1)}}{\partial w_{ij}^{(v,s)}} +
+        \delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}a_i^{(u,l-1)}\\
       \text{kai } l=3 \quad& \sum_{p=1}^{M}
         \frac{\partial a_p^{(u,l-2)}}{\partial w_{ij}^{(v,s)}}G_{pk}^{(u,l)} +
-        \delta_{l,s+1}\delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}a_i^{(u,l-1)} + \\
-        & + \delta_{l,s+2}\delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}h_i^{(t-1)}*\sum_{n=1}^{(K(u,l-1)+1)}
-        w_{nk}^{(u,l-1)}\frac{f(z_k^{(u,l-1)})}{z_k^{(u,l-1)}}\\
+        \delta_{l,s+1}\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}a_i^{(u,l-1)} + \\
+        & + \delta_{l,s+2}\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}a_i^{(u,l-1)}\sum_{n=1}^{K(u,l-1)+1}
+        w_{nk}^{(u,l-1)}\frac{\partial f(z_k^{(u,l-1)})}{\partial z_k^{(u,l-1)}}\\
       \text{kai } l>3 \quad& \sum_{p=1}^{K(u,l-2)}
         \frac{\partial a_p^{(u,l-2)}}{\partial w_{ij}^{(v,s)}}G_{pk}^{(u,l)} +
-        \delta_{l,s+1}\delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}a_i^{(u,l-1)} + \\
-        & + \delta_{l,s+2}\delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}a_i^{(u,l-2)}*\sum_{n=1}^{(K(u,l-1)+1)}
-        w_{nk}^{(u,l-1)}\frac{f(z_k^{(u,l-1)})}{z_k^{(u,l-1)}}
+        \delta_{l,s+1}\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}a_i^{(u,l-1)} + \\
+        & + \delta_{l,s+2}\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}a_i^{(u,l-2)}\sum_{n=1}^{K(u,l-1)+1}
+        w_{nk}^{(u,l-1)}\frac{\partial f(z_k^{(u,l-1)})}{\partial z_k^{(u,l-1)}}
     \end{aligned}
     \right.
   \end{aligned}
 \end{equation}
 
+Toliau išvesime formulę apskaičiuoti $\frac{\partial a_k^{(u,l)}}{\partial w_{ij}^{(v)}}$ reikšmes(atitinkamo neurono išvestinę pagal svorius, kurie jungia praeito žingsnio išvesties reikšmes su esamo žingsnio neuronais) (\ref{eq:gkvh}).
 
+Šios formules (\ref{eq:gkvh}) išvedimas yra analogiškas formulės (\ref{eq:gkv}) išvedimui, tačiau reikia išskirti esminius skirtumus, kurie supaprastina skaičiavimą.
 
+\begin{enumerate}
+  \item Kai l = 1, formulė nesikeičia, nes išvestinių reikšmės yra paimamos iš praeito žingsnio gautų išvestinių reikšmių. $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v)}} = \frac{\partial h_k^{(t-1)}}{\partial w_{ij}^{(v)}}$
+  \item Kai l = 2, formulės struktūra nesikeičia, tačiau kai yra skaičiuojama $\frac{\partial a_k^{(u, l)}}{\partial w_{ij}^{(v)}}$, tai pridedama $a_i^{(u,l-1)}$ reikšmė yra pakeičiama į $h_i^{(t-1)}$.
+  \item Kai l = 3, tai skirtingai, nei skaičiuojant formulėje (\ref{eq:gkv}), šioje lygybėje dingsta $\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}h_i^{(t-1)}$, nes svoriai pagal kuriuos yra skaičiuojama išvestinė priklauso pirmąjam sluoksniui, o kadangi pirmojo sluoksnio išvestines pagal šiuos svorius jau turime, tai $\delta_{l,1}\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}h_i^{(t-1)}\\ \sum_{n=1}^{K(u,l-1)+1} w_{nk}^{(u,l-1)}\frac{\partial f(z_k^{(u,l-1)})}{\partial z_k^{(u,l-1)}}$ ši dalis išlieka išskyrus kaip ir antruoju atveju $a_i^{(u,l-1)}$ reikšmė yra pakeičiama į $h_i^{(t-1)}$.
+  \item Kai l > 3, tai abi sumos paminėtos antruoju ir trečiuoju atveju dingsta, nes skaičiuojant trečio ir aukštesnio sluoksnio neuronų išvestines, svoriai pagal kuriuos yra skaičiuojamos išvestinės yra trijais ir daugiau sluoksnių žemiau, kadangi formulė pagal kurią skaičiuojame išvestines rekurentiškai naudoja jau apskaičiuotas dviem sluoksniais žemiau esančių neuronų išvestines, todėl paminėtos sumos yra nereikalingos.
+\end{enumerate}
+
+Atlikus šiuos pakeitimus yra gaunama $\frac{\partial a_k^{(u,l)}}{\partial w_{ij}^{(v)}}$ reikšmių skaičiavimo formulė (\ref{eq:gkvh}).
 
 \begin{equation} \label{eq:gkvh}
   \begin{aligned}
     \frac{\partial a_k^{(u,l)}}{\partial w_{ij}^{(v)}} = \left \{
     \begin{aligned}
       &\text{kai } l=1 && \frac{\partial h_k^{(t-1)}}{\partial w_{ij}^{(v)}}\\
-      &\text{kai } l=2 && \frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}
-      *
-      \sum_{n=0}^M w_{nk}^u * \frac{\partial h_n^{(t-1)}}{\partial w_{ij}^{(v)}} +
+      &\text{kai } l=2 && \frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}\sum_{n=0}^M w_{nk}^u \frac{\partial h_n^{(t-1)}}{\partial w_{ij}^{(v)}} +
       \delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}h_i^{(t-1)}\\
       &\text{kai } l=3 && \sum_{p=1}^{M}
       \frac{\partial a_p^{(u,l-2)}}{\partial w_{ij}^{(v)}}G_{pk}^{(u,l)} +
-      \delta_{l,1}\delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}h_i^{(t-1)}*\sum_{n=1}^{K(u,l-1)+1} w_{nk}^{(u,l-1)}\frac{f(z_k^{(u,l-1)})}{z_k^{(u,l-1)}}\\
+      \delta_{l,1}\delta_{u,v}\frac{\partial f(z_k^{(u,l)})}{\partial z_k^{(u,l)}}h_i^{(t-1)}\sum_{n=1}^{K(u,l-1)+1} w_{nk}^{(u,l-1)}\frac{\partial f(z_k^{(u,l-1)})}{\partial z_k^{(u,l-1)}}\\
       &\text{kai } l>3 && \sum_{p=1}^{K(u,l-2)}
-      \frac{\partial a_p^{(u,l-2)}}{\partial w_{ij}^{(v)}}G_{pk}^{(u,l)} +
-      \delta_{l,1}\delta_{u,v}\frac{f(z_k^{(u,l)})}{z_k^{(u,l)}}a_i^{(u,l-2)}\sum_{n=1}^{K(u,l-1)+1} w_{nk}^{(u,l-1)}\frac{f(z_k^{(u,l-1)})}{z_k^{(u,l-1)}}
+      \frac{\partial a_p^{(u,l-2)}}{\partial w_{ij}^{(v)}}G_{pk}^{(u,l)}
     \end{aligned}
     \right.
   \end{aligned}

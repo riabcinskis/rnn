@@ -85,26 +85,14 @@ class RnnCell {
     };
 
     RnnCell(string filename) {
-        // FILE * p1File;
-        // p1File = fopen(filename.c_str(), "rb");
-        // Topology *top=new Topology();
-        // top->readTopology(p1File);
-        // prepare(top);
-        // init(p1File);
-        // fclose (p1File);
     };
 
      void train(double *a, double *b, double alpha, double eta){};
   	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
      void backPropagation( RnnDerivatives *deriv_in, RnnDerivatives *deriv_out);
 
-
-
     //
     AnnSerial* getANN(int v);
-
-
-
 
     void destroy();
   private:
@@ -138,10 +126,6 @@ struct DataNode{
   double* vec;
   DataNode *next;
 };
-
-
-
-
 
 
 class Rnn {

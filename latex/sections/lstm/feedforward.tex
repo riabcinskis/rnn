@@ -1,28 +1,28 @@
-Norint apmokyti tinklą ar prognozuoti išvesties reikšmes yra daromas įvesties reikšmių perleidimas per tinklą(angl. \textit{Feed forward}). Pradiniai duomenys ir prieš tai buvusio žingsnio išvesties reikšmės yra paduodamos, kaip įvesties reikšmės į visus keturis rekurentiniame tinkle esamus neuroninius tinklus. Kiekvienas neuroninis tinklas apskaičiuoja išvesties reikšmes pagal atitinkamuose tinkluose esamus svorius ir juose naudojamas sigmoidines(nezinau kaip) funkcijas.
+Norint apmokyti tinklą ar prognozuoti išvesties reikšmes yra daromas įvesties reikšmių perleidimas per tinklą(angl. \textit{Feed forward}). Pradiniai duomenys ir prieš tai buvusio žingsnio išvesties reikšmės yra paduodamos, kaip įvesties reikšmės į visus keturis rekurentiniame tinkle esamus neuroninius tinklus. Kiekvienas neuroninis tinklas apskaičiuoja išvesties reikšmes pagal atitinkamuose tinkluose esamus svorius ir juose naudojamas aktyvacijos funkcijas.
 
 Pirmo sluoksnio \begin{math}a_k^{(u,1)}\end{math} ir \begin{math}h_k^{(u)}\end{math} reikšmės yra pradinės įvesties reikšmės, todėl jos yra paduodamos tiesiogiai.
 Antro sluoksnio atitinkamo tinklo \begin{math}a_k^{(u,2)}\end{math} reikšmės yra apskaičiuojamos pagal formulę (\ref{eq:a_calc}).
 
 \begin{equation}\label{eq:a_calc}
-  a_k^{(u,2)} = f(z_k^{(u,2)})
+  a_k^{(u,2)} = f(z_k^{(u,2)}),
 \end{equation}
-, čia funkcija f yra sigmoidinė arba tanh priklausomai nuo tinklo, o \begin{math}z_k^{(u,2)}\end{math} yra apskaičiuojama pagal formulę (\ref{eq:z_calc}).
+čia funkcija f yra aktyvacijos funkcija, o \begin{math}z_k^{(u,2)}\end{math} yra apskaičiuojama pagal formulę (\ref{eq:z_calc}).
 
 \begin{equation}\label{eq:z_calc}
-  z_k^{(u,2)} = \sum_{m=1}^{M} w_{mk}^{(u)}*h_m^{t-1} + \sum_{m=1}^{I+1} w_{mk}^{(u,1)}*a_m^{(u,1)}
+  z_k^{(u,2)} = \sum_{m=1}^{M} w_{mk}^{(u)}h_m^{t-1} + \sum_{m=1}^{I+1} w_{mk}^{(u,1)}a_m^{(u,1)},
 \end{equation}
-, čia \begin{math}z_k^{(u,2)}\end{math} yra suma visų svorių prijungtų prie k-ojo z-o padauginus iš atitinkamų įvesties reikšmių prijungtų prie to svorio.
+čia \begin{math}z_k^{(u,2)}\end{math} yra suma visų svorių prijungtų prie k-ojo z-o padauginus iš atitinkamų įvesties reikšmių prijungtų prie to svorio.
 
 Toliau trečio ir tolimesnių atitinkamų tinklų sluoksnių neuronų reikšmės \begin{math}a_k^{(u,l)}\end{math} yra apskaičiuojamos pagal formulę (\ref{eq:a_calc_l}).
 
 \begin{equation}\label{eq:a_calc_l}
-  a_k^{(u,l)} = f(z_k^{(u,l)})
+  a_k^{(u,l)} = f(z_k^{(u,l)}),
 \end{equation}
-, čia \begin{math}z_k^{(u,l)}\end{math} yra apskaičiuojama pagal formulę (\ref{eq:z_calc_l}).
+čia \begin{math}z_k^{(u,l)}\end{math} yra apskaičiuojama pagal formulę (\ref{eq:z_calc_l}).
 \begin{equation}\label{eq:z_calc_l}
-  z_k^{(u,l)} = \sum_{m=1}^{K(u,l-1)+1} w_{mk}^{(u,l-1)}*a_m^{(u,l-1)}
+  z_k^{(u,l)} = \sum_{m=1}^{K(u,l-1)+1} w_{mk}^{(u,l-1)}a_m^{(u,l-1)},
 \end{equation}
-,čia \begin{math}z_k^{(u,l)}\end{math} yra suma visų svorių prijungtų prie k-ojo z-o padauginus iš atitinkamų įvesties reikšmių prijungtų prie to svorio.
+čia \begin{math}z_k^{(u,l)}\end{math} yra suma visų svorių prijungtų prie k-ojo z-o padauginus iš atitinkamų įvesties reikšmių prijungtų prie to svorio.
 
 
 Apskaičiavus visas atitinkamų tinklų \begin{math}a_k^{(u,l)}\end{math} reikšmes, kiekvienas neuroninis tinklas gražina paskutinio sluoksnio išvesties reikšmes \begin{math}a_k^{(u,L)}\end{math}.
@@ -30,14 +30,14 @@ Apskaičiavus visas atitinkamų tinklų \begin{math}a_k^{(u,l)}\end{math} reikš
 Toliau yra perskaičiuojama nauja rekurentinio tinklo atmintis, pagal gautas neuroninių tinklų išvesties reikšmes ir prieš tai buvusio žingsnio gražintą atmintį. Nauja atmintis paskaičiuojama pagal formulę (\ref{eq:c_neww}).
 
 \begin{math}\label{eq:c_neww}
-  c_k^{(t)} = c_k^{(t-1)} * a_k^{(f,L)} + a_k^{(i,L)} * a_k^{(g,L)}
+  c_k^{(t)} = c_k^{(t-1)}a_k^{(f,L)} + a_k^{(i,L)}a_k^{(g,L)},
 \end{math}
-,čia \begin{math}a_k^{(f,L)}\end{math} - pirmojo neuroninio tinklo išvesties reikšmės, \begin{math}a_k^{(i,L)}\end{math} - antrojo neuroninio tinklo išvesties reikšmės, \begin{math}a_k^{(g,L)}\end{math} - trečiojo neuroninio tinklo išvesties reikšmės.
+čia \begin{math}a_k^{(f,L)}\end{math} - pirmojo neuroninio tinklo išvesties reikšmės, \begin{math}a_k^{(i,L)}\end{math} - antrojo neuroninio tinklo išvesties reikšmės, \begin{math}a_k^{(g,L)}\end{math} - trečiojo neuroninio tinklo išvesties reikšmės.
 
 Sekantis žingsnis yra apskaičiuoti tarpines išvesties reikšmes \begin{math}b_k^{(t)}\end{math}. Jos yra apskaičiuojamos pagal formulę (\ref{eq:b_calc}).
 
 \begin{equation}\label{eq:b_calc}
-  b_k^{(t)} = a_k^{(o,L)}*tanh(c_k^{(t)}),
+  b_k^{(t)} = a_k^{(o,L)}tanh(c_k^{(t)}),
 \end{equation}
 čia \begin{math}a_k^{(o,L)}\end{math} - ketvirtojo neuroninio tinklo išvesties reikšmės.
 

@@ -14,7 +14,8 @@
 \RequirePackage{setspace}
 
 \AfterPackage{setspace}{
-  \onehalfspacing
+  % \onehalfspacing
+  \linespread{1.15}
   %\doublespacing
 }
 
@@ -251,7 +252,7 @@
    paperheight={297mm},
    %twoside,
    left={1.18in},
-   right={0.39in},
+   right={0.39in},%20 top/bot, 30left, 10right
    top={0.79in},
    bottom={0.5in},
    footskip={0.25in},
