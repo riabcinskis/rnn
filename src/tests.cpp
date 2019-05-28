@@ -278,13 +278,13 @@ bool test_ann_random_weights(){
   AnnSerial *serialDBL = new AnnSerial(1, 0, M, topology, func, func_deriv);
 
   double *weights = serialDBL->getWeights();
-  for(int i = 0; i < topology[0]->obtainWeightCount(); i++)
-    printf("weight[%d] = %.5f\n", i, weights[i]);
+  // for(int i = 0; i < topology[0]->obtainWeightCount(); i++)
+  // printf("weight[%d] = %.5f\n", i, weights[i]);
 
-printf("\n");
+    printf("\n");
     double *hweights = serialDBL->getHWeights();
-    for(int i = 0; i < M*topology[0]->getLayerSize(1); i++)
-      printf("hweights[%d] = %.5f\n", i, hweights[i]);
+    // for(int i = 0; i < M*topology[0]->getLayerSize(1); i++)
+    //   printf("hweights[%d] = %.5f\n", i, hweights[i]);
 
   delete serialDBL;
   return true;
@@ -524,6 +524,120 @@ bool test_backprogg(){
   return true;
 }
 
+bool test_file_read(){
+  int M = 2;
+  int V = 4;
+  int I = 2;
+  Topology **topology = new Topology*[V];
+  for(int v = 0; v < V; v++){
+    topology[v] = new Topology();
+    topology[v]->addLayer(I);
+    topology[v]->addLayer(M);
+  }
+
+
+  RnnCell *rnnCell = new RnnCell(M, "labas.bin");
+
+
+  //serialDBL->printf_Network("w_and_dw_tests.bin");
+  double *h_input = new double[2];
+  h_input[0] = 3;
+  h_input[1] = 4;
+
+  double *input = new double[2];
+  input[0] = 1;
+  input[1] = 2;
+
+  double *output1 = new double[2];
+  double *output2 = new double[2];
+  double *output3 = new double[2];
+  double *output4 = new double[2];
+
+
+  ///
+  ///1
+  ///
+  	rnnCell->getANN(0)->feedForward(h_input,input, output1);
+
+    //              0.937026643943003
+    if(output1[0] != 0.93702664394300350104) return false;
+    //              0.978118729063869
+
+    if(output1[1] != 0.97811872906386942983) return false;
+
+  ///
+  ///2
+  ///
+	rnnCell->getANN(1)->feedForward(h_input,input, output2);
+
+  //              0.997806366643291
+  if(output2[0] != 0.99780636664329125374) return false;
+  //              0.98974822772662796044
+  if(output2[1] != 0.98974822772662796044) return false;
+
+  ///
+  ///3
+  ///
+	rnnCell->getANN(2)->feedForward(h_input,input, output3);
+
+
+  //              0.997637499691042
+  if(output3[0] != 0.99763749969104176252) return false;
+  //              0.998566404814467
+  if(output3[1] != 0.99856640481446723445) return false;
+
+  ///
+  ///4
+  ///
+	rnnCell->getANN(3)->feedForward(h_input,input, output4);
+
+  //              0.953469525485268
+  if(output4[0] != 0.95346952548526853199) return false;
+  //              0.97996429096637
+  if(output4[1] != 0.97996429096637027722) return false;
+
+  double *c_in = new double[2];
+  c_in[0] = 0.5;
+  c_in[1] = 0.3;
+  double *c_out = new double[2];
+  double *h_out = new double[2];
+  rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
+
+
+  // printf("%.20f\n", c_out[0]);
+  //
+  // printf("%.20f\n", c_out[1]);
+  //
+  // printf("%.20f\n", h_out[0]);
+  //
+  // printf("%.20f\n", h_out[1]);
+
+
+  //             1.46396237076532
+  if(c_out[0] != 1.46396237076531776644) return false;
+  //             1.28176494815163
+  if(c_out[1] != 1.28176494815163022345) return false;
+  //             0.504207600189669
+  if(h_out[0] != 0.50420760018966914728) return false;
+  //             0.495792399810331
+  if(h_out[1] != 0.49579239981033090823) return false;
+
+
+  rnnCell->destroy();
+
+
+  delete [] h_input;
+  delete [] input;
+
+  delete [] output1;
+  delete [] output2;
+  delete [] output3;
+  delete [] output4;
+  delete [] topology;
+
+  delete rnnCell;
+  return true;
+}
 
 bool test_rnn_cell_feedforward_full(){
   int M = 2;
@@ -635,8 +749,8 @@ bool test_rnn_cell_feedforward_full(){
   DerivIO* derivIO_out3 = new DerivIO(topology[3], M);
 
   ///                   s  i  j  k  val
-  derivIO_in0->setDeriv(0, 0, 0, 0, -0.05);
-  derivIO_in0->setDeriv(0, 0, 0, 1, -0.15);
+  derivIO_in0->setDeriv(0, 0, 0, 0, -0.05);//
+  derivIO_in0->setDeriv(0, 0, 0, 1, -0.15);//
 
   derivIO_in0->setDeriv(0, 0, 1, 0, 0.1);
   derivIO_in0->setDeriv(0, 0, 1, 1, 0.03);
@@ -660,8 +774,8 @@ bool test_rnn_cell_feedforward_full(){
   derivIO_in0->setHDeriv(0, 1, 0, 0.21);
   derivIO_in0->setHDeriv(0, 1, 1, -0.11);
 
-  derivIO_in0->setHDeriv(1, 0, 0, 0.2);
-  derivIO_in0->setHDeriv(1, 0, 1, -0.63);
+  derivIO_in0->setHDeriv(1, 0, 0, 0.4);//
+  derivIO_in0->setHDeriv(1, 0, 1, 0.4);//
 
   derivIO_in0->setHDeriv(1, 1, 0, 0.1);
   derivIO_in0->setHDeriv(1, 1, 1, 0.01);
@@ -776,6 +890,164 @@ bool test_rnn_cell_feedforward_full(){
 
 
 
+
+
+  //
+  //cderivs
+  //
+  DerivIO* derivIO_cin0 = new DerivIO(topology[0], M);
+  DerivIO* derivIO_cin1 = new DerivIO(topology[1], M);
+  DerivIO* derivIO_cin2 = new DerivIO(topology[2], M);
+  DerivIO* derivIO_cin3 = new DerivIO(topology[3], M);
+
+  DerivIO* derivIO_cout0 = new DerivIO(topology[0], M);
+  DerivIO* derivIO_cout1 = new DerivIO(topology[1], M);
+  DerivIO* derivIO_cout2 = new DerivIO(topology[2], M);
+  DerivIO* derivIO_cout3 = new DerivIO(topology[3], M);
+
+  ///                   s  i  j  k  val
+  derivIO_cin0->setDeriv(0, 0, 0, 0, 0.05);
+  derivIO_cin0->setDeriv(0, 0, 0, 1, 0.5);
+
+  derivIO_cin0->setDeriv(0, 0, 1, 0, 0.1);///
+  derivIO_cin0->setDeriv(0, 0, 1, 1, 0.03);///
+
+  derivIO_cin0->setDeriv(0, 1, 0, 0, 0.12);
+  derivIO_cin0->setDeriv(0, 1, 0, 1, -0.36);
+
+  derivIO_cin0->setDeriv(0, 1, 1, 0, 0.17);
+  derivIO_cin0->setDeriv(0, 1, 1, 1, 0.4);
+
+  derivIO_cin0->setDeriv(0, 2, 0, 0, -0.7);
+  derivIO_cin0->setDeriv(0, 2, 0, 1, 0.1);
+
+  derivIO_cin0->setDeriv(0, 2, 1, 0, 0.23);
+  derivIO_cin0->setDeriv(0, 2, 1, 1, 0.39);
+
+
+  derivIO_cin0->setHDeriv(0, 0, 0, 0.71);
+  derivIO_cin0->setHDeriv(0, 0, 1, 0.35);
+
+  derivIO_cin0->setHDeriv(0, 1, 0, 0.21);
+  derivIO_cin0->setHDeriv(0, 1, 1, -0.11);
+
+  derivIO_cin0->setHDeriv(1, 0, 0, 0.12);//
+  derivIO_cin0->setHDeriv(1, 0, 1, -0.36);//
+
+  derivIO_cin0->setHDeriv(1, 1, 0, 0.1);
+  derivIO_cin0->setHDeriv(1, 1, 1, 0.01);
+
+
+
+  derivIO_cin1->setDeriv(0, 0, 0, 0, 0.05);
+  derivIO_cin1->setDeriv(0, 0, 0, 1, 0.15);
+
+  derivIO_cin1->setDeriv(0, 0, 1, 0, 0.5);
+  derivIO_cin1->setDeriv(0, 0, 1, 1, 0.13);
+
+  derivIO_cin1->setDeriv(0, 1, 0, 0, 0.65);//
+  derivIO_cin1->setDeriv(0, 1, 0, 1, 0.11);//
+
+  derivIO_cin1->setDeriv(0, 1, 1, 0, 0.32);
+  derivIO_cin1->setDeriv(0, 1, 1, 1, 0.02);
+
+  derivIO_cin1->setDeriv(0, 2, 0, 0, -0.22);
+  derivIO_cin1->setDeriv(0, 2, 0, 1, 0.14);
+
+  derivIO_cin1->setDeriv(0, 2, 1, 0, 0.43);
+  derivIO_cin1->setDeriv(0, 2, 1, 1, 0.34);
+
+
+  derivIO_cin1->setHDeriv(0, 0, 0, -0.71);
+  derivIO_cin1->setHDeriv(0, 0, 1, 0.53);
+
+  derivIO_cin1->setHDeriv(0, 1, 0, 0.35);
+  derivIO_cin1->setHDeriv(0, 1, 1, -0.35);
+
+  derivIO_cin1->setHDeriv(1, 0, 0, 0.32);//
+  derivIO_cin1->setHDeriv(1, 0, 1, 0.45);//
+
+  derivIO_cin1->setHDeriv(1, 1, 0, 0.22);
+  derivIO_cin1->setHDeriv(1, 1, 1, 0.01);
+
+
+
+
+
+
+
+  derivIO_cin2->setDeriv(0, 0, 0, 0, 0.045);
+  derivIO_cin2->setDeriv(0, 0, 0, 1, 0.125);
+
+  derivIO_cin2->setDeriv(0, 0, 1, 0, 0.51);
+  derivIO_cin2->setDeriv(0, 0, 1, 1, 0.133);
+
+  derivIO_cin2->setDeriv(0, 1, 0, 0, -0.1);
+  derivIO_cin2->setDeriv(0, 1, 0, 1, -0.3);
+
+  derivIO_cin2->setDeriv(0, 1, 1, 0, 0.32);
+  derivIO_cin2->setDeriv(0, 1, 1, 1, 0.2);
+
+  derivIO_cin2->setDeriv(0, 2, 0, 0, 0.22);//
+  derivIO_cin2->setDeriv(0, 2, 0, 1, 0.15);//
+
+  derivIO_cin2->setDeriv(0, 2, 1, 0, 0.443);
+  derivIO_cin2->setDeriv(0, 2, 1, 1, 0.374);
+
+
+  derivIO_cin2->setHDeriv(0, 0, 0, -0.751);
+  derivIO_cin2->setHDeriv(0, 0, 1, 0.523);
+
+  derivIO_cin2->setHDeriv(0, 1, 0, 0.35);
+  derivIO_cin2->setHDeriv(0, 1, 1, -0.35);
+
+  derivIO_cin2->setHDeriv(1, 0, 0, 0.31);//
+  derivIO_cin2->setHDeriv(1, 0, 1, 0.03);//
+
+  derivIO_cin2->setHDeriv(1, 1, 0, 0.226);
+  derivIO_cin2->setHDeriv(1, 1, 1, 0.015);
+
+
+
+
+
+
+
+
+  derivIO_cin3->setDeriv(0, 0, 0, 0, 0.105);
+  derivIO_cin3->setDeriv(0, 0, 0, 1, 0.135);
+
+  derivIO_cin3->setDeriv(0, 0, 1, 0, 0.51);
+  derivIO_cin3->setDeriv(0, 0, 1, 1, 0.613);
+
+  derivIO_cin3->setDeriv(0, 1, 0, 0, -0.188);
+  derivIO_cin3->setDeriv(0, 1, 0, 1, -0.321);
+
+  derivIO_cin3->setDeriv(0, 1, 1, 0, 0.362);
+  derivIO_cin3->setDeriv(0, 1, 1, 1, 0.072);
+
+  derivIO_cin3->setDeriv(0, 2, 0, 0, -0.122);
+  derivIO_cin3->setDeriv(0, 2, 0, 1, 0.124);
+
+  derivIO_cin3->setDeriv(0, 2, 1, 0, -0.2);//
+  derivIO_cin3->setDeriv(0, 2, 1, 1, 0.05);//
+
+
+  derivIO_cin3->setHDeriv(0, 0, 0, 0.1);//
+  derivIO_cin3->setHDeriv(0, 0, 1, 0.5);//
+
+  derivIO_cin3->setHDeriv(0, 1, 0, 0.325);
+  derivIO_cin3->setHDeriv(0, 1, 1, -0.535);
+
+  derivIO_cin3->setHDeriv(1, 0, 0, 0.12);
+  derivIO_cin3->setHDeriv(1, 0, 1, -0.224);
+
+  derivIO_cin3->setHDeriv(1, 1, 0, 0.226);
+  derivIO_cin3->setHDeriv(1, 1, 1, 0.051);
+
+
+
+
   Derivatives **deriv_in = new Derivatives*[V];
   Derivatives **deriv_out = new Derivatives*[V];
 
@@ -790,6 +1062,29 @@ bool test_rnn_cell_feedforward_full(){
   deriv_out[3] =  derivIO_out3->getDerivatives();
 
 
+
+
+  Derivatives **deriv_cin = new Derivatives*[V];
+  Derivatives **deriv_cout = new Derivatives*[V];
+
+  deriv_cin[0] =  derivIO_cin0->getDerivatives();
+  deriv_cin[1] =  derivIO_cin1->getDerivatives();
+  deriv_cin[2] =  derivIO_cin2->getDerivatives();
+  deriv_cin[3] =  derivIO_cin3->getDerivatives();
+
+  deriv_cout[0] =  derivIO_cout0->getDerivatives();
+  deriv_cout[1] =  derivIO_cout1->getDerivatives();
+  deriv_cout[2] =  derivIO_cout2->getDerivatives();
+  deriv_cout[3] =  derivIO_cout3->getDerivatives();
+
+  RnnDerivatives *rnnderivs = new RnnDerivatives;
+  RnnDerivatives *rnnderivsout = new RnnDerivatives;
+  rnnderivs->hderiv=deriv_in;
+  rnnderivs->cderiv=deriv_cin;
+
+
+  rnnderivsout->hderiv=deriv_in;
+  rnnderivsout->cderiv=deriv_cin;
 
 
 
@@ -815,19 +1110,22 @@ bool test_rnn_cell_feedforward_full(){
   ///1
   ///
   	rnnCell->getANN(0)->feedForward(h_input,input, output1);
-  //              0.689589607251556
-  if(output1[0] != 0.68958960725155571403) return false;
-  //              0.74958548419844700000
-  if(output1[1] != 0.74958548419844750477) return false;
+
+    //              0.937026643943003
+    if(output1[0] != 0.93702664394300350104) return false;
+    //              0.978118729063869
+
+    if(output1[1] != 0.97811872906386942983) return false;
 
   ///
   ///2
   ///
 	rnnCell->getANN(1)->feedForward(h_input,input, output2);
-  //              0.84085944955203300000
-  if(output2[0] != 0.84085944955203295592) return false;
-  //              0.74789281328782
-  if(output2[1] != 0.74789281328782009073) return false;
+
+  //              0.997806366643291
+  if(output2[0] != 0.99780636664329125374) return false;
+  //              0.98974822772662796044
+  if(output2[1] != 0.98974822772662796044) return false;
 
   ///
   ///3
@@ -835,20 +1133,20 @@ bool test_rnn_cell_feedforward_full(){
 	rnnCell->getANN(2)->feedForward(h_input,input, output3);
 
 
-  //              0.79996904340460500000
-  if(output3[0] != 0.79996904340460495142) return false;
-  //              0.934733066362687
-  if(output3[1] != 0.93473306636268660430) return false;
+  //              0.997637499691042
+  if(output3[0] != 0.99763749969104176252) return false;
+  //              0.998566404814467
+  if(output3[1] != 0.99856640481446723445) return false;
 
   ///
   ///4
   ///
 	rnnCell->getANN(3)->feedForward(h_input,input, output4);
 
-  //              0.645914426127551
-  if(output4[0] != 0.64591442612755145536) return false;
-  //              0.771312387165297
-  if(output4[1] != 0.77131238716529726407) return false;
+  //              0.953469525485268
+  if(output4[0] != 0.95346952548526853199) return false;
+  //              0.97996429096637
+  if(output4[1] != 0.97996429096637027722) return false;
 
   double *c_in = new double[2];
   c_in[0] = 0.5;
@@ -857,30 +1155,56 @@ bool test_rnn_cell_feedforward_full(){
   double *h_out = new double[2];
   rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
 
-  //             1.01745633312164000000
-  if(c_out[0] != 1.01745633312164018847) return false;
-  //             0.923955787934675
-  if(c_out[1] != 0.92395578793467447731) return false;
-  //             0.469404624141351
-  if(h_out[0] != 0.46940462414135097902) return false;
-  //             0.530595375858649
-  if(h_out[1] != 0.53059537585864913201) return false;
 
-  c_in[0] = c_out[0];
-  c_in[1] = c_out[1];
-  h_input[0] = h_out[0];
-  h_input[1] = h_out[1];
+  // printf("%.20f\n", c_out[0]);
+  //
+  // printf("%.20f\n", c_out[1]);
+  //
+  // printf("%.20f\n", h_out[0]);
+  //
+  // printf("%.20f\n", h_out[1]);
 
-  rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
 
-  //             1.33881207992600000000
-  if(c_out[0] != 1.33881207992600104184) return false;
-  //             1.3692467644635
-  if(c_out[1] != 1.36924676446350157555) return false;
-  //             0.453692800787076
-  if(h_out[0] != 0.45369280078707552306) return false;
-  //             0.546307199212925
-  if(h_out[1] != 0.54630719921292447694) return false;
+  //             1.46396237076532
+  if(c_out[0] != 1.46396237076531776644) return false;
+  //             1.28176494815163
+  if(c_out[1] != 1.28176494815163022345) return false;
+  //             0.504207600189669
+  if(h_out[0] != 0.50420760018966914728) return false;
+  //             0.495792399810331
+  if(h_out[1] != 0.49579239981033090823) return false;
+  // printf("%.20f\n", rnnderivs->hderiv[0]->v[0]);
+  // printf("%.20f\n", rnnderivsout->hderiv[0]->v[1]);
+
+
+  rnnCell->backPropagation(rnnderivs, rnnderivsout);
+
+
+  //                                -0.029011974331376
+  if(rnnderivsout->hderiv[0]->v[0]!=-0.02901197433137625570) return false;
+  //                                0.029011974331376
+  if(rnnderivsout->hderiv[0]->v[1]!=0.02901197433137625570) return false;
+
+  //                             0.074291094898578
+  if(rnnderivsout->cderiv[0]->v[0]!=0.07429109489857764481) return false;
+  //                                0.494136286237499
+  if(rnnderivsout->cderiv[0]->v[1]!=0.49413628623749911162) return false;
+
+  // c_in[0] = c_out[0];
+  // c_in[1] = c_out[1];
+  // h_input[0] = h_out[0];
+  // h_input[1] = h_out[1];
+
+  // rnnCell->feedForward(h_input,c_in,input,c_out, h_out);
+  //
+  // //             1.33881207992600000000
+  // if(c_out[0] != 1.33881207992600104184) return false;
+  // //             1.3692467644635
+  // if(c_out[1] != 1.36924676446350157555) return false;
+  // //             0.453692800787076
+  // if(h_out[0] != 0.45369280078707552306) return false;
+  // //             0.546307199212925
+  // if(h_out[1] != 0.54630719921292447694) return false;
 
 
   rnnCell->destroy();
@@ -943,9 +1267,9 @@ bool test__vec_to_char(){
     vec[4] = 0.2;
 
     char c = vec_to_char(" abcd", vec);
-    printf("c = %c\n", c);
+    // printf("c = %c\n", c);
 
-return true;
+    return true;
 }
 
 bool test__str_to_nodes(){
@@ -955,14 +1279,14 @@ bool test__str_to_nodes(){
   DataNode* q = node;
   int index = 0;
   do{
-    printf("[%d] : %c\n", index++, vec_to_char(abc, q->vec));
+    // printf("[%d] : %c\n", index++, vec_to_char(abc, q->vec));
     q = q->next;
   }while(q != NULL);
 
   char str[64]="";
   nodes_to_str(abc, node, str);
 
-  printf("got back: |%s|\n", str);
+  // printf("got back: |%s|\n", str);
 
   return true;
 }
@@ -985,8 +1309,8 @@ bool run_tests(){
   // passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
   // printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
   // printf("%s\n", "---------------------");
-  // passed = test_rnn_cell_feedforward_full(); failCount += passed ? 0 : 1;
-  // printf("%s - test_rnn_cell_feedforward_full\n", passed ? "PASSED" : "FAILED");
+  passed = test_rnn_cell_feedforward_full(); failCount += passed ? 0 : 1;
+  printf("%s - test_rnn_cell_feedforward_full\n", passed ? "PASSED" : "FAILED");
 
 
 
@@ -1007,7 +1331,8 @@ bool run_tests(){
   passed = test__str_to_nodes(); failCount += passed ? 0 : 1;
   printf("%s - test__str_to_nodes\n", passed ? "PASSED" : "FAILED");
 
-
+  // passed = test_file_read(); failCount += passed ? 0 : 1;
+  // printf("%s - test_file_read\n", passed ? "PASSED" : "FAILED");
 
 
   printf("\n");

@@ -12,7 +12,7 @@ void LanguageModel::doSomething(){
   //
   // int M = strlen(abc);
   // int I = strlen(abc);
-  //
+  // printf("%s\n", "asdsa");
   // int V = 4;
   // Topology **topology = new Topology*[V];
   // for(int v = 0; v < V; v++){
@@ -21,22 +21,29 @@ void LanguageModel::doSomething(){
   //   topology[v]->addLayer(M);
   // }
   //
-  //
-  // RnnCell *rnnCell = new RnnCell(M, topology);
-  // Rnn* rnn = new Rnn(I, M, rnnCell);
+  // RnnCell *rnnCell = new RnnCell(M, "500_123_03.bin");
+  // Rnn* rnn = new Rnn(I, M, rnnCell, RNN_FULL_BACKPROPAGATION);
   //
   // SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
-  //
-  // DataNode *inputNodes = str_to_nodes(abc, "labai prasau veik ");
+  //   // printf("%s\n", "asdsa");
+  //     // printf("%s\n", "asdsa");
+  // DataNode *inputNodes = str_to_nodes(abc, "123 4");
+  //   // printf("%s\n", "asdsa");
   // DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
-  //
+  //   // printf("%s\n", "asdsa");
   // char str[512]="";
   // nodes_to_str(abc, outputNodes, str);
   //
   // printf("%s", str);
+  // printf("%s\n", "asdsa");
 
-  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data.txt");
 
+
+
+
+
+  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data1.txt");
+  // printf("%s\n", "asdsa");
 
 
   char str[512]="";
@@ -47,9 +54,9 @@ void LanguageModel::doSomething(){
 
 
 
-  double alpha = 0.8;
+  double alpha = 0.7;
   double eta = 0.2;
-
+  printf("%s\n", "asdsa");
   int M = strlen(abc);
   int V = 4;
   int I = strlen(abc);
@@ -59,13 +66,16 @@ void LanguageModel::doSomething(){
     topology[v]->addLayer(I);
     topology[v]->addLayer(M);
   }
-
+  printf("%s\n", "asdsa");
   RnnCell *rnnCell = new RnnCell(M, topology);
-  Rnn *rnn = new Rnn(I, M, rnnCell, RNN_FULL_BACKPROPAGATION);
+  Rnn *rnn = new Rnn(I, M, rnnCell, RNN_APPROX_BACKPROPAGATION);
 
   SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
 
-  for(int n = 0; n < 100; n++){
+  // printf("%s\n", "asdsa");
+  double startTime = clock();
+
+  for(int n = 0; n < 500; n++){
     double iterError = 0;
     for(int i = 0; i < nodeVector->size(); i++){
       DataNode* input = (*nodeVector)[i];
@@ -108,9 +118,17 @@ void LanguageModel::doSomething(){
     }
 
      printf("%.10f\n",iterError);
-
-
   }
+
+  rnn->getRnnCell()->printf_Network("2000_123_02.bin");
+
+
+
+  double endTime = clock();
+  double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
+
+  printf("=== DOUBLE \n");
+  printf("Apmokymas uztruko: %.5f sec\n", runtime);
 
 
 

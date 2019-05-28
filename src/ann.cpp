@@ -73,6 +73,26 @@ int Topology::getOutputNeuronCount(){
 	return (*ml)[ml->size()-1];
 }
 
+void Topology::printTopology(FILE *file){
+  int a=getLayerCount();
+  fwrite (&a , sizeof(int), 1, file);
+  for(int i=0;i<a;i++){
+    int b=ml->at(i);
+    fwrite (&b , sizeof(int), 1, file);
+  }
+}
+
+void Topology::readTopology(FILE *file){
+  int size=0;
+  (void)fread (&size , sizeof(int), 1, file);
+  int* abc=new int[size];
+  ml=new vector<int>();
+  (void)fread (abc , sizeof(int), size, file);
+  for(int i=0;i<size;i++){
+    ml->push_back(abc[i]);
+  }
+}
+
 
 
 //***********************************

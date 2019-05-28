@@ -21,14 +21,14 @@ Esminis neuroninio tinklo elementas yra dirbtinis neuronas. Šį neuroną sudaro
 \begin{figure}[h!]
   \centering
 \scalebox{0.2}{\includegraphics[trim=0 0 0 3.3cm, clip]{images/perceptron.png}}
-\caption{Perceptronas.}
+\caption{Perceptronas.\\https://towardsdatascience.com/the-mostly-complete-chart-of-neural-networks-explained-3fb6f2367464}
 \label{fig:perceptron1}
 \end{figure}
 
 \begin{figure}
   \centering
 \scalebox{0.7}{\includegraphics[trim=0 1cm 0 0, clip]{images/perceptron_pvz.png}}
-\caption{Dirbtinio neurono modelis (Perceptronas).}
+\caption{Dirbtinio neurono modelis (Perceptronas).\\http://www.elektronika.lt/teorija/kompiuterija/4342/neuroniniai-tinklai/}
 \label{fig:perceptron}
 \end{figure}
 
@@ -93,7 +93,7 @@ Hiperbolinio tangento netiesinė aktyvacijos funkcija. Jos funkcija $f(x)=tanh(x
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics{images/tanhh.png}}
-\caption{Hiperbolinio tangento grafikas.}
+\caption{Hiperbolinio tangento grafikas.\\https://mlnotebook.github.io/post/transfer-functions/}
 \label{fig:tanh}
 \end{figure}
 
@@ -131,7 +131,7 @@ Naudojant Perceptronų sudarymo logiką, buvo pradėti kurti pradiniai tiesiogin
 \begin{figure}[h!]
   \centering
 \scalebox{0.8}{\includegraphics{images/ffnettt.png}}
-\caption{Tiesioginio sklidimo neuroninis tinklas.}
+\caption{Tiesioginio sklidimo neuroninis tinklas.\\https://dzone.com/articles/feed-forward-neural-network-with-mxnetr}
 \label{fig:feedforfff}
 \end{figure}
 
@@ -152,7 +152,7 @@ Norint žinoti kiek sluoksnių yra šiuose neuroniniuose tinkluose, skaičiavima
 \begin{figure}[h!]
   \centering
 \scalebox{0.4}{\includegraphics[trim=0 1cm 0 1.8cm, clip]{images/deepff.jpeg}}
-\caption{Daugiasluoksnis tiesioginio sklidimo neuroninis tinklas.}
+\caption{Daugiasluoksnis tiesioginio sklidimo neuroninis tinklas.\\https://towardsdatascience.com/training-deep-neural-networks-9fdb1964b964}
 \label{fig:deepnn}
 \end{figure}
 
@@ -198,7 +198,7 @@ Kiekviena iš keturių tinklo ląstelių yra sudaryta iš daugiasluoksnių tiesi
 \begin{figure}[h!]
   \centering
 \scalebox{0.4}{\includegraphics{images/LSTMveikimas.png}}
-\caption{LSTM tinklo sandara.}
+\caption{LSTM tinklo sandara.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmveikimas}
 \end{figure}
 
@@ -207,7 +207,7 @@ Pagrindinė šio tinklo veikimo esmė yra atmintis, kuri yra perduodama kaip bū
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics{images/LSTMcore.png}}
-\caption{LSTM tinklo atmintis.}
+\caption{LSTM tinklo atmintis.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmcore}
 \end{figure}
 
@@ -221,28 +221,28 @@ LSTM veikimo principas \cite{Christopher2015}
   \begin{figure}[h!]
     \centering
   \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMforget.png}}
-  \caption{LSTM tinklo pamiršimo ląstelė.}
+  \caption{LSTM tinklo pamiršimo ląstelė.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
   \label{fig:lstmforget}
   \end{figure}
   \item Sekantis žingsnis yra nustatyti kurią informaciją įrašysime į atmintį. Šį sprendimą daro įvesties ir įvesties moduliacijos ląstelės. Įvesties ląstele nustatome, kurią informaciją mes pridėsime, o įvesties moduliacijos ląstele nustatome kokia ta informacija bus. \ref{fig:lstminput}
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMinput.png}}
-\caption{LSTM tinklo įvesties ląstelės.}
+\caption{LSTM tinklo įvesties ląstelės.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstminput}
 \end{figure}
 \item Toliau atnaujinsime tinklo atmintį. Iš pradžių padauginame atmintį iš pamiršimo ląstelės, kad pamirštume informaciją, kurią nustatėme, kad reikia pamiršti. o toliau pridėsime informaciją, kurią nustatė įvesties ir įvesties moduliacijos ląstelės, kad reikia pridėti.\ref{fig:lstmnewc}
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMnewc.png}}
-\caption{LSTM tinklo naujos atminties skaičiavimas.}
+\caption{LSTM tinklo naujos atminties skaičiavimas.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmnewc}
 \end{figure}
 \item Galiausiai nustatome kokią tinklo reikšmę išvesime. Ši reikšmė priklausys nuo naujos atminties ir išvesties ląstelės. Išvesties ląstelė nustato kurias reikšmes reikia perduoti, o atminčiai yra pritaikoma hiperbolinio tangento funkcija. Sudauginus atmintį ir išvesties ląstelę, gauname kurią informaciją išvesime.\ref{fig:lstmoutput}
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMoutput.png}}
-\caption{LSTM tinklo naujos atminties skaičiavimas.}
+\caption{LSTM tinklo naujos atminties skaičiavimas.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmoutput}
 \end{figure}
 \end{enumerate}
@@ -271,6 +271,14 @@ $\alpha$ ir $\eta$ kintamieji nurodo tinklo apmokymo inerciją ir greitį. \cite
 
 \subsection{ Informatikos apžvalga}
 
+
+Neuroniniai tinklai yra programuojami daugeliu programavimo kalbų, tokių kaip Python, C++, C\#, R, Java ir kt. Mano pasirinkta kalba yra C++, kadangi ši kalba yra pakankamai paprasta ir palaiko objektiškai orientuotą programavimą. Darbe rekurentinis neuroninis tinklas bus objektas, kuris turės keturis paprastus neuroninius tinklus, kurie taip pat bus atskiri objektai.
+
+Neuroninio tinklo išvestoms formulėms optimizuoti buvo naudojamas vienas iš algoritmų analizės metodų. Naudojau dinaminio programavimo metodą. Šis metodas rekurentinio uždavinio sąlygą suskaido į kelias mažesnes sąlygas. Dinaminio programavimo implementacijos būdų yra keli, pagrindiniai jų yra metodas, kuris skaičiuoja iš pradžių mažesnių uždavinių reikšmes, jas išsaugo, poto tas reikšmes apjungia ir skaičiuoja sudėtingesnio uždavinio reikšmes. Kitas būdas skaičiuojant didesnio uždavinio reikšmę, tai didesnis uždavinys suskaidomas į kelis mažesnius uždavinius ir tie uždaviniai yra sprendžiami atskirai. Šiame darbe naudosiu pirmąjį būdą, nes visus skaičiavimus galima išsaugoti atmintyje ir jie neužima daug vietos, o kadangi daug sudėtingesnių uždavinių sprendimai priklausys nuo dar daugiau paprastesnių uždavinių, tai šis būdas yra optimaliausias greitaveikos atžvilgiu. \cite{Robinett2005}
+
+Tinklo apmokymas ant procesoriaus vyksta lėtai, kadangi tinklui apmokyti reikia atlikti labai daug skaičiavimų, todėl skaičiavimai bus perkeliami ant vaizdo procesoriaus (angl. \textit{GPU}). Šiam tikslui yra naudojamos lygiagretaus programavimo bibliotekos. C++ kalboje dažniausiai naudojamos yra OpenMP ir CUDA. Darbe naudosiu CUDA biblioteką, kadangi ji yra pritaikyta skaičiavimus perkelti į grafinį vaizdo procesorių ir juos paskirstyti. Taip pat skaičiavimai yra atliekami daug greičiau grafiniame vaizdo procesoriuje, nes jame yra tūkstančiai gijų, kurios nepriklausomus skaičiavimus gali atlikti vienu metu. \cite{Fazlul2014}
+
+% Reukurentinio neuroninio tinklo apmokymas vyksta į tinklą paduodant tam tikrus rinkinius duomenų. Tie rinkiniai sudaryti iš įvesties reikšmių ir reikšmių, kurias tikimasi gauti iš tinklo. Iš pradžių duomenys yra praleidžiami pro tinklą (angl. \textit{Feed forward}) ir poto atliekamas baudos funkcijos paklaidos mažinimas anti-gradientinio nusileidimo metodu (angl. \textit{Back Propogation}).
 
 
 % Reukurentinio neuroninio tinklo apmokymas vyksta į tinklą paduodant tam tikrus rinkinius duomenų. Tie rinkiniai sudaryti iš įvesties reikšmių ir reikšmių, kurias tikimasi gauti iš tinklo. Iš pradžių duomenys yra praleidžiami pro tinklą (angl. \textit{Feed forward}) ir poto atliekamas baudos funkcijos paklaidos mažinimas anti-gradientinio nusileidimo metodu (angl. \textit{Back Propogation}).

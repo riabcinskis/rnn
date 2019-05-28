@@ -41,27 +41,42 @@ class Random {
 class Topology {
 	private:
 		std::vector<int> *ml;
+    //-ml : vector<int>
 	public:
 		Topology();
+    //+Topology()
 		~Topology();
+    //+~Topology()
+
 		void addLayer(int size);
+    //+void addLayer(int size) : void
 
 		int getLayerCount();
+    //+getLayerCount() : int
 		int getLayerSize(int index);
+    //+getLayerSize(index : int) : int
 
 		int obtainNeuronCount();
+    //+obtainNeuronCount() : int
 		int obtainWeightCount();
+    //+obtainWeightCount() : int
 
 		int getInputNeuronCount();
+    //+getInputNeuronCount() : int
 		int getOutputNeuronCount();
+    //+getOutputNeuronCount() : int
 
-    // void printTopology(FILE *file);
-    // void readTopology(FILE *file);
+    void printTopology(FILE *file);
+    //+printTopology(file : FILE) : void
+    void readTopology(FILE *file);
+    //+readTopology(file : FILE) : void
 };
 
 struct Derivatives{
   double *v;
+  //+v : double[]
   double *vh;
+  //+vh : double[]
 };
 
 // Derivatives *a = new Derivatives;
@@ -126,52 +141,88 @@ private:
 public:
 
   AnnSerial(int V, int u, int M, Topology **top,  double (*f)(double), double (*f_deriv)(double));
+  //+AnnSerial(V : int, u : int, M : int, top : Topology[],  (*f)(double) : double, (*f_deriv)(double) : double)
+
+  AnnSerial(int V, int u, int M, double (*f)(double), double (*f_deriv)(double), string filename) {
+      // FILE * p1File;
+      // p1File = fopen(filename.c_str(), "rb");
+      // Topology *top=new Topology();
+      // top->readTopology(p1File);
+      // prepare(top);
+      // init(p1File);
+      // fclose (p1File);
+  };
 
   void destroy();
+  //+destroy() : void
 
   void feedForward(double *h_input, double *a, double *b); // ...
+  //+feedForward(h_input : double[], a : double[], b : double[]) : void
   void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
+  //+backPropagation(deriv_in : Derivatives[], deriv_out : Derivatives[]) : void
 
   void updateWeights(ErrorDerivatives *errDeriv, double alpha, double eta);
+  //+updateWeights(errDeriv : ErrorDerivatives, alpha : double, eta : double) : void
 
 private:
 
   void prepare(Topology **top);
+  //-prepare(top : Topology[]) : void
   void init(Topology **top,FILE *pFile);
+  //-init(top : Topology[],pFile : FILE) : void
 
   void calc_feedForward();
+  //-calc_feedForward() : void
   void copyOutput(double *a);
+  //-copyOutput(a : double[]) : void
 
   void calcG();
+  //-calcG() : void
   void calcDerivatives(int v, Derivatives *deriv_h, Derivatives *deriv_a);
+  //-calcDerivatives(v : int, deriv_h : Derivatives, deriv_a : Derivatives) : void
 
   int obtainGCount(int L);
+  //-obtainGCount(L : int) : int
   int layerToGIndex(int L, int l);
+  //-layerToGIndex(L : int, l : int) : int
 
   double d(int i, int j);
+  //-d(i : int, j : int) : double
 
 
 
 
 public:
   int vi(int v, int s, int i, int j, int k);
+  //+vi(v : int, s : int, i : int, j : int, k : int) : int
   int vhi(int v, int i, int j, int k);
+  //+vhi(v : int, i : int, j : int, k : int) : int
 
   int vi(int v, int s, int i, int j);
+  //+vi(v : int, s : int, i : int, j : int) : int
   int vhi(int v, int i, int j);
+  //+vhi(v : int, i : int, j : int) : int
 
 
   void setWeights(double *W, double *Wh);
+  //+setWeights(W : double[], Wh : double[]) : void
 
 
   double* getWeights();
+  //+getWeights() : double[]
   double* getHWeights();
+  //+getHWeights() : double[]
   double* getDWeights();
+  //+getDWeights() : double[]
   double* getDHWeights();
+  //+getDHWeights() : double[]
   double* getA();
+  //+getA() : double[]
   double getOutput(int k);
+  //+getOutput(k : int) : double
 
   Topology* getTopology();
+  //+getTopology() : Topology
 };
 
 //
