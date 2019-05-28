@@ -56,6 +56,7 @@ Paveiksle \ref{fig:perceptron} pavaizduoto neurono veikimo principas:
 
 \subsection{Sužadinimo signalai(angl. \textit{Bias neuron})}
 Dažniausiai įvesties reikšmių yra vienetu daugiau, nei yra paduodama įvesties reikšmių. Ši įvestis yra vadinama sužadinimo signalu (angl. \textit{bias neuron}). Šio signalo reikšmė yra pastovi ir visada lygi vienetui($x_{n+1} = 1$). Taip pat yra pridedamas papildomas svoris $W_{n+1}$ jungiantis šį signalą su neuronu.\cite{Ieva2012}
+
 Šis sužadinimo signalas padeda lengvai koreguoti neurono išvesties reikšmę, kadangi įvesties reikšmė yra vienetas, tuomet sandauga, kuri yra prisumuojama priklauso tik nuo svorio jungiančio sužadinimo signalą su neuronu. Ji yra lygi  $W_{n+1}$. Naudojant sužadinimo signalus neuroniai tinklai yra daug sparčiau apmokinami, kadangi šie signalai gali laisvai koreguoti perduodamą reikšmę į neuronus.
   \subsection{Aktyvacijos funkcijų savybės ir naudojimas(angl. \textit{Activation function})}
 Neurono išvesties reikšmei apskaičiuoti naudojamų aktyvacijos funkcijų yra labai daug. Jų paskirtis yra nuspręsti ar atitinkamas neuronas, kuriam yra taikoma aktyvacijos funkcija yra reikšmingas tolimesniem skaičiavimams.
@@ -268,8 +269,15 @@ Tačiau toks tinklo apmokymo būdas nėra veiksmingas, nes tinklas apsimokys atp
 \end{equation*}
 $\alpha$ ir $\eta$ kintamieji nurodo tinklo apmokymo inerciją ir greitį. \cite{Deividas2018} darbe lyginamos tinklo apmokymo paklaidos keičiant šių parametrų reikšmes. Parinkus optimalius parametrus tinklo svoriai daug greičiau konverguoja į norimus svorius, kas leidžia tinklui greičiau apsimokinti. Parinkus labai mažas apmokymo greičio reikšmes tinklas gali labai užtrukti, kol jis apsimokins, o parinkus labai dideles reikšmes tinklas labai greitai išmoks atpažinti naujas reikšmes, tačiau pamiršdamas senas.
 
+Taip pat egzistuoja nykstančio gradiento problema, kuri būna tinkluose, kuriuose yra labai daug sluoksnių. Kadangi neuroninių tinklų apmokymas vyksta einant nuo paskutinio sluoksnio iki pirmojo ir taip einant per visus sluoksnius kiekvieno sluoksnio išvestinės yra dauginamos kartu, tam kad apskaičiuotų pradinio sluoksnio išvestines. Kai yra n neuroninio tinklo sluoksnių ir šie sluoksniai naudoja tokią aktyvacijos funkciją, kaip sigmoidinę, tai n sluoksnių išvestinės yra sudauginamos kartu, to pasekoje gradiento reikšmė mažėja eksponentiškai, o maža gradiento reikšmė reiškia, kad apmokant tinklą svoriai nebus atnaujinami, kadangi gradiento reikšmė, pagal kurią atnaujiname svorius bus nulinė.\cite{Wang2019}
 
-\subsection{ Informatikos apžvalga}
+\subsection{Query autocompletion}
+
+Neuroniniai tinklai yra taikomi daugelyje sričių. Viena iš jų yra kalbos sudaryme (angl. \textit{language modelling}). Daugelis šiuolaikinių paieškos sistemų naudoja užklausų automatinio užbaigimo sistemas. Šios sistemos siūlo rašomų žodžių pabaigą ir prognozuoja kelis sekančius žodžius. Šios sistemos veikimo principas yra, kai vartotojas įvedą į paiešką bet kokią raidę sistema pagal prieš tai buvusį tekstą ir pagal naują įvestą raidę pasiūlo naujus žodžių užbaigimo variantus ir prognozuoja naujus sekančius žodžius. Tokie pasiūlymai dažniausiai yra priimami iš praeities naudotų užklausų, todėl yra labai mažas šansas, kad sistema gebės prognozuoti tekstą, kurio dar nėra mačius. Tam tikslui yra naudojami neuroniai tinklas, kad apmokyti tinklą prognozuoti tokių užklausų užbaigimus.\cite{park2017} 
+
+
+
+\subsection{Programnės įrangos apžvalga}
 
 
 Neuroniniai tinklai yra programuojami daugeliu programavimo kalbų, tokių kaip Python, C++, C\#, R, Java ir kt. Mano pasirinkta kalba yra C++, kadangi ši kalba yra pakankamai paprasta ir palaiko objektiškai orientuotą programavimą. Darbe rekurentinis neuroninis tinklas bus objektas, kuris turės keturis paprastus neuroninius tinklus, kurie taip pat bus atskiri objektai.

@@ -7,7 +7,7 @@ LanguageModel::LanguageModel(){
 void LanguageModel::doSomething(){
 
    //char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
-   char abc[64]=" 0123456789";
+   char abc[64]=" 0123456789abcdefghi";
 
   //
   // int M = strlen(abc);
@@ -75,7 +75,7 @@ void LanguageModel::doSomething(){
   // printf("%s\n", "asdsa");
   double startTime = clock();
 
-  for(int n = 0; n < 500; n++){
+  for(int n = 0; n < 100; n++){
     double iterError = 0;
     for(int i = 0; i < nodeVector->size(); i++){
       DataNode* input = (*nodeVector)[i];
@@ -117,7 +117,11 @@ void LanguageModel::doSomething(){
       iterError += sentenceError;
     }
 
-     printf("%.10f\n",iterError);
+     //printf("%.10f\n",iterError);
+     double endTime = clock();
+     double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
+
+     printf("%.5f\n", runtime);
   }
 
   rnn->getRnnCell()->printf_Network("2000_123_02.bin");

@@ -3,7 +3,21 @@ Darbe kurtas rekurentinis neuroninis tinklas buvo realizuotas C++ programavimo k
 
 \begin{figure}[h!]
   \centering
-\scalebox{0.8}{\includegraphics[trim=0 0 0 0cm, clip]{images/class_diag.png}}
+\scalebox{0.45}{\includegraphics[trim=0 0 0 0cm, clip]{images/new_diag2.png}}
 \caption{Klasiu diagrama}
 \label{fig:classdiag}
 \end{figure}
+
+\clearpage
+Tinklui realizuoti buvo sukurtos klasės, kurios aprašo tinklo veikimą.
+
+\begin{enumerate}
+  \item \textbf{Rnn} - klasė, kuri kontroliuoja viso tinklo veikimą. Apdoroja įvesties duomenis, apskaičiuoja prognozuojamas reikšmes, tinklą apmokina.
+  \item \textbf{RnnCell} - klasė, kuri kontroliuoja rekurentinio neuroninio tinklo skaičiavimus susijusius su viena apmokymo ar prognozavimo iteracija.
+  \item \textbf{AnnSerial} - klasė, kuri kontroliuoja paprastų neuroninų tinklų skaičiavimus susijusius su viena apmokymo ar prognozavimo iteracija.
+  \item \textbf{Topology} - klasė, kuri saugo atitinkamo neuroninio tinklo struktūrą.
+  \item \textbf{Derivatives} - klasė. kuri saugo atitinkamo tinklo išvesčių išvestines, pagal atitinkamo neuroninio tinklo svorius.
+  \item \textbf{ErrorDerivatives} - klasė. kuri saugo viso tinklo išvesčių išvestines, pagal atitinkamo neuroninio tinklo svorius.
+  \item \textbf{RnnDerivatives} - klasė, kuri saugo visų tinklų išvestines, pagal visų tinklų svorius.
+  \item \textbf{SecondMarkLimit} - klasė, kuri skaičiuoja kiek kartų atitinkamas simbolis buvo panaudotas, pagal kurį yra prognozuojamas tekstas.
+\end{enumerate}
