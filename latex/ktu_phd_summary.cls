@@ -206,7 +206,7 @@
    \renewcommand{\cftloftitlefont}{\hfill\normalfont\bfseries\MakeUppercase}
    \renewcommand{\cftafterloftitle}{\hfill}
    \addto\captionsenglish{%
-      \renewcommand{\listfigurename}{List of figures}%
+      \renewcommand{\listfigurename}{Paveikslėlių sąrašas}%
    }
 
    % list of tables
@@ -219,7 +219,7 @@
    \renewcommand{\cftlottitlefont}{\hfill\normalfont\bfseries\MakeUppercase}
    \renewcommand{\cftafterlottitle}{\hfill}
    \addto\captionsenglish{%
-      \renewcommand{\listtablename}{List of tables}%
+      \renewcommand{\listtablename}{Lentelių sąrašas}%
    }
 }
 \RequirePackage{tocloft}
