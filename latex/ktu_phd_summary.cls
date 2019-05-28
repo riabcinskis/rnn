@@ -150,7 +150,7 @@
 \AfterPackage{tocloft}{
 
    \renewcommand{\@pnumwidth}{12pt}
-   \renewcommand{\@tocrmarg}{36pt}
+   \renewcommand{\@tocrmarg}{40pt}
    \renewcommand{\cftdotsep}{2}
 
    % table of contents - title
