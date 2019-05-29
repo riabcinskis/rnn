@@ -43,7 +43,7 @@ void LanguageModel::doSomething(){
 
 
 
-  // std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data.txt");
+
   std::vector<DataNode*>* nodeVector = loadFromFile(abc, "data.txt");
   // printf("%s\n", "asdsa");
 
@@ -155,7 +155,7 @@ void LanguageModel::doSomething(){
 }
 
 std::vector<DataNode*>* LanguageModel::loadFromFile(const char *abc, const char *filename){
-  FILE* file = fopen("../files/data.txt", "r");
+  FILE* file = fopen(filename, "r");
 
   char* line = NULL;
   size_t len = 0;

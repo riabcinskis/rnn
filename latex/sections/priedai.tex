@@ -1,0 +1,2011 @@
+\subsection{ann.h failas}
+
+$#$ifndef ANN_HEADER
+$#$define ANN_HEADER
+
+$#$include <cmath>
+$#$include <cstdlib>
+
+$#$include <cmath>
+$#$include <math.h>
+$#$include <vector>
+$#$include <iostream>
+$#$include <iomanip>
+$#$include <fstream>
+$#$include <string>
+$#$include <array>
+$#$include <assert.h>
+
+$#$include <random>
+
+using namespace std;
+
+$#$include "rnn.h"
+
+struct ErrorDerivatives;
+
+//
+// Random
+//
+class Random {
+  private:
+    std::mt19937 *mGen;
+    std::uniform_real_distribution<double> *mDist;
+
+  public:
+    Random();
+    double next();
+    int nextInt(int min, int max);
+    bool nextBool();
+};
+
+
+class Topology {
+	private:
+		std::vector<int> *ml;
+	public:
+		Topology();
+		~Topology();
+
+		void addLayer(int size);
+
+		int getLayerCount();
+		int getLayerSize(int index);
+		int obtainNeuronCount();
+		int obtainWeightCount();
+		int getInputNeuronCount();
+		int getOutputNeuronCount();
+    void printTopology(FILE *file);
+    void readTopology(FILE *file);
+};
+
+struct Derivatives{
+  double *v;
+  double *vh;
+};
+
+template <typename T>
+class AnnBase {
+  public:
+    virtual void feedForward(T *h_input, T *a, T *b) = 0; // MB: h, a->x, b->a
+    virtual void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
+    virtual void destroy() = 0;
+
+  private:
+    virtual void prepare(Topology **top, int M)=0; // MB: M
+    virtual	void init(FILE *pFile)=0; // MB: pFile neraikia kol kas
+    virtual void reset()=0;
+    virtual void calc_feedForward()=0;
+    virtual void copyOutput(double *a)=0;
+};
+
+
+
+class AnnSerial{ // -> AnnSerial
+private:
+  Topology* cTopology;
+  int V; // total number of ANNs
+  int u; // index of ANN
+  int L;
+  int M;
+  int * l; // neuronu skaičius sluoksnyje
+  int **vl;
+  int *vL;
+  int * s; // sluoksnio pradzios indeksai
+  double * a_arr;
+  double * ah_arr;
+  double * z;
+  int * sW;
+  int ** vsW;
+
+  double * W;
+  double * dW;
+  double * Wh;
+  double * dWh;
+
+
+  int * nG;
+  int * sG;//pazieti kurie int kurie double
+  double * G;
+
+  double (*f)(double);
+  double (*f_deriv)(double);
+
+
+public:
+
+  AnnSerial(int V, int u, int M, Topology **top,  double (*f)(double), double (*f_deriv)(double));
+
+  void destroy();
+
+  void feedForward(double *h_input, double *a, double *b); // ...
+  void backPropagation(Derivatives **deriv_in, Derivatives **deriv_out);
+
+  void updateWeights(ErrorDerivatives *errDeriv, double alpha, double eta);
+
+private:
+
+  void prepare(Topology **top);
+  void init(Topology **top,FILE *pFile);
+
+  void calc_feedForward();
+  void copyOutput(double *a);
+
+  void calcG();
+  void calcDerivatives(int v, Derivatives *deriv_h, Derivatives *deriv_a);
+  int obtainGCount(int L);
+  int layerToGIndex(int L, int l);
+  double d(int i, int j);
+
+public:
+  int vi(int v, int s, int i, int j, int k);
+  int vhi(int v, int i, int j, int k);
+
+  int vi(int v, int s, int i, int j);
+  int vhi(int v, int i, int j);
+
+
+  void setWeights(double *W, double *Wh);
+
+  double* getWeights();
+  double* getHWeights();
+  double* getDWeights();
+  double* getDHWeights();
+  double* getA();
+  double getOutput(int k);
+
+  Topology* getTopology();
+};
+
+//
+// Global functions
+//
+
+void obtainSW(Topology *top, int *sW);
+
+
+$#$endif /* */
+
+\subsection{ann.cpp}
+
+$#$include "ann.h"
+
+using namespace std;
+
+//
+// Random
+//
+Random::Random(){
+  mGen = new std::mt19937();
+  mDist = new std::uniform_real_distribution<double>(0., 1.);
+}
+
+double Random::next(){
+  return (*mDist)(*mGen);
+}
+
+int Random::nextInt(int min, int max){
+  double range = max - min;
+  double r = range * next();
+  return min + (int)(r+0.5);
+}
+
+bool Random::nextBool(){
+  if(next() >= 0) return true;
+  return false;
+}
+
+//*****************************
+//
+// Topology
+//
+Topology::Topology(){
+	ml = new vector<int>();
+}
+
+Topology::~Topology(){
+	ml->clear();
+	delete ml;
+}
+
+void Topology::addLayer(int size){
+	ml->push_back(size);
+}
+
+int Topology::getLayerCount(){
+	return ml->size();
+}
+
+int Topology::getLayerSize(int index){
+	return (*ml)[index];
+}
+
+int Topology::obtainNeuronCount(){
+	int count = 0;
+	for (int i = 0; i < ml->size(); i++)
+		count += (*ml)[i] + 1;
+  count--;
+	return count;
+}
+
+int Topology::obtainWeightCount(){
+	int count = 0;
+	for (int i = 0; i < ml->size()-1; i++)
+		count += ((*ml)[i] + 1)*(*ml)[i+1];
+	return count;
+}
+
+int Topology::getInputNeuronCount(){
+	return (*ml)[0];
+}
+
+int Topology::getOutputNeuronCount(){
+	return (*ml)[ml->size()-1];
+}
+
+void Topology::printTopology(FILE *file){
+  int a=getLayerCount();
+  fwrite (&a , sizeof(int), 1, file);
+  for(int i=0;i<a;i++){
+    int b=ml->at(i);
+    fwrite (&b , sizeof(int), 1, file);
+  }
+}
+
+void Topology::readTopology(FILE *file){
+  int size=0;
+  (void)fread (&size , sizeof(int), 1, file);
+  int* abc=new int[size];
+  ml=new vector<int>();
+  (void)fread (abc , sizeof(int), size, file);
+  for(int i=0;i<size;i++){
+    ml->push_back(abc[i]);
+  }
+}
+
+
+
+//***********************************
+//
+// AnnSerial
+//
+
+AnnSerial::AnnSerial(int V, int u, int M, Topology **top, double (*f)(double), double (*f_deriv)(double)){
+  this->V = V;
+  this->u = u;
+  this->M = M;
+  cTopology = new Topology();
+    cTopology = top[u];
+
+  L = cTopology->getLayerCount();
+
+  this->f=(*f);
+  this->f_deriv=(*f_deriv);
+
+  assert(M == top[u]->getOutputNeuronCount());
+  prepare(top);
+
+  init(top, NULL);
+}
+
+void AnnSerial::destroy(){
+	delete[] l;
+	l = NULL;
+
+  delete [] vl;
+  vl = NULL;
+
+  delete[] vL;
+  vL= NULL;
+
+	delete[] s;
+	s = NULL;
+
+	delete[] a_arr;
+	a_arr = NULL;
+
+  delete[] ah_arr;
+  ah_arr = NULL;
+
+	delete[] z;
+	z = NULL;
+
+	delete[] sW;
+	sW = NULL;
+
+  delete [] vsW;
+  vsW = NULL;
+
+	delete[] W;
+	W = NULL;
+	delete[] dW;
+	dW = NULL;
+
+  delete[] Wh;
+  Wh = NULL;
+  delete[] dWh;
+  dWh = NULL;
+
+  delete[] nG;
+  nG = NULL;
+  delete[] sG;
+  sG = NULL;
+
+
+	// delete[] t_arr;
+	// t_arr = NULL;
+
+	// delete[] gjl;
+	// gjl = NULL;
+}
+
+void AnnSerial::prepare(Topology **top){
+
+  vL = new int[V];
+  vl = new int*[V];
+  for(int i = 0; i < V; i++){
+    vl[i] = new int[top[u]->getLayerCount()];
+  }
+	l = new int[cTopology->getLayerCount()];
+	s = new int[cTopology->getLayerCount()];
+
+	int neuronCount = cTopology->obtainNeuronCount();
+	int weightCount = cTopology->obtainWeightCount();
+
+	a_arr = new double[neuronCount];
+	z = new double[neuronCount];
+
+  ah_arr = new double[M];
+
+  vsW = new int*[V];
+  for(int v = 0; v < V; v++)
+    vsW[v] = new int[top[v]->getLayerCount()-1];
+
+	sW = new int[cTopology->getLayerCount()-1];
+
+	W = new double[weightCount];
+	dW = new double[weightCount];
+
+  int second_layer_size = cTopology->getLayerSize(1);
+  int h_weightCount = second_layer_size * M;
+
+  Wh = new double[h_weightCount];
+  dWh = new double[h_weightCount];
+
+  int G_count = obtainGCount(L);
+
+
+  nG = new int[G_count];
+  sG = new int[G_count];
+
+  int count = 0;
+  int l2;
+  for(int gl = 0; gl < G_count; gl++){
+    l2 = L - 2*gl - 1;
+    nG[gl] = cTopology->getLayerSize(l2)*(cTopology->getLayerSize(l2 - 2));
+    count += nG[gl];
+  }
+
+
+  for(int gl = 0; gl < G_count; gl++){
+    if(gl == 0)
+      sG[0] = 0;
+    else
+      sG[gl] = sG[gl-1] + nG[gl-1];
+  }
+
+  G = new double[count];
+
+
+	//gjl = new double[neuronCount];
+}
+
+void AnnSerial::init(Topology **top,FILE * pFile=NULL){
+
+	Random *rnd = new Random();
+
+	//Neuronu kiekiai sluoksnyje
+	for (int i = 0; i < L; i++) {
+		l[i] = cTopology->getLayerSize(i) + 1;
+	}
+
+	//Sluoksniu pradzios indeksai
+	for (int i = 0; i < L; i++) {
+		s[i] = 0;
+		for (int j = i; j > 0; j--) {
+			s[i] += l[j - 1];
+		}
+	}
+
+	//Bias neuronai
+	for (int i = 0; i < L - 1; i++) {
+		a_arr[s[i + 1] - 1] = 1;
+	}
+
+  for(int i = 0; i < V; i++){
+    vL[i] = top[i]->getLayerCount();
+  }
+
+  for(int i = 0; i < V; i++)
+    for(int j = 0; j < vL[i]; j++)
+      vl[i][j] = top[i]->getLayerSize(j)+1;
+
+
+	//Svoriu kiekiai l-ame sluoksnyje
+
+
+  obtainSW(top[u], sW);
+  for(int v = 0; v < V; v++){
+    obtainSW(top[v], vsW[v]);
+  }
+
+
+  if (pFile==NULL) {
+    for (int ll = 0; ll < L - 1; ll++)
+      for (int i = 0; i < l[ll]; i++)
+        for (int j = 0; j < l[ll+1]-1; j++){
+          W[sW[ll] + i*(l[ll+1]-1) + j] = (rnd->next()*2-1);
+          dW[sW[ll] + i*(l[ll+1]-1) + j] = 0.0;
+        }
+
+
+    int second_layer_size = cTopology->getLayerSize(1);
+    int h_weightCount = second_layer_size * M;
+    for(int i = 0; i < M; i++)
+      for(int j = 0; j < l[1]-1; j++)
+        Wh[i*(l[1]-1) + j] = (rnd->next()*2-1);
+
+  }
+  else {
+  //  readf_Network(pFile);
+  }
+
+  delete rnd;
+
+}
+
+void AnnSerial::updateWeights(ErrorDerivatives *errDeriv, double alpha, double eta){
+
+  for(int k = 0; k < cTopology->obtainWeightCount(); k++){
+    dW[k] = -eta*errDeriv->v[k] + alpha*dW[k];
+    W[k] = W[k] + dW[k];
+  }
+
+  for(int k = 0; k < cTopology->getLayerSize(1)*M; k++){
+    dWh[k] = -eta*errDeriv->vh[k] + alpha*dWh[k];
+    Wh[k] = Wh[k] + dWh[k];
+  }
+
+}
+
+void AnnSerial::feedForward(double *h_input, double *a, double *b){
+
+  for (int i = 0; i < cTopology->getLayerSize(0); i++) {
+    a_arr[i] = a[i];
+  }
+  a_arr[cTopology->getLayerSize(0)] = 1.0;
+
+  for(int i=0; i<M;i++){
+    ah_arr[i] = h_input[i];
+  }
+
+	calc_feedForward();
+
+	copyOutput(b);
+}
+
+void AnnSerial::calc_feedForward(){
+
+  for (int j = 0; j < cTopology->obtainNeuronCount(); j++) {
+		z[j] = 0;
+	}
+  for(int k = 0; k < l[1] - 1; k++){
+    for(int j = 0; j < M; j++){
+      z[s[1] + k] += ah_arr[j] * Wh[j*(l[1]-1) + k];
+    }
+  }
+	for (int i = 0; i < L - 1; i++) {//per sluoksnius einu+
+    for (int k = 0; k < l[i + 1] - 1; k++) {//per sekancio sluoksnio z+
+		  for (int j = 0; j < l[i]; j++) { //kiek neuronu sluoksnyje+
+				z[s[i + 1] + k] += W[sW[i] + j*(l[i + 1] - 1) + k] * a_arr[s[i] + j];
+			}
+		}
+		for (int k = 0; k < l[i + 1] - 1; k++) {//per sekancio sluoksnio z
+			a_arr[s[i + 1] + k] = f(z[s[i + 1] + k]);
+		}
+	}
+}
+
+void AnnSerial::copyOutput(double *a){
+  for (int i = 0; i<cTopology->getLayerSize(cTopology->getLayerCount() - 1); i++)
+		a[i] = a_arr[s[L - 1] + i];
+}
+
+void AnnSerial::backPropagation(Derivatives **deriv_in, Derivatives **deriv_out){
+
+  calcG();
+
+  for(int v = 0; v < V; v++)
+    calcDerivatives(v, deriv_in[v],  deriv_out[v]);
+}
+
+void AnnSerial::calcG(){
+  int G_count = obtainGCount(L);
+  int l2;
+  for(int gl = 0; gl < G_count; gl++){
+    l2 = L - 2*gl - 1;
+
+    double sum = 0;
+
+    if(l2==2){
+
+      for(int p = 0; p < M; p++){
+        for(int k = 0; k < l[l2]-1; k++){
+
+          for(int n = 0; n < l[l2-1]-1; n++){
+            sum += Wh[(l[l2-1]-1)*p + n]*W[sW[l2-1] + (l[l2]-1)*n + k]*f_deriv(z[s[l2-1]+n]);
+            //pakeiciau W i Wh
+            //sum += Wh[M*p + n]*W[sW[l2-1] + (l[l2]-1)*n + k]*f_deriv(z[s[l2-1]+n]);
+          }
+
+          G[sG[gl] + (l[l2]-1)*p + k] = f_deriv(z[s[l2] + k])*sum;
+        }
+
+      //  G[sG[gl] + (l[l2]-1)*p + k] = f_deriv(z[s[l2] + k])*sum;
+      }
+
+    }else{
+      for(int p = 0; p < l[l2-2]; p++){
+        for(int k = 0; k < l[l2]-1; k++){
+
+          for(int n = 0; n < l[l2-1]-1; n++){
+            sum += W[sW[l2-2] + (l[l2-1]-1)*p + n]*W[sW[l2-1] + (l[l2]-1)*n + k]*f_deriv(z[s[l2-1]+n]);
+          }
+
+          G[sG[gl] + (l[l2]-1)*p + k] = f_deriv(z[s[l2] + k])*sum;
+        }
+      }
+    }
+  }
+}
+
+void AnnSerial::calcDerivatives(int v, Derivatives *deriv_in, Derivatives *deriv_out){
+  // deriv_in->v[vi(...)];
+  // deriv_in->vh[vhi(...)];
+
+  int max_layer_size = 0;
+  for(int i = 0; i < L; i++)
+    max_layer_size = (l[i]-1) > max_layer_size ? l[i]-1 : max_layer_size;
+
+  // vec0 -> vec1
+  double *vec0 = new double[max_layer_size];
+  double *vec1 = new double[max_layer_size];
+
+
+  int start_l = L%2 == 1 ? 0 : 1;
+
+    for(int ss = 0; ss < vL[v]-1; ss++){//kiek sluoksniu tinkle
+      for(int wi = 0; wi < vl[v][ss]; wi++){//kiek neuronu
+        for(int wj = 0; wj < vl[v][ss+1]-1; wj++){//kiek sekanciame neuronu
+          for(int ll = start_l; ll < L; ll=ll+2){//per G reiksmes  cia gal maziau tik
+
+            if(ll == 0){
+
+              for(int k = 0; k < M; k++)
+                vec1[k] = deriv_in->v[vi(v, ss, wi, wj, k)];
+
+            }else if(ll == 1){
+
+              for(int k = 0; k < l[ll]-1;k++){
+                double sum = 0;
+                for(int n = 0; n < M; n++){
+                  sum += Wh[(l[ll]-1)*n + k]*deriv_in->v[vi(v, ss, wi, wj, n)];
+                }
+
+                if(u == v) sum += a_arr[wi];
+
+                vec1[k] = f_deriv(z[s[ll] + k])*sum;
+              }
+
+
+            }else {
+
+
+              int gl = layerToGIndex(L, ll);
+              double sum = 0;
+              int to_p = ll == 2 ? M : l[ll-2]-1;//-1 gal
+
+
+              for(int k = 0; k < l[ll]-1;k++){
+                for(int p = 0; p < to_p; p++){
+                  sum += vec0[p]*G[sG[gl] + (l[ll]-1)*p + k];
+                }
+
+
+                if(u == v){
+                  if(ll == ss+1)
+                    sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-1] + wi];
+                  else if(ll == ss+2){
+                      double sum2 = 0;
+                      for(int n = 0; n < l[ll-1]; n++)
+                       sum2 += W[sW[ll-1] + (l[ll]-1)*n + k] * f_deriv(z[s[ll-1] + n]);
+                      sum += f_deriv(z[s[ll] + k])*a_arr[s[ll-2] + wi]*sum2;
+                  }
+                }
+              }
+            }
+            int to_k = ll == 0 ? M : l[ll]-1;
+            for(int k = 0; k < to_k; k++) vec0[k] = vec1[k];
+
+          }
+          for(int k = 0; k < M /*l[L-1]-1*/; k++){
+            deriv_out->v[vi(v, ss, wi, wj, k)] = vec1[k];
+
+          }
+        }
+      }
+    }
+
+      for(int wi = 0; wi < M; wi++){//kiek neuronu
+        for(int wj = 0; wj < vl[v][1]-1; wj++){//kiek sekanciame neuronu
+          for(int ll = start_l; ll < L; ll=ll+2){//per G reiksmes  cia gal maziau tik
+            if(ll == 0){
+
+              for(int k = 0; k < M; k++)
+                vec1[k] = deriv_in->vh[vhi(v, wi, wj, k)];
+
+            }else if(ll == 1){
+
+              for(int k = 0; k < l[ll]-1;k++){
+                double sum = 0;
+                for(int n = 0; n < M; n++)
+                  sum += Wh[(l[ll]-1)*n + k]*deriv_in->vh[vhi(v, wi, wj, n)];
+                if(u == v ) sum += ah_arr[wi];
+                vec1[k] = f_deriv(z[s[ll] + k])*sum;
+
+              }
+
+            }else {
+
+
+              int gl = layerToGIndex(L, ll);
+              double sum = 0;
+              int to_p = ll == 2 ? M : l[ll-2]-1;//-1 gal
+
+
+              for(int k = 0; k < l[ll]-1;k++){
+                for(int p = 0; p < to_p; p++){
+                  sum += vec0[p]*G[sG[gl] + (l[ll]-1)*p + k];
+                }
+
+
+                if(u == v){
+
+                  if(ll == 2){
+                    double sum2 = 0;
+                    for(int n = 0; n < l[ll-1]; n++)
+                      sum2 += W[sW[ll-1] + (l[ll]-1)*n + k] * f_deriv(z[s[ll-1] + n]);
+                    sum += f_deriv(z[s[ll] + k])*ah_arr[wi]*sum2;
+                  }
+                }
+              }
+            }
+
+            int to_k = ll == 0 ? M : l[ll]-1;
+            for(int k = 0; k < to_k; k++) vec0[k] = vec1[k];
+          }
+
+          for(int k = 0; k < M /*l[L-1]-1*/; k++){
+            deriv_out->vh[vhi(v, wi, wj, k)] = vec1[k];
+          }
+        }
+      }
+
+  delete [] vec0;
+  delete [] vec1;
+
+}
+
+int AnnSerial::obtainGCount(int L){
+  int G_count = 0;
+  int remaining_L = L;
+  while(remaining_L >= 3){
+    G_count++;
+    remaining_L -= 2;
+  }
+  return G_count;
+}
+
+int AnnSerial::layerToGIndex(int L, int l){
+  int G_count = obtainGCount(L);
+  return G_count - (l - l%2) / 2;
+}
+
+int AnnSerial::vi(int v, int s, int i, int j, int k){
+  return (vsW[v][s] + i*(vl[v][s+1]-1) + j)*M + k;
+}
+
+int AnnSerial::vhi(int v, int i, int j, int k){
+  return  (i*(vl[v][1]-1) + j)*M + k;
+}
+
+int AnnSerial::vi(int v, int s, int i, int j){
+  return vsW[v][s] + i*(vl[v][s+1]-1) + j;
+}
+
+int AnnSerial::vhi(int v, int i, int j){
+  return  i*(vl[v][1]-1) + j;
+}
+
+double AnnSerial::d(int i, int j){
+  if(i == j) return 1.0;
+  return 0.0;
+}
+
+void AnnSerial::setWeights(double *W, double *Wh){
+  this->W = W;
+  this->Wh = Wh;
+};
+
+double* AnnSerial::getWeights(){
+	return W;
+}
+
+double* AnnSerial::getDWeights(){
+	return dW;
+}
+
+double* AnnSerial::getHWeights(){
+	return Wh;
+}
+
+double* AnnSerial::getDHWeights(){
+	return dWh;
+}
+
+double* AnnSerial::getA(){
+	return a_arr;
+}
+
+double AnnSerial::getOutput(int k){
+  return a_arr[s[L-1]+k];
+}
+
+
+Topology* AnnSerial::getTopology(){
+  return cTopology;
+}
+
+//
+// Global functions
+//
+
+
+void obtainSW(Topology *top, int *sW){
+  int nW;
+  sW[0] = 0;
+  for (int i = 1; i < top->getLayerCount()-1; i++) {
+		nW = (top->getLayerSize(i-1)+1)*top->getLayerSize(i); //l[i] * (l[i + 1] - 1);
+    sW[i] = sW[i-1] + nW;
+  }
+}
+
+\subsection{rnn.h}
+
+$#$ifndef RNN_HEADER
+$#$define RNN_HEADER
+
+$#$define RNN_FULL_BACKPROPAGATION 0
+$#$define RNN_APPROX_BACKPROPAGATION 1
+
+
+//$#$include <helper_cuda.h>
+$#$include "ann.h"
+$#$include "rnn.h"
+
+
+
+$#$include <cmath>
+
+class Topology;
+class AnnSerial;
+struct Derivatives;
+
+/* Class definitions here. */
+void run_cuda_sample();
+
+class RnnConfig{
+private:
+  Topology** cTopology;
+  int mM;
+
+
+public:
+  void setTopologies(Topology **top);
+  void setM(int M);
+
+
+  Topology** getTopologies();
+  int getM();
+
+};
+
+
+
+struct RnnDerivatives {
+  Derivatives **hderiv;
+  //+hderiv : Derivatives[]
+  Derivatives **cderiv;
+  //+cderiv : Derivatives[]
+};
+
+struct ErrorDerivatives {
+  double *v;
+  //+v : double[]
+  double *vh;
+  //+vh : double[]
+};
+
+template <typename T>
+class RnnBase {
+  public:
+  	 virtual void train(T *a, T *b, T alpha, T eta) = 0;
+  	 virtual void feedForward(T *h_in, T *c_in,T *a, T *c_out, T *h_out) = 0;
+
+
+  private:
+     virtual	void init(FILE *pFile)=0;
+};
+
+
+class RnnCell {
+  private:
+
+    int M;
+    //-M : int
+    int V;
+    //-V : int
+
+    AnnSerial** anns;
+    //-anns : AnnSerial[]
+    AnnSerial* ann_forget; // 0
+
+    AnnSerial* ann_input; // 1
+    AnnSerial* ann_gate; // 2
+    AnnSerial* ann_output; // 3
+
+    double* c_current;
+    //-c_current : double[]
+    double* c_new;
+    //-c_new : double[]
+    double* h_current;
+    //-h_current : double[]
+    double* h_new;
+    //-h_new : double[]
+    double* b;
+    //-b : double[]
+    double** a_outputs;
+    //-a_outputs : double[][]
+
+    Derivatives ***aderiv;
+    //-aderiv : Derivatives[][]
+
+
+
+
+  public:
+
+    RnnCell(int M, Topology **top) {
+      prepare(M, top);
+      init(NULL);
+    };
+    //+RnnCell(M : int, top : Topology[])
+
+
+    RnnCell(int M, string filename);
+
+
+
+  	 void feedForward(double *h_in, double *c_in,double *a, double *c_out, double *h_out);
+     //+feedForward(h_in : double[], c_in : double[],a : double[], c_out : double[], h_out : double[]) : void
+     void backPropagation( RnnDerivatives *deriv_in, RnnDerivatives *deriv_out);
+     //+backPropagation( deriv_in : RnnDerivatives, deriv_out : RnnDerivatives) : void
+
+    //
+    AnnSerial* getANN(int v);
+    //+getANN(v : int) : AnnSerial
+
+    void destroy();
+    //+destroy() : void
+
+    void printf_Network(string output_filename);
+
+    //+printf_Network(output_filename : string) : void
+  private:
+    void prepare(int M, Topology **top);
+    //-prepare(M : int, top : Topology[]) : void
+    void init(FILE *pFile);
+    //-init(pFile : FILE) : void
+
+};
+
+
+class OutputLimit {
+  public:
+    virtual void reset() = 0;
+    virtual bool check(double *vec) = 0;
+};
+
+class SecondMarkLimit : public OutputLimit {
+  private:
+    int M;
+    int count;
+    int markIndex;
+
+  public:
+    SecondMarkLimit(int markIndex, int M);
+
+    void reset();
+    bool check(double *vec);
+};
+
+struct DataNode{
+  DataNode(int M);
+  double* vec;
+  DataNode *next;
+};
+
+
+class Rnn {
+  private:
+    int I;
+    int M;
+    int V;
+
+    RnnCell* cRnnCell;
+
+
+    double *h_in;
+    double *h_out;
+    double* c_in;
+    double *c_out;
+
+    ErrorDerivatives** errDeriv;
+    RnnDerivatives **rnnDeriv;
+
+    int impl;
+
+  public:
+    Rnn(int I, int M, RnnCell *rnnCell, int impl);
+    Rnn(int I, int M, RnnCell *rnnCell);
+
+    DataNode* feedForward(DataNode* input, OutputLimit *outputLimit);
+    bool backPropagation(DataNode* input, DataNode* output, OutputLimit *outputLimit, double &error);
+
+    void updateWeights(double alpha, double eta);
+    //+updateWeights(alpha : double, eta : double) : void
+    void resetErrorDerivatives();
+    //+resetErrorDerivatives() : void
+
+
+    RnnCell* getRnnCell(){
+      return cRnnCell;
+    }
+
+    //+getRnnCell() : RnnCell
+
+  private:
+
+    RnnDerivatives* allocateRnnDerivatives(RnnDerivatives* deriv);
+    //-allocateRnnDerivatives(deriv : RnnDerivatives) : RnnDerivatives
+
+    //RnnDerivatives* deallocateRnnDerivatives(RnnDerivatives* deriv);
+    void resetHDerivatives(Derivatives** hderiv);
+    //-resetHDerivatives(hderiv : Derivatives[]) : void
+    void resetCDerivatives(Derivatives** cderiv);
+
+
+    void copyRnnDerivatives(RnnDerivatives* deri_b, RnnDerivatives* deriv_a);
+    //-copyRnnDerivatives(deri_b : RnnDerivatives, deriv_a : RnnDerivatives) : void
+    void copyVector(double* vec_b, double *vec_a, int n);
+    //-copyVector(vec_b : double[], vec_a : double[], n : int) : void
+
+    void sumErrorDerivatives(double *h, Derivatives **hderiv, double *y);
+    //-sumErrorDerivatives(h : double, hderiv : Derivatives[], y : double[]) : void
+    double calcError(double *h, double *y);
+    //-calcError(h : double[], y : double[]) : double
+
+
+};
+
+double f(double x);
+double f_deriv(double x);
+
+double f_tanh(double x);
+double f_tanh_deriv(double x);
+
+
+
+$#$endif /* RNN_HEADER */
+
+
+\subsection{rnn.cpp}
+
+$#$include "rnn.h"
+
+/* C++ code here. */
+void RnnConfig::setTopologies(Topology **top){
+  cTopology = top;
+}
+
+void RnnConfig::setM(int M){
+  mM=M;
+}
+
+
+Topology** RnnConfig::getTopologies(){
+  return cTopology;
+}
+
+int RnnConfig::getM(){
+  return mM;
+}
+
+
+//
+// RnnCell
+//
+
+RnnCell::RnnCell(int M, string filename) {
+  FILE * p1File;
+  p1File = fopen(filename.c_str(), "rb");
+
+  Topology** top= new Topology*[4];
+  top[0] = new Topology();
+  top[1] = new Topology();
+  top[2] = new Topology();
+  top[3] = new Topology();
+  top[0]->readTopology(p1File);
+  top[1]->readTopology(p1File);
+  top[2]->readTopology(p1File);
+  top[3]->readTopology(p1File);
+
+
+  prepare(M,top);
+
+  double* Ww0= new double[top[0]->obtainWeightCount()];
+  double* Ww1= new double[top[1]->obtainWeightCount()];
+  double* Ww2= new double[top[2]->obtainWeightCount()];
+  double* Ww3= new double[top[3]->obtainWeightCount()];
+
+  double* Whw0= new double[M*top[0]->getLayerSize(1)];
+  double* Whw1= new double[M*top[1]->getLayerSize(1)];
+  double* Whw2= new double[M*top[2]->getLayerSize(1)];
+  double* Whw3= new double[M*top[3]->getLayerSize(1)];
+
+  (void)fread (Ww0 , sizeof(double), top[0]->obtainWeightCount(), p1File);
+  (void)fread (Whw0 , sizeof(double), M*top[0]->getLayerSize(1), p1File);
+
+  (void)fread (Ww1 , sizeof(double), top[1]->obtainWeightCount(), p1File);
+  (void)fread (Whw1 , sizeof(double), M*top[1]->getLayerSize(1), p1File);
+
+  (void)fread (Ww2 , sizeof(double), top[2]->obtainWeightCount(), p1File);
+  (void)fread (Whw2 , sizeof(double), M*top[2]->getLayerSize(1), p1File);
+
+  (void)fread (Ww3 , sizeof(double), top[3]->obtainWeightCount(), p1File);
+  (void)fread (Whw3 , sizeof(double), M*top[3]->getLayerSize(1), p1File);
+
+
+  anns[0]->setWeights(Ww0,Whw0);
+
+  anns[1]->setWeights(Ww1,Whw1);
+
+  anns[2]->setWeights(Ww2,Whw2);
+
+  anns[3]->setWeights(Ww3,Whw3);
+
+
+
+  init(p1File);
+  fclose (p1File);
+};
+
+
+void RnnCell::printf_Network(string output_filename){
+
+    FILE * pFile;
+    const char * c = output_filename.c_str();
+    pFile = fopen(c, "wb");
+    anns[0]->getTopology()->printTopology(pFile);
+    anns[1]->getTopology()->printTopology(pFile);
+    anns[2]->getTopology()->printTopology(pFile);
+    anns[3]->getTopology()->printTopology(pFile);
+
+    fwrite (anns[0]->getWeights() , sizeof(double), anns[0]->getTopology()->obtainWeightCount(), pFile);
+    fwrite (anns[0]->getHWeights() , sizeof(double), anns[0]->getTopology()->getLayerSize(1)*M, pFile);
+
+    fwrite (anns[1]->getWeights() , sizeof(double), anns[1]->getTopology()->obtainWeightCount(), pFile);
+    fwrite (anns[1]->getHWeights() , sizeof(double), anns[1]->getTopology()->getLayerSize(1)*M, pFile);
+
+    fwrite (anns[2]->getWeights() , sizeof(double), anns[2]->getTopology()->obtainWeightCount(), pFile);
+    fwrite (anns[2]->getHWeights() , sizeof(double), anns[2]->getTopology()->getLayerSize(1)*M, pFile);
+
+    fwrite (anns[3]->getWeights() , sizeof(double), anns[3]->getTopology()->obtainWeightCount(), pFile);
+    fwrite (anns[3]->getHWeights() , sizeof(double), anns[3]->getTopology()->getLayerSize(1)*M, pFile);
+
+    fclose (pFile);
+}
+
+void RnnCell::prepare(int M, Topology **top){
+  this->M = M;
+  V = 4;
+
+  double (*func)(double);
+  double (*func_deriv)(double);
+
+  double (*func_tanh)(double);
+  double (*func_tanh_deriv)(double);
+
+  func=f;
+  func_deriv = f_deriv;
+
+  func_tanh=f_tanh;
+  func_tanh_deriv = f_tanh_deriv;
+
+
+  anns = new AnnSerial*[V];
+  for(int v = 0; v < V; v++){
+    if(v==2){
+      anns[v] = new AnnSerial(V, v, M, top, func_tanh, func_tanh_deriv);
+    } else {
+      anns[v] = new AnnSerial(V, v, M, top, func, func_deriv);
+    }
+  }
+
+  ann_forget = anns[0];
+  ann_input = anns[1];
+  ann_gate = anns[2];
+  ann_output = anns[3];
+
+
+
+
+  b = new double[M];
+  c_current = new double[M];
+  c_new = new double[M];
+  h_current = new double[M];
+  h_new = new double[M];
+
+  a_outputs = new double*[V];
+  for(int v = 0; v < V; v++){
+    a_outputs[v] = new double[M];
+  }
+
+  aderiv = new Derivatives**[V];
+  for(int u = 0; u < V; u++){
+    aderiv[u] = new Derivatives*[V];
+    for(int v = 0; v < V; v++){
+      aderiv[u][v] = new Derivatives;
+      aderiv[u][v]->v = new double[top[v]->obtainWeightCount()*M];
+      aderiv[u][v]->vh = new double[M*top[v]->getLayerSize(1)*M];
+    }
+  }
+}
+
+
+void RnnCell::init(FILE * pFile=NULL){
+
+  for(int i=0; i<M; i++){
+    c_current[i] = 0;
+    h_current[i] = 0;
+  }
+}
+
+void RnnCell::feedForward(double *h_in, double *c_in, double *a_in, double *c_out, double *h_out){
+
+  c_current = c_in; // c_t0, c_t1,
+  h_current = h_in;
+
+  for(int v = 0; v < V; v++)
+    anns[v]->feedForward(h_in, a_in, a_outputs[v]);
+
+  for(int i=0; i < M; i++){
+    c_new[i] = c_out[i] = c_in[i] * a_outputs[0][i] + a_outputs[1][i] * a_outputs[2][i];
+    b[i] = tanh(c_out[i])* a_outputs[3][i];
+  }
+
+  double sumB = 0;
+  for(int i = 0; i < M; i++)
+    sumB += exp(b[i]);
+
+  for(int i = 0; i < M; i++)
+    h_new[i] = h_out[i] = exp(b[i]) / sumB;
+
+}
+
+
+void RnnCell::backPropagation(RnnDerivatives *deriv_in, RnnDerivatives *deriv_out){
+
+
+
+  for(int u = 0; u < V; u++)
+    anns[u]->backPropagation(deriv_in->hderiv, aderiv[u]);
+
+
+
+  for(int v = 0; v < V; v++){
+
+    Topology *vtop = anns[v]->getTopology();
+    for(int s = 0; s < vtop->getLayerCount()-1; s++){
+
+      for(int wi = 0; wi < vtop->getLayerSize(s)+1; wi++){
+
+        for(int wj = 0; wj < vtop->getLayerSize(s+1); wj++){
+
+
+          for(int k = 0; k < M; k++){
+
+            double cderiv = deriv_in->cderiv[v]->v[anns[v]->vi(v, s, wi, wj, k)];
+            // printf("cderiv: %.20f\n", cderiv);
+            double a_forget = ann_forget->getOutput(k);
+            // printf("a_forget: %.20f\n", a_forget);
+            double c = c_current[k];
+            // printf("c: %.20f\n", c);
+            double a_forget_deriv = aderiv[0][v]->v[anns[v]->vi(v, s, wi, wj, k)];
+            // printf("a_forget_deriv: %.20f\n", a_forget_deriv);
+            double a_input_deriv = aderiv[1][v]->v[anns[v]->vi(v, s, wi, wj, k)];
+            // printf("a_input_deriv: %.20f\n", a_input_deriv);
+            double a_gate = ann_gate->getOutput(k);
+            // printf("a_gate: %.20f\n", a_gate);
+            double a_input = ann_input->getOutput(k);
+            // printf("a_input: %.20f\n", a_input);
+            double a_gate_deriv = aderiv[2][v]->v[anns[v]->vi(v, s, wi, wj, k)];
+            // printf("a_gate_deriv: %.20f\n", a_gate_deriv);
+
+            deriv_out->cderiv[v]->v[anns[v]->vi(v, s, wi, wj, k)] = cderiv*a_forget + c*a_forget_deriv + a_input_deriv*a_gate + a_input*a_gate_deriv;
+            // printf("cderiv*a_forget:  %.20f\n", cderiv*a_forget);
+            // printf("c*a_forget_deriv:  %.20f\n", c*a_forget_deriv);
+            // printf("a_input_deriv*a_gate:  %.20f\n", a_input_deriv*a_gate);
+            // printf("a_input*a_gate_deriv:  %.20f\n", a_input*a_gate_deriv);
+            // printf("cia:  %.20f\n", deriv_out->cderiv[0]->v[0]);
+            // printf("cia:  %.20f\n", deriv_out->cderiv[0]->v[1]);
+            // break;
+          }
+        }
+      }
+    }
+    // printf("cia:  %.20f\n", deriv_out->cderiv[0]->v[0]);
+    // printf("cia:  %.20f\n", deriv_out->cderiv[0]->v[1]);
+
+
+    for(int wi = 0; wi < M /*vtop->getLayerSize(0)*/; wi++){
+      for(int wj = 0; wj < vtop->getLayerSize(1); wj++){
+
+        for(int k = 0; k < M; k++){
+
+          double cderiv = deriv_in->cderiv[v]->vh[anns[v]->vhi(v, wi, wj, k)];
+          // if(wi==1 && wj==0&& k==0 && v==0) printf("cderiv: %.20f\n", cderiv);
+
+          double a_forget = ann_forget->getOutput(k);
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("a_forget: %.20f\n", a_forget);
+
+          double c = c_current[k];
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("c: %.20f\n", c);
+
+          double a_forget_deriv = aderiv[0][v]->vh[anns[v]->vhi(v, wi, wj, k)];
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("a_forget_deriv: %.20f\n", a_forget_deriv);
+
+          double a_input_deriv = aderiv[1][v]->vh[anns[v]->vhi(v, wi, wj, k)];
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("a_input_deriv: %.20f\n", a_input_deriv);
+
+          double a_gate = ann_gate->getOutput(k);
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("a_gate: %.20f\n", a_gate);
+
+          double a_input = ann_input->getOutput(k);
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("a_input: %.20f\n", a_input);
+
+          double a_gate_deriv = aderiv[2][v]->vh[anns[v]->vhi(v, wi, wj, k)];
+          // if(wi==1 && wj==0&& k==0&& v==0) printf("a_gate_deriv: %.20f\n", a_gate_deriv);
+
+          deriv_out->cderiv[v]->vh[anns[v]->vhi(v, wi, wj, k)] = cderiv*a_forget + c*a_forget_deriv + a_input_deriv*a_gate + a_input*a_gate_deriv;
+          // if(wi==1 && wj==0 && k==0&& v==0) printf("cderiv*a_forget:  %.20f\n", cderiv*a_forget);
+          // if(wi==1 && wj==0 && k==0&& v==0) printf("c*a_forget_deriv:  %.20f\n", c*a_forget_deriv);
+          // if(wi==1 && wj==0 && k==0&& v==0) printf("a_input_deriv*a_gate:  %.20f\n", a_input_deriv*a_gate);
+          // if(wi==1 && wj==0 && k==0&& v==0) printf("a_input*a_gate_deriv:  %.20f\n", a_input*a_gate_deriv);
+          // if(wi==1 && wj==0 && k==0&& v==0) printf("deriv_out->cderiv[v]->vh[anns[v]->vhi(v, wi, wj, k)]: %.20f\n", deriv_out->cderiv[v]->vh[anns[v]->vhi(v, wi, wj, k)]);
+        }
+      }
+    }
+  }
+
+  // printf("1%.20f\n", deriv_out->cderiv[0]->vh[0]);
+  // printf("%.20f\n", deriv_out->cderiv[0]->vh[1]);
+  // printf("%.20f\n", deriv_out->cderiv[0]->vh[2]);
+  // printf("4%.20f\n", deriv_out->cderiv[0]->vh[3]);
+  double* sm_deriv = new double[M*M];
+
+
+  for(int k = 0; k < M; k++)
+    for(int n = 0; n < M; n++)
+      if(k == n) sm_deriv[k*M + n] = h_new[k]*(1-h_new[k]);
+      else sm_deriv[k*M + n] = -h_new[k]*h_new[n];
+
+      // printf("sm_deriv[k*M]: %.20f\n", sm_deriv[0*M]);
+      // printf("sm_deriv[k*M]: %.20f\n", sm_deriv[1]);
+
+      for(int v = 0; v < V; v++){
+        Topology *vtop = anns[v]->getTopology();
+        for(int s = 0; s < vtop->getLayerCount()-1; s++){
+          for(int wi = 0; wi < vtop->getLayerSize(s)+1; wi++){
+            for(int wj = 0; wj < vtop->getLayerSize(s+1); wj++){
+              for(int k = 0; k < M; k++){
+                double sum = 0;
+                for(int n = 0; n < M; n++){
+                  double sum2=0;
+                  //sm_deriv[k*M + n]
+                  double a_output_deriv = aderiv[3][v]->v[anns[v]->vi(v, s, wi, wj, n)];
+                  // printf("a_output_deriv: %.20f\n", a_output_deriv);
+                  double a_output = ann_output->getOutput(n);
+                  // printf("a_output: %.20f\n", a_output);
+                  double c_deriv = deriv_out->cderiv[v]->v[anns[v]->vi(v, s, wi, wj, n)];
+                  // printf("c_deriv: %.20f\n", c_deriv);
+                  sum2 += a_output_deriv*f_tanh(c_new[n]) + a_output*f_tanh_deriv(c_new[n])*c_deriv;
+                  // printf("a_output_deriv*f_tanh(c_new[n]): %.20f\n", a_output_deriv*f_tanh(c_new[n]));
+                  // printf("a_output*f_tanh_deriv(c_new[n])*c_deriv: %.20f\n", a_output*f_tanh_deriv(c_new[n])*c_deriv);
+                  sum2 *= sm_deriv[k*M+n];
+
+                  sum+=sum2;
+
+                  // printf("sum: %.20f\n", sum);
+                }
+                deriv_out->hderiv[v]->v[anns[v]->vi(v, s, wi, wj, k)] = sum;
+
+              }
+            }
+          }
+        }
+
+
+        for(int wi = 0; wi < M /*vtop->getLayerSize(0)*/; wi++){
+          for(int wj = 0; wj < vtop->getLayerSize(1); wj++){
+            for(int k = 0; k < M; k++){
+              double sum = 0;
+              for(int n = 0; n < M; n++){
+                //sm_deriv[k*M + n]
+                double a_output_deriv = aderiv[3][v]->vh[anns[v]->vhi(v, wi, wj, n)];
+                // printf("a_output_deriv:%.20f\n", a_output_deriv);
+
+                double a_output = ann_output->getOutput(n);
+                // printf("a_output:%.20f\n", a_output);
+                double c_deriv = deriv_out->cderiv[v]->vh[anns[v]->vhi(v, wi, wj, n)];
+                // printf("c_deriv:%.20f\n", c_deriv);
+                sum += a_output_deriv*f_tanh(c_new[n]) + a_output*f_tanh_deriv(c_new[n])*c_deriv;
+                sum *= sm_deriv[k*M+n];
+              }
+              deriv_out->hderiv[v]->vh[anns[v]->vhi(v, wi, wj, k)] = sum;
+
+            }
+          }
+        }
+      }
+
+  delete [] sm_deriv;
+
+}
+
+void RnnCell::destroy(){
+    for(int i = 0; i < V; i++){
+      anns[i]->destroy();
+    }
+
+   delete [] anns;
+   anns = NULL;
+
+
+  delete c_current;
+  c_current = NULL;
+  delete c_new;
+  c_new = NULL;
+  delete h_current;
+  h_current = NULL;
+  delete h_new;
+  h_new = NULL;
+  delete b;
+  b = NULL;
+  delete [] a_outputs;
+  a_outputs = NULL;
+
+  delete ann_forget; // 0
+  delete ann_input; // 1
+  delete ann_gate; // 2
+  delete ann_output; // 3
+
+  delete *aderiv;
+
+}
+
+
+AnnSerial* RnnCell::getANN(int v){
+  return anns[v];
+}
+
+
+//
+// SecondMarkLimit
+//
+
+SecondMarkLimit::SecondMarkLimit(int markIndex, int M){
+  this->markIndex = markIndex;
+  this->M = M;
+}
+
+void SecondMarkLimit::reset(){
+  count = 0;
+}
+
+bool SecondMarkLimit::check(double *vec){
+  int maxAt = 0;
+  for(int i = 1; i < M; i++)
+    maxAt = vec[maxAt] < vec[i] ? i : maxAt;
+
+  if(maxAt == markIndex) count++;
+
+  if(count == 2) return true;
+  return false;
+}
+
+
+//
+// DataNode
+//
+DataNode::DataNode(int M){
+  vec = new double[M];
+  next = NULL;
+}
+
+//
+// Rnn
+//
+
+Rnn::Rnn(int I, int M, RnnCell *rnnCell){
+
+  impl = RNN_FULL_BACKPROPAGATION;
+  // printf("M:%d\n", M);
+  Rnn(I, M, rnnCell, impl);
+}
+
+Rnn::Rnn(int I, int M, RnnCell *rnnCell, int impl){
+
+  this->I = I;
+  this->M = M;
+  this->V = 4;
+  cRnnCell = rnnCell;
+  this->impl = impl;
+  // printf("M:%d\n", this->M);
+  h_in = new double[M];
+  h_out = new double[M];
+  c_in = new double[M];
+  c_out = new double[M];
+  // printf("%s\n", "buvo");
+  rnnDeriv = new RnnDerivatives*[2];
+  rnnDeriv[0] = new RnnDerivatives;
+  rnnDeriv[1] = new RnnDerivatives;
+  allocateRnnDerivatives(rnnDeriv[0]);
+  allocateRnnDerivatives(rnnDeriv[1]);
+
+  errDeriv = new ErrorDerivatives*[V];
+
+  for(int v = 0; v < V; v++){
+    errDeriv[v] = new ErrorDerivatives;
+    errDeriv[v]->v = new double[cRnnCell->getANN(v)->getTopology()->obtainWeightCount()];
+    errDeriv[v]->vh = new double[cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M];
+  }
+}
+
+DataNode* Rnn::feedForward(DataNode* input, OutputLimit *outputLimit){
+  // printf("%d\n", M);
+  for(int k = 0; k < M; k++){
+    h_in[k] = 0;
+    c_in[k] = 0;
+  }
+
+  DataNode* p = input;
+  while(p->next != NULL){
+
+
+    cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+    copyVector(h_in, h_out, M);
+    copyVector(c_in, c_out, M);
+
+    p = p->next;
+  }
+
+  DataNode* out = new DataNode(M);
+  DataNode* q = out;
+
+  outputLimit->reset();
+
+  cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+  copyVector(h_in, h_out, M);
+  copyVector(c_in, c_out, M);
+  copyVector(q->vec, h_out, M);
+
+  if(outputLimit->check(q->vec)) return out;
+
+ double* empty_input = new double[I];
+ for(int i = 0; i < I; i++)
+  empty_input[i] = 0;
+
+
+  int count=0;
+  do{
+    count++;
+    // printf("%d\n", count);
+    cRnnCell->feedForward(h_in, c_in, empty_input, c_out, h_out);
+    copyVector(h_in, h_out, M);
+    copyVector(c_in, c_out, M);
+    // printf("%s\n", "asdsa");
+    q->next = new DataNode(M);
+    q = q->next;
+    copyVector(q->vec, h_out, M);
+
+
+
+
+  }while(outputLimit->check(q->vec) == false && count < 100);
+
+  delete [] empty_input;
+
+  return out;
+}
+
+bool Rnn::backPropagation(DataNode* input, DataNode* output, OutputLimit *outputLimit, double &error){
+
+  for(int k = 0; k < M; k++){
+    h_in[k] = 0;
+    c_in[k] = 0;
+  }
+
+  error = 0;
+
+  outputLimit->reset();
+
+  int derivIndex = 0;
+  resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
+  resetCDerivatives(rnnDeriv[derivIndex]->cderiv);
+
+  //initRnnDerivatives(rnnDeriv[1 - derivIndex]);
+
+  DataNode* p = input;
+
+
+//printf("----------------\n");
+
+  while(p->next != output){
+    //printf("A");
+    cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+    if(impl == RNN_APPROX_BACKPROPAGATION)resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
+    cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
+
+    copyVector(h_in, h_out, M);
+    copyVector(c_in, c_out, M);
+    p = p->next;
+    derivIndex = 1 - derivIndex;
+  }
+
+
+
+  cRnnCell->feedForward(h_in, c_in, p->vec, c_out, h_out);
+  if(impl == RNN_APPROX_BACKPROPAGATION)resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
+  cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
+  copyVector(h_in, h_out, M);
+  copyVector(c_in, c_out, M);
+
+  sumErrorDerivatives(h_out, rnnDeriv[1-derivIndex]->hderiv, output->vec);
+  error += calcError(h_out, output->vec);
+  int outputCount = 1;
+
+
+  derivIndex = 1 - derivIndex;
+  DataNode* q = output;
+
+  double* empty_input = new double[I];
+  for(int i = 0; i < I; i++)
+   empty_input[i] = 0;
+
+   //char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
+   //char abc[64]=" 0123456789";
+
+   do{
+
+     q = q->next;
+     //printf("%c", vec_to_char(abc, q->vec));
+    // printf("B");
+     if(q == NULL) {
+
+       delete [] empty_input;
+       return false;
+     }
+
+     cRnnCell->feedForward(h_in, c_in, empty_input, c_out, h_out);
+     if(impl == RNN_APPROX_BACKPROPAGATION)resetHDerivatives(rnnDeriv[derivIndex]->hderiv);
+     cRnnCell->backPropagation(rnnDeriv[derivIndex], rnnDeriv[1-derivIndex]);
+     copyVector(h_in, h_out, M);
+     copyVector(c_in, c_out, M);
+
+     sumErrorDerivatives(h_out, rnnDeriv[1-derivIndex]->hderiv, q->vec);
+     error += calcError(h_out, q->vec);
+     outputCount++;
+
+     derivIndex = 1 - derivIndex;
+
+   }while(outputLimit->check(q->vec) == false);
+
+
+   delete [] empty_input;
+
+   error = error / (double)outputCount;
+
+   return true;
+
+}
+
+void Rnn::updateWeights(double alpha, double eta){
+  for(int v = 0; v < V; v++)
+    cRnnCell->getANN(v)->updateWeights(errDeriv[v], alpha, eta);
+}
+
+void Rnn::resetErrorDerivatives(){
+  for(int v = 0; v < V; v++){
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount(); k++)
+      errDeriv[v]->v[k] = 0.0;
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M; k++)
+      errDeriv[v]->vh[k] = 0.0;
+  }
+}
+
+
+// PRIVATE
+
+
+RnnDerivatives* Rnn::allocateRnnDerivatives(RnnDerivatives* deriv){
+  deriv->hderiv = new Derivatives*[V];
+  deriv->cderiv = new Derivatives*[V];
+
+  for(int v = 0; v < V; v++){
+    deriv->hderiv[v] = new Derivatives;
+    deriv->hderiv[v]->v = new double[cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M];
+    deriv->hderiv[v]->vh = new double[cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M];
+
+    deriv->cderiv[v] = new Derivatives;
+    deriv->cderiv[v]->v = new double[cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M];
+    deriv->cderiv[v]->vh = new double[cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M];
+  }
+}
+
+
+void Rnn::resetHDerivatives(Derivatives** hderiv){
+  for(int v = 0; v < V; v++){
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M; k++)
+      hderiv[v]->v[k] = 0.0;
+
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M; k++)
+      hderiv[v]->vh[k] = 0.0;
+
+  }
+}
+void Rnn::resetCDerivatives(Derivatives** cderiv){
+  for(int v = 0; v < V; v++){
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->obtainWeightCount()*M; k++)
+      cderiv[v]->v[k] = 0.0;
+
+    for(int k = 0; k < cRnnCell->getANN(v)->getTopology()->getLayerSize(1)*M*M; k++)
+      cderiv[v]->vh[k] = 0.0;
+
+  }
+}
+
+
+void Rnn::copyVector(double* vec_b, double *vec_a, int n){
+  for(int k = 0; k < n; k++)
+    vec_b[k] = vec_a[k];
+}
+
+void Rnn::sumErrorDerivatives(double *h, Derivatives **hderiv, double *y){
+  for(int v = 0; v < V; v++){
+    Topology *top = cRnnCell->getANN(v)->getTopology();
+    for(int s = 0; s < top->getLayerCount()-1; s++){
+      for(int wi = 0; wi < top->getLayerSize(s)+1; wi++){
+        for(int wj = 0; wj < top->getLayerSize(s+1); wj++){
+          double sum = 0;
+          for(int n = 0; n < M; n++)
+            sum += (y[n]-h[n])*hderiv[v]->v[cRnnCell->getANN(v)->vi(v, s, wi, wj, n)];
+          errDeriv[v]->v[cRnnCell->getANN(v)->vi(v, s, wi, wj)] = sum;
+        }
+      }
+    }
+
+
+    for(int wi = 0; wi < M; wi++){
+      for(int wj = 0; wj < top->getLayerSize(1); wj++){
+        double sum = 0;
+        for(int n = 0; n < M; n++)
+          sum += (y[n]-h[n])*hderiv[v]->vh[cRnnCell->getANN(v)->vhi(v, wi, wj, n)];
+        errDeriv[v]->vh[cRnnCell->getANN(v)->vhi(v, wi, wj)] = sum;
+      }
+    }
+  }
+}
+
+double Rnn::calcError(double *h, double *y){
+  double error = 0;
+  for(int k = 0; k < M; k++)
+    error += 0.5*(h[k] - y[k])*(h[k] - y[k]);
+  return error;
+}
+
+double f(double x){
+  double y = 1 + exp(-x);
+  return 1 / y;
+}
+
+double f_deriv(double x){
+  return exp(-x) / pow((1 + exp(-x)), 2);
+}
+
+double f_tanh(double x){
+  return tanh(x);
+}
+
+double f_tanh_deriv(double x){
+  return 1 - pow(tanh(x), 2);
+}
+
+
+\subsection{app.h}
+
+$#$ifndef APP_HEADER
+$#$define APP_HEADER
+
+$#$include "rnn.h"
+
+$#$include <cstring>
+$#$include <vector>
+$#$include <cstdlib>
+
+class LanguageModel {
+  private:
+  public:
+    LanguageModel();
+
+    void doSomething();
+
+  private:
+    std::vector<DataNode*>* loadFromFile(const char *abc, const char *filename);
+
+};
+
+double* char_to_vec(const char* abc, char c);
+char vec_to_char(const char* abc, double  *vec);
+
+DataNode* str_to_nodes(const char* abc, const char* str);
+void nodes_to_str(const char* abc, DataNode* node, char* str);
+
+
+
+
+$#$endif /* APP_HEADER */
+
+\subsection{app.cpp}
+
+$#$include "app.h"
+
+LanguageModel::LanguageModel(){
+
+}
+
+void LanguageModel::doSomething(){
+
+   char abc[64]=" abcdefghijklmnopqrstuvwxyz";
+   // char abc[64]=" 123";
+   // char abc[64]=" abcdeghilnoprstuvyz";
+
+  //
+  // int M = strlen(abc);
+  // int I = strlen(abc);
+  // printf("%s\n", "asdsa");
+  // int V = 4;
+  // Topology **topology = new Topology*[V];
+  // for(int v = 0; v < V; v++){
+  //   topology[v] = new Topology();
+  //   topology[v]->addLayer(I);
+  //   topology[v]->addLayer(M);
+  // }
+  //
+  // RnnCell *rnnCell = new RnnCell(M, "500_123_03.bin");
+  // Rnn* rnn = new Rnn(I, M, rnnCell, RNN_FULL_BACKPROPAGATION);
+  //
+  // SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
+  //   // printf("%s\n", "asdsa");
+  //     // printf("%s\n", "asdsa");
+  // DataNode *inputNodes = str_to_nodes(abc, "123 4");
+  //   // printf("%s\n", "asdsa");
+  // DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
+  //   // printf("%s\n", "asdsa");
+  // char str[512]="";
+  // nodes_to_str(abc, outputNodes, str);
+  //
+  // printf("%s", str);
+  // printf("%s\n", "asdsa");
+
+
+
+
+
+
+  // std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data.txt");
+  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "data.txt");
+
+
+
+  char str[512]="";
+  for(int i = 0; i < nodeVector->size(); i++){
+    nodes_to_str(abc, (*nodeVector)[i], str);
+
+  }
+
+
+
+  double alpha = 0.8;
+  double eta = 0.05;
+
+  int M = strlen(abc);
+  int V = 4;
+  int I = strlen(abc);
+  Topology **topology = new Topology*[V];
+  for(int v = 0; v < V; v++){
+    topology[v] = new Topology();
+    topology[v]->addLayer(I);
+    topology[v]->addLayer(M);
+  }
+
+  RnnCell *rnnCell = new RnnCell(M, topology);
+  Rnn *rnn = new Rnn(I, M, rnnCell, RNN_APPROX_BACKPROPAGATION);
+
+  SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
+
+  // printf("%s\n", "asdsa");
+  double startTime = clock();
+
+  for(int n = 0; n < 10; n++){
+    double iterError = 0;
+    for(int i = 0; i < nodeVector->size(); i++){
+      DataNode* input = (*nodeVector)[i];
+
+
+      DataNode* startOutput = input;
+
+      for(int i = 0; i < 3; i++)
+        startOutput = startOutput->next;
+
+
+      DataNode* output = NULL;
+      int offset = 0;
+
+      int partCount = 0;
+      double sentenceError = 0.0;
+
+      do{
+        double partError;
+        output = startOutput;
+        for(int i = 0; i < offset; i++)
+          output = output->next;
+        if(rnn->backPropagation(input, output, markLimit, partError) == false){
+          rnn->resetErrorDerivatives();
+          break;
+        }
+        rnn->updateWeights(alpha, eta);
+        rnn->resetErrorDerivatives();
+
+        sentenceError += partError;
+        partCount++;
+
+
+        offset++;
+      }while(true);
+      sentenceError = sentenceError / (double)partCount;
+
+      iterError += sentenceError;
+    }
+
+     printf("Epochos paklaida: %.10f\n",iterError);
+  }
+
+  rnn->getRnnCell()->printf_Network("2000_123_02.bin");
+
+
+
+  double endTime = clock();
+  double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
+
+  printf("Apmokymas uztruko: %.5f sec\n", runtime);
+
+
+}
+
+std::vector<DataNode*>* LanguageModel::loadFromFile(const char *abc, const char *filename){
+  FILE* file = fopen("../files/data.txt", "r");
+
+  char* line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  std::vector<DataNode*>* vector = new std::vector<DataNode*>();
+
+  while ((read = getline(&line, &len, file)) != -1) {
+    printf("\n\n");
+    printf("%s", line);
+
+    DataNode* node = str_to_nodes(abc, line);
+    vector->push_back(node);
+
+
+  }
+
+  fclose(file);
+  return vector;
+}
+
+//
+// GLOBAL
+//
+void char_to_vec(const char* abc, double* vec, char c){
+  int n = strlen(abc);
+
+
+  for(int i = 0; i < n; i++)
+    vec[i] = abc[i] == c ? 1.0 : 0.0;
+
+}
+
+char vec_to_char(const char* abc, double *vec){
+  int n = strlen(abc);
+  int maxAt = 0;
+  for(int i = 1; i < n; i++)
+    maxAt = vec[i] > vec[maxAt] ? i : maxAt;
+
+  return abc[maxAt];
+}
+
+DataNode* str_to_nodes(const char* abc, const char* str){
+  int n = strlen(abc);
+
+  DataNode* out = new DataNode(n);
+  DataNode* q = out;
+  int index = 0;
+  while(str[index] != '\0'){
+    char_to_vec(abc, q->vec, str[index]);
+    index++;
+
+    if(str[index] == '\0') break;
+    q->next = new DataNode(n);
+    q = q->next;
+  }
+
+  return out;
+
+}
+
+void nodes_to_str(const char* abc, DataNode* node, char* str){
+  int n = strlen(abc);
+  DataNode* q = node;
+
+  int index = 0;
+  while(q != NULL){
+    str[index++] = vec_to_char(abc, q->vec);
+    q = q->next;
+  }
+
+  str[index] = '\0';
+
+}

@@ -281,7 +281,7 @@ bool test_ann_random_weights(){
   // for(int i = 0; i < topology[0]->obtainWeightCount(); i++)
   // printf("weight[%d] = %.5f\n", i, weights[i]);
 
-    printf("\n");
+    // printf("\n");
     double *hweights = serialDBL->getHWeights();
     // for(int i = 0; i < M*topology[0]->getLayerSize(1); i++)
     //   printf("hweights[%d] = %.5f\n", i, hweights[i]);
@@ -1301,22 +1301,16 @@ bool run_tests(){
 
   bool passed = test_topology(); failCount += passed ? 0 : 1;
   printf("%s - test_topology\n", passed ? "PASSED" : "FAILED");
-  printf("%s\n", "---------------------");
   passed = test_ann_feedforward(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_feedforward\n", passed ? "PASSED" : "FAILED");
-  printf("%s\n", "---------------------");
-
   // passed = test_rnn_feedforward(); failCount += passed ? 0 : 1;
   // printf("%s - test_rnn_feedforwards_of_networks\n", passed ? "PASSED" : "FAILED");
   // printf("%s\n", "---------------------");
   passed = test_rnn_cell_feedforward_full(); failCount += passed ? 0 : 1;
   printf("%s - test_rnn_cell_feedforward_full\n", passed ? "PASSED" : "FAILED");
 
-
-
   passed = test_ann_random_weights(); failCount += passed ? 0 : 1;
   printf("%s - test_ann_random_weights\n", passed ? "PASSED" : "FAILED");
-
 
   passed = test_backprogg(); failCount += passed ? 0 : 1;
   printf("%s - test_backprogg\n", passed ? "PASSED" : "FAILED");
