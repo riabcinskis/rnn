@@ -16,7 +16,7 @@ Neuroniai tinklai dažniausiai yra naudojami išvesti prasmę iš sudėtingų ne
 \subsection{Neuroninių tinklų neuronai}
 % Neuroninių tinklų sprendžiamos problemos
 
-Esminis neuroninio tinklo elementas yra dirbtinis neuronas. Šį neuroną sudaro pagrindiniai trys komponentai: įvesties reikšmės, svoriai, kurie jungia šias reikšmes su neuronu ir aktyvacijos funkcija. \ref{fig:perceptron1} Tai yra pats paprasčiausias neurono modelis, vadinamas Perceptronu (angl. \textit{Perceptron}).\cite{Andrew2017}
+Esminis neuroninio tinklo elementas yra dirbtinis neuronas. Šį neuroną sudaro pagrindiniai trys komponentai: įvesties reikšmės, svoriai, kurie jungia šias reikšmes su neuronu ir aktyvacijos funkcija. \ref{fig:perceptron1} paveiksle pavaizduotas yra pats paprasčiausias neurono modelis, vadinamas Perceptronu (angl. \textit{Perceptron}).\cite{Andrew2017}
 
 \begin{figure}[h!]
   \centering
@@ -29,7 +29,8 @@ Esminis neuroninio tinklo elementas yra dirbtinis neuronas. Šį neuroną sudaro
 \begin{figure}
   \centering
 \scalebox{0.7}{\includegraphics[trim=0 1cm 0 0, clip]{images/perceptron_pvz.png}}
-\caption{Dirbtinio neurono modelis (Perceptronas).\\http://www.elektronika.lt/teorija/kompiuterija/4342/neuroniniai-tinklai/}
+\caption{Dirbtinio neurono modelis (Perceptronas).}
+\source{http://www.elektronika.lt/teorija/kompiuterija/4342/neuroniniai-tinklai/}
 \label{fig:perceptron}
 \end{figure}
 
@@ -55,11 +56,11 @@ Paveiksle \ref{fig:perceptron} pavaizduoto neurono veikimo principas:
 \end{equation*}
 \end{enumerate}
 
-\subsection{Sužadinimo signalai(angl. \textit{Bias neuron})}
+\subsection{Sužadinimo signalai}
 Dažniausiai įvesties reikšmių yra vienetu daugiau, nei yra paduodama įvesties reikšmių. Ši įvestis yra vadinama sužadinimo signalu (angl. \textit{bias neuron}). Šio signalo reikšmė yra pastovi ir visada lygi vienetui($x_{n+1} = 1$). Taip pat yra pridedamas papildomas svoris $W_{n+1}$ jungiantis šį signalą su neuronu.\cite{Ieva2012}
 
 Šis sužadinimo signalas padeda lengvai koreguoti neurono išvesties reikšmę, kadangi įvesties reikšmė yra vienetas, tuomet sandauga, kuri yra prisumuojama priklauso tik nuo svorio jungiančio sužadinimo signalą su neuronu. Ji yra lygi  $W_{n+1}$. Naudojant sužadinimo signalus neuroniai tinklai yra daug sparčiau apmokinami, kadangi šie signalai gali laisvai koreguoti perduodamą reikšmę į neuronus.
-  \subsection{Aktyvacijos funkcijų savybės ir naudojimas(angl. \textit{Activation function})}
+  \subsection{Aktyvacijos funkcijų savybės ir naudojimas}
 Neurono išvesties reikšmei apskaičiuoti naudojamų aktyvacijos funkcijų yra labai daug. Jų paskirtis yra nuspręsti ar atitinkamas neuronas, kuriam yra taikoma aktyvacijos funkcija yra reikšmingas tolimesniem skaičiavimams.
 
 Tarkime turime neuroną, kurio $z$ yra lygus $\sum_{k=1}^{n} x_k W_k + bias$. Šios reikšmės reikšmių intervalas yra nuo $-\infty$ iki $+\infty$. Kadangi neuronai nežino reikšmių ribų, tam tikslui yra naudojamos aktyvacijos funkcijos nuspręsti ar šis neuronas turi būti sužadintas.
@@ -71,6 +72,7 @@ Sigmoidinė netiesinė aktyvacijos funkcija. Jos funkcija $f(x)=\frac{1}{1+e^{-x
   \centering
 \scalebox{0.6}{\includegraphics{images/sigmoid.png}}
 \caption{Sigmoidinės funkcijos grafikas.}
+\source{https://en.wikipedia.org/wiki/File:Logistic-curve.svg}
 \label{fig:sigmoid}
 \end{figure}
 
@@ -95,7 +97,8 @@ Hiperbolinio tangento netiesinė aktyvacijos funkcija. Jos funkcija $f(x)=tanh(x
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics{images/tanhh.png}}
-\caption{Hiperbolinio tangento grafikas.\\https://mlnotebook.github.io/post/transfer-functions/}
+\caption{Hiperbolinio tangento grafikas.}
+\source{https://mlnotebook.github.io/post/transfer-functions/}
 \label{fig:tanh}
 \end{figure}
 
@@ -115,9 +118,9 @@ Hiperbolinio tangento netiesinė aktyvacijos funkcija. Jos funkcija $f(x)=tanh(x
 \end{enumerate}
 
 
-\subsection{Tiesioginio sklidimo neuroniniai tinklai(angl. \textit{Feed Forward neural networks })}
+\subsection{Tiesioginio sklidimo neuroniniai tinklai}
 
-Naudojant Perceptronų sudarymo logiką, buvo pradėti kurti pradiniai tiesioginio sklidimo neuroniai tinklai. Šie tinklai yra sudaryti iš daug perceptronų, kurie yra sugrupuoti į tris sluoksnius \ref{fig:feedforfff}.
+Naudojant Perceptronų sudarymo logiką, buvo pradėti kurti pradiniai tiesioginio sklidimo neuroniai tinklai. Šie tinklai yra sudaryti iš daug perceptronų, kurie yra sugrupuoti į tris sluoksnius (\ref{fig:feedforfff}).
 \begin{enumerate}
   \item Įvesties sluoksnis (angl. \textit{Input layer}).
   \item Paslėptasis sluoksnis (angl. \textit{Hidden layer}).
@@ -133,7 +136,8 @@ Naudojant Perceptronų sudarymo logiką, buvo pradėti kurti pradiniai tiesiogin
 \begin{figure}[h!]
   \centering
 \scalebox{0.8}{\includegraphics{images/ffnettt.png}}
-\caption{Tiesioginio sklidimo neuroninis tinklas.\\https://dzone.com/articles/feed-forward-neural-network-with-mxnetr}
+\caption{Tiesioginio sklidimo neuroninis tinklas.}
+\source{https://dzone.com/articles/feed-forward-neural-network-with-mxnetr}
 \label{fig:feedforfff}
 \end{figure}
 
@@ -145,16 +149,17 @@ Paveiksle \ref{fig:feedforfff} galima pastebėti, kad
 \end{enumerate}
 
 
-\subsection{Daugiasluoksniai tiesioginio sklidimo neuroniniai tinklai(angl. \textit{Deep Feed Forward neural networks})}
+\subsection{Daugiasluoksniai tiesioginio sklidimo neuroniniai tinklai}
 
-Turintys daugiau nei vieną paslėptajį sluoksnį, tiesioginio sklidimo neuroniniai tinklai yra vadinami daugiasluoksniais. Šio tinklo veikimo principas yra toks pat, kaip ir paprastojo tiesioginio neuroninio tinklo su vienu paslėptuoju sluoksniu. Šių tinklų privalumas yra tas, kad kiekvienas paslėptasis sluoksnis nustato tam tikras įvesties duomenų charakteristikas. Pavyzdžiui \cite{Deividas2018} darbe rašoma, kad atliekant šį tinklą apmokant atpažinti ranka rašytinius skaičius, tinklo paslėptieji sluoksniai nusako tam tikras skačiaus charakteristikas, pavyzdžiui vienas sluoksnis gali nusakyti ar skaičiuje yra apskritimas, tai jei sluoksnis atranda apskritimą tame skaičiuoje, tai tinklo gražinamos reikšmės gali būti 0, 6, 8 arba 9, kadangi šiuose skaičiuose yra apskritimas.
+Turintys daugiau nei vieną paslėptajį sluoksnį, tiesioginio sklidimo neuroniniai tinklai yra vadinami daugiasluoksniais. Šio tinklo veikimo principas yra toks pat, kaip ir paprastojo tiesioginio neuroninio tinklo su vienu paslėptuoju sluoksniu. Šių tinklų privalumas yra tas, kad kiekvienas paslėptasis sluoksnis nustato tam tikras įvesties duomenų charakteristikas \cite{Mirjalili2019}. Pavyzdžiui \cite{Deividas2018} darbe rašoma, kad atliekant šį tinklą apmokant atpažinti ranka rašytinius skaičius, tinklo paslėptieji sluoksniai nusako tam tikras skačiaus charakteristikas, pavyzdžiui vienas sluoksnis gali nusakyti ar skaičiuje yra apskritimas, tai jei sluoksnis atranda apskritimą tame skaičiuoje, tai tinklo gražinamos reikšmės gali būti 0, 6, 8 arba 9, kadangi šiuose skaičiuose yra apskritimas.
 
 Norint žinoti kiek sluoksnių yra šiuose neuroniniuose tinkluose, skaičiavimams atlikti yra įvedamas žymėjimas L, kuris reiškia kiek sluoksnių šitame neuroniniame tinkle yra, o žymėjimas l reiškia kuriame sluoksnyje dabar atliekame skaičiavimus.
 
 \begin{figure}[h!]
   \centering
 \scalebox{0.4}{\includegraphics[trim=0 1cm 0 1.8cm, clip]{images/deepff.jpeg}}
-\caption{Daugiasluoksnis tiesioginio sklidimo neuroninis tinklas.\\https://towardsdatascience.com/training-deep-neural-networks-9fdb1964b964}
+\caption{Daugiasluoksnis tiesioginio sklidimo neuroninis tinklas.}
+\source{https://towardsdatascience.com/training-deep-neural-networks-9fdb1964b964}
 \label{fig:deepnn}
 \end{figure}
 
@@ -165,14 +170,14 @@ Norint žinoti kiek sluoksnių yra šiuose neuroniniuose tinkluose, skaičiavima
 \end{equation*}
 čia $s_l$ - nurodo kiek l-ajame sluoksnyje yra neuronų, $a_k^l$ - nurodo k-ąjį neuroną l-ajame sluoksnyje, o $W_{nk}^{l-1}$ - nurodo svorį jungiantį (l-1)-ojo sluoksnio n-ajį neuroną su l-ojo sluoksnio k-uoju neuronu.
 
-\subsection{Rekurentiniai neuroniniai tinklai(angl. \textit{Recurrent Neural Network})}
+\subsection{Rekurentiniai neuroniniai tinklai}
 
-Rekurentiniai neuroniai tinklai implementuoja naujo tipo ląsteles, vadinamas rekurentinėmis ląstelėmis. Pirmasis šio tinklo prototipas buvo sukurtas, taip kad kiekviena paslėpta tinklo ląstelė kaip įvestis pasiimdavo tos pačios ląstelės išvesties reikšmes kelių žingsnių.
+Rekurentiniai neuroniai tinklai implementuoja naujo tipo ląsteles, vadinamas rekurentinėmis ląstelėmis. Pirmasis šio tinklo prototipas buvo sukurtas, taip kad kiekviena paslėpta tinklo ląstelė kaip įvestis pasiimdavo tos pačios ląstelės išvesties reikšmes kelių žingsnių. \cite{Balasubramaniam2008}
 
-Yra daug šio tinklo variacijų, pavyzdžiui kaip įvestis perduoti tinklo būsenas, kintamųjų užtempimas ir panašiai, tačiau įdėja išlieka ta pati. Šis tinklas dažniausiai yra naudojamas, kai yra svarbus kontekstas (t.y. kai sprendimai priklauso nuo to kas vyko praeityje), pavyzdžiui sudarant tekstus, nauji teksto sakiniai yra prognozuojami, pagal tai kokie sakiniai jau yra prieš tai parašyti.
+Yra daug šio tinklo variacijų, pavyzdžiui kaip įvestis perduoti tinklo būsenas, kintamųjų užtempimas ir panašiai, tačiau įdėja išlieka ta pati. Šis tinklas dažniausiai yra naudojamas, kai yra svarbus kontekstas (t.y. kai sprendimai priklauso nuo to kas vyko praeityje), pavyzdžiui sudarant tekstus, nauji teksto sakiniai yra prognozuojami, pagal tai kokie sakiniai jau yra prieš tai parašyti. \cite{Filippo2017}
 
 
-\subsection{ LSTM tipo rekurentiniai neuroniniai tinklai(angl. \textit{LSTM Recurrent Neural Network})}
+\subsection{ LSTM tipo rekurentiniai neuroniniai tinklai}
 
 LSTM - Ilgalaikė/trumpalaikė atmintis. Šio tipo rekurentiniai tinklai implementuoja atminties ląstelę, kuri gali apdoroti duomenis, kai paduodami duomenys turi tam tikrus laiko tarpus, kada jie yra paduodami. Šie tinklai gali prognozuoti tekstą pagal pavyzdžiui 10 prieš tai einančių žodžių. Taip pat šie tinklai gali prognozuoti vaizdo kadrą, pagal tai kas vyko keliais kadrais ankščiau. \cite{Christopher2015}
 
@@ -195,12 +200,13 @@ Kiekviena iš keturių tinklo ląstelių yra sudaryta iš daugiasluoksnių tiesi
   \item Išvesties ląstelė nurodo, kuri informacija yra svarbi ir kiek jos turi būti perduodama tolimesniems skaičiavimam.
 \end{enumerate}
 
-Šių visų tinklų perduodama informacija sąveikauja tarpusavyje. \ref{fig:lstmveikimas}
+Šių visų tinklų perduodama informacija sąveikauja tarpusavyje (\ref{fig:lstmveikimas} pav.).
 
 \begin{figure}[h!]
   \centering
 \scalebox{0.4}{\includegraphics{images/LSTMveikimas.png}}
-\caption{LSTM tinklo sandara.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+\caption{LSTM tinklo sandara.}
+\source{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmveikimas}
 \end{figure}
 
@@ -209,7 +215,8 @@ Pagrindinė šio tinklo veikimo esmė yra atmintis, kuri yra perduodama kaip bū
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics{images/LSTMcore.png}}
-\caption{LSTM tinklo atmintis.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+\caption{LSTM tinklo atmintis.}
+\source{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmcore}
 \end{figure}
 
@@ -219,32 +226,37 @@ Rekurentinis neuroninis tinklas turi tris neuroninius tinklus, kurie naudoja sig
 
 LSTM veikimo principas \cite{Christopher2015}
 \begin{enumerate}
-  \item Pirmiausia nustatome, kurią informaciją turime pamiršti. Šį sprendimą daro pamiršimo ląstelė. Ji pagal tinklo būseną ir įvesties reikšmes nustato, kurią informaciją reikia visiškai pamirši, o kurią reikia perduoti. \ref{fig:lstmforget}
+  \item Pirmiausia nustatome, kurią informaciją turime pamiršti. Šį sprendimą daro pamiršimo ląstelė. Ji pagal tinklo būseną ir įvesties reikšmes nustato, kurią informaciją reikia visiškai pamirši, o kurią reikia perduoti. (\ref{fig:lstmforget} pav.)
   \begin{figure}[h!]
     \centering
   \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMforget.png}}
-  \caption{LSTM tinklo pamiršimo ląstelė.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+  \caption{LSTM tinklo pamiršimo ląstelė.}
+  \source{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
   \label{fig:lstmforget}
   \end{figure}
-  \item Sekantis žingsnis yra nustatyti kurią informaciją įrašysime į atmintį. Šį sprendimą daro įvesties ir įvesties moduliacijos ląstelės. Įvesties ląstele nustatome, kurią informaciją mes pridėsime, o įvesties moduliacijos ląstele nustatome kokia ta informacija bus. \ref{fig:lstminput}
+  \item Sekantis žingsnis yra nustatyti kurią informaciją įrašysime į atmintį. Šį sprendimą daro įvesties ir įvesties moduliacijos ląstelės. Įvesties ląstele nustatome, kurią informaciją mes pridėsime, o įvesties moduliacijos ląstele nustatome kokia ta informacija bus. (\ref{fig:lstminput} pav.)
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMinput.png}}
-\caption{LSTM tinklo įvesties ląstelės.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+\caption{LSTM tinklo įvesties ląstelės.}
+\source{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstminput}
 \end{figure}
-\item Toliau atnaujinsime tinklo atmintį. Iš pradžių padauginame atmintį iš pamiršimo ląstelės, kad pamirštume informaciją, kurią nustatėme, kad reikia pamiršti. o toliau pridėsime informaciją, kurią nustatė įvesties ir įvesties moduliacijos ląstelės, kad reikia pridėti.\ref{fig:lstmnewc}
+\item Toliau atnaujinsime tinklo atmintį. Iš pradžių padauginame atmintį iš pamiršimo ląstelės, kad pamirštume informaciją, kurią nustatėme, kad reikia pamiršti. o toliau pridėsime informaciją, kurią nustatė įvesties ir įvesties moduliacijos ląstelės, kad reikia pridėti.(\ref{fig:lstmnewc} pav.)
+\clearpage
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMnewc.png}}
-\caption{LSTM tinklo naujos atminties skaičiavimas.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+\caption{LSTM tinklo naujos atminties skaičiavimas.}
+\source{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmnewc}
 \end{figure}
-\item Galiausiai nustatome kokią tinklo reikšmę išvesime. Ši reikšmė priklausys nuo naujos atminties ir išvesties ląstelės. Išvesties ląstelė nustato kurias reikšmes reikia perduoti, o atminčiai yra pritaikoma hiperbolinio tangento funkcija. Sudauginus atmintį ir išvesties ląstelę, gauname kurią informaciją išvesime.\ref{fig:lstmoutput}
+\item Galiausiai nustatome kokią tinklo reikšmę išvesime. Ši reikšmė priklausys nuo naujos atminties ir išvesties ląstelės. Išvesties ląstelė nustato kurias reikšmes reikia perduoti, o atminčiai yra pritaikoma hiperbolinio tangento funkcija. Sudauginus atmintį ir išvesties ląstelę, gauname kurią informaciją išvesime.(\ref{fig:lstmoutput} pav.)
 \begin{figure}[h!]
   \centering
 \scalebox{0.6}{\includegraphics[trim=0 0 11cm 0, clip]{images/LSTMoutput.png}}
-\caption{LSTM tinklo naujos atminties skaičiavimas.\\https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+\caption{LSTM tinklo naujos atminties skaičiavimas.}
+\source{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
 \label{fig:lstmoutput}
 \end{figure}
 \end{enumerate}
@@ -265,14 +277,16 @@ Naudojant šią išvestinę tinklo apmokymas vykdomas atnaujinant visus tinklo s
     \end{equation*}
 Tačiau toks tinklo apmokymo būdas nėra veiksmingas, nes tinklas apsimokys atpažinti naujas reikšmes labai greitai, tačiau problema yra ta, kad labai lengvai pamirš ką jau išmoko praeityje, todėl yra naudojami $\alpha$ ir $\eta$ koeficientai. Gaunama nauja formulė.
 \begin{equation*}
-  \Delta W_{ij} =-\eta\frac{\partial E}{\partial W_{ij}}+\alpha \Delta W_{ij} \\
+  \Delta W_{ij} =-\eta\frac{\partial E}{\partial W_{ij}}+\alpha \Delta W_{ij}
+\end{equation*}
+\begin{equation*}
     W_{ij} = W_{ij} + \Delta W_{ij}
 \end{equation*}
 $\alpha$ ir $\eta$ kintamieji nurodo tinklo apmokymo inerciją ir greitį. \cite{Deividas2018} darbe lyginamos tinklo apmokymo paklaidos keičiant šių parametrų reikšmes. Parinkus optimalius parametrus tinklo svoriai daug greičiau konverguoja į norimus svorius, kas leidžia tinklui greičiau apsimokinti. Parinkus labai mažas apmokymo greičio reikšmes tinklas gali labai užtrukti, kol jis apsimokins, o parinkus labai dideles reikšmes tinklas labai greitai išmoks atpažinti naujas reikšmes, tačiau pamiršdamas senas.
 
-Taip pat egzistuoja nykstančio gradiento problema, kuri būna tinkluose, kuriuose yra labai daug sluoksnių. Kadangi neuroninių tinklų apmokymas vyksta einant nuo paskutinio sluoksnio iki pirmojo ir taip einant per visus sluoksnius kiekvieno sluoksnio išvestinės yra dauginamos kartu, tam kad apskaičiuotų pradinio sluoksnio išvestines. Kai yra n neuroninio tinklo sluoksnių ir šie sluoksniai naudoja tokią aktyvacijos funkciją, kaip sigmoidinę, tai n sluoksnių išvestinės yra sudauginamos kartu, to pasekoje gradiento reikšmė mažėja eksponentiškai, o maža gradiento reikšmė reiškia, kad apmokant tinklą svoriai nebus atnaujinami, kadangi gradiento reikšmė, pagal kurią atnaujiname svorius bus nulinė.\cite{Wang2019}
+Taip pat egzistuoja nykstančio gradiento problema, kuri būna tinkluose, kuriuose yra labai daug sluoksnių. Kadangi neuroninių tinklų apmokymas vyksta einant nuo paskutinio sluoksnio iki pirmojo ir taip einant per visus sluoksnius kiekvieno sluoksnio išvestinės yra dauginamos kartu, tam kad apskaičiuotų pradinio sluoksnio išvestines. Kai yra n neuroninio tinklo sluoksnių ir šie sluoksniai naudoja tokią aktyvacijos funkciją, kaip sigmoidinę, tai n sluoksnių išvestinės yra sudauginamos kartu, to pasekoje gradiento reikšmė mažėja eksponentiškai, o maža gradiento reikšmė reiškia, kad apmokant tinklą svoriai nebus atnaujinami, kadangi gradiento reikšmė, pagal kurią atnaujiname svorius bus nulinė.\cite{Wang2019} \cite{Shepherd1997}
 
-\subsection{Query autocompletion}
+\subsection{Užklausų automatinis užbaigimas}
 
 Neuroniniai tinklai yra taikomi daugelyje sričių. Viena iš jų yra kalbos sudaryme (angl. \textit{language modelling}). Daugelis šiuolaikinių paieškos sistemų naudoja užklausų automatinio užbaigimo sistemas. Šios sistemos siūlo rašomų žodžių pabaigą ir prognozuoja kelis sekančius žodžius. Šios sistemos veikimo principas yra, kai vartotojas įvedą į paiešką bet kokią raidę sistema pagal prieš tai buvusį tekstą ir pagal naują įvestą raidę pasiūlo naujus žodžių užbaigimo variantus ir prognozuoja naujus sekančius žodžius. Tokie pasiūlymai dažniausiai yra priimami iš praeities naudotų užklausų, todėl yra labai mažas šansas, kad sistema gebės prognozuoti tekstą, kurio dar nėra mačius. Tam tikslui yra naudojami neuroniai tinklas, kad apmokyti tinklą prognozuoti tokių užklausų užbaigimus.\cite{park2017}
 

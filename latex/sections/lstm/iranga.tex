@@ -21,3 +21,14 @@ Tinklui realizuoti buvo sukurtos klasės, kurios aprašo tinklo veikimą.
   \item \textbf{RnnDerivatives} - klasė, kuri saugo visų tinklų išvestines, pagal visų tinklų svorius.
   \item \textbf{SecondMarkLimit} - klasė, kuri skaičiuoja kiek kartų atitinkamas simbolis buvo panaudotas, pagal kurį yra prognozuojamas tekstas.
 \end{enumerate}
+
+\clearpage
+
+\begin{figure}[h!]
+  \centering
+\scalebox{0.8}{\includegraphics[trim=0 0 0 0cm, clip]{images/Drawing0.png}}
+\caption{Veiklos diagrama.}
+\label{fig:activity}
+\end{figure}
+
+\ref{fig:activity} paveiksle pavaizduota tinklo apmokymo veiklos diagrama. Iš pradžių yra paduodami duomenys į tinklą, šie duomenys yra suskaidomi į sąkinius. Tinklas apmokomas tinklą apmokinant kas vieną sakinį ir grąžinant to sakinio apmokymo vidutinės paklaidos reikymę. Kai yra apmokomi visi sakiniai tinklas gražina kiek laiko mokinosi ir išsisaugo apmokinto tinklo parametrus, kad jį būtų galima naudoti ateityje prognozuojant reikšmes.

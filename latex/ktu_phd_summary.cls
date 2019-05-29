@@ -100,7 +100,7 @@
 
   \captionsetup[figure]{
     font={small},
-     %labelfont={bf},
+     labelfont={bf},
      format={figureFormat},
      labelformat={figureLabelFormat},
      labelsep=period,
@@ -206,7 +206,7 @@
    \renewcommand{\cftloftitlefont}{\hfill\normalfont\bfseries\MakeUppercase}
    \renewcommand{\cftafterloftitle}{\hfill}
    \addto\captionsenglish{%
-      \renewcommand{\listfigurename}{Paveikslėlių sąrašas}%
+      \renewcommand{\listfigurename}{Paveikslai}%
    }
 
    % list of tables

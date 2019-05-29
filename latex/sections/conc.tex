@@ -1,11 +1,12 @@
 \begin{enumerate}
-  \item Buvo sudarytos ir išvestos LSTM rekurentinio neuroninio tinklo formulės. Pavyko išvesti bendrąsias tinklo apmokymo formules gradientinio nusileidimo metodu. Šios formulės buvo optimizuotos, naudojant algoritmų analizės dinaminio programavimo metodą, kai tinklo išvesčių reikšmių išvestinės apskaičiuojamos nenaudojant rekurencijos "top-down" metodika, o naudojama "bottom-up" metodika, kai iš pradžių yra apskaičiuojamos tarpinės reikšmės ir jos išsaugomos.
+  \item Buvo sudarytos ir išvestos LSTM rekurentinio neuroninio tinklo formulės. Pavyko išvesti bendrąsias tinklo apmokymo formules gradientinio nusileidimo metodu. Šios formulės buvo optimizuotos, naudojant algoritmų analizės dinaminio programavimo metodą, kai tinklo išvesčių reikšmių išvestinės apskaičiuojamos nenaudojant rekurencijos "top-down" metodika, o naudojama "bottom-up" metodika, kai iš pradžių yra apskaičiuojamos tarpinės reikšmės, jos išsaugomos ir apjungiamos.
   \item Tinklas buvo realizuotas programiškai. Tinklas implementuotas taip, kad būtų galima patogiai keisti įvesties ir išvesties vektorių ilgius, būtų galima pasirinkti kiekvieno viduje esančio neuroninio tinklo individualias topologijas, nustatyti šių tinklų naudojamas aktyvacijos funkcijas ir pasirinkti apmokymui naudojamų parametrų reikšmes.
-  \item Dar nepilnai padaryta žodžio užbaigimo ir sekančio žodžio prognozės implementacija.
-  \item Tinklas dar nėra pilnai optimizuotas, tam reikia skaičiavimus perkelti į vaizdo plokštę ir paskirstyti skaičiavimus taip, kad gijos esančios vaizdo plokštėje būtų kuo efektyviau išnaudojamos.
+  \item Tinklo atskiri metodai buvo ištestuoti ir metodai veikia korektiškai.
+  \item Tinklas yra pritaikytas apmokymui duotuoju tekstu ir tada tinklas išsaugomas faile. Šį tinklą poto galima pasileisti ir prognozuoti sakinius, tačiau tinklui korektiškai prognozuoti tekstą reikia atlikti labai daug apmokymų.
   \item
   \begin{enumerate}
-    \item Apmokant tinklą nėra būtina perduoti naujai apskaičiuotų išvestinių į tolimesnių žingsnių apmokymus, kadangi tinklas yra apmokomas vienodai abiejais atvejais.
-    \item (Dar bus daroma)
+    \item Apmokant tinklą nėra būtina perduoti naujai apskaičiuotų išvestinių į tolimesnių žingsnių apmokymus, kadangi tinklas yra apmokomas vienodai abiejais atvejais. Remiantis šiuo faktu galima supaprastinti išvestas formules, kurias realizavus tinklo apmokymo laikas būtų daug trumpesnis.
+    \item Naudojant skirtingus apmokymo parametrus tinklas apsimokina skirtingai, tačiau visus atvejus sieja, kad apmokant šį tinklą naudojant bet kokius parametrus, tinklo funkcija patenka į lokalaus minimumo tašką, dėl kurio tinklas pilnai neapsimoko.
+    \item Tinklo apmokymas, kai įvesties reikšmių vektorių ir prognozuojamų reikšmių vektorių ilgiai didėja, tai tinklo apmokymo trukmė didėja eksponentiškai, todėl apmokant tinklą įvesties reikšmių parametrus būtų galima klasifikuoti į klases, kurios leistų tinklui greičiau apsimokinti.
   \end{enumerate}
 \end{enumerate}

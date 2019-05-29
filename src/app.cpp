@@ -6,8 +6,9 @@ LanguageModel::LanguageModel(){
 
 void LanguageModel::doSomething(){
 
-   //char abc[64]=" abcdefghijklmnopqrstuvwxyz-";
-   char abc[64]=" 0123456789abcdefghi";
+   char abc[64]=" abcdefghijklmnopqrstuvwxyz";
+   // char abc[64]=" 123";
+   // char abc[64]=" abcdeghilnoprstuvyz";
 
   //
   // int M = strlen(abc);
@@ -42,7 +43,8 @@ void LanguageModel::doSomething(){
 
 
 
-  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data1.txt");
+  // std::vector<DataNode*>* nodeVector = loadFromFile(abc, "../files/data.txt");
+  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "data.txt");
   // printf("%s\n", "asdsa");
 
 
@@ -54,9 +56,9 @@ void LanguageModel::doSomething(){
 
 
 
-  double alpha = 0.7;
-  double eta = 0.2;
-  printf("%s\n", "asdsa");
+  double alpha = 0.8;
+  double eta = 0.05;
+  // printf("%s\n", "asdsa");
   int M = strlen(abc);
   int V = 4;
   int I = strlen(abc);
@@ -66,7 +68,7 @@ void LanguageModel::doSomething(){
     topology[v]->addLayer(I);
     topology[v]->addLayer(M);
   }
-  printf("%s\n", "asdsa");
+  // printf("%s\n", "asdsa");
   RnnCell *rnnCell = new RnnCell(M, topology);
   Rnn *rnn = new Rnn(I, M, rnnCell, RNN_APPROX_BACKPROPAGATION);
 
@@ -75,7 +77,7 @@ void LanguageModel::doSomething(){
   // printf("%s\n", "asdsa");
   double startTime = clock();
 
-  for(int n = 0; n < 100; n++){
+  for(int n = 0; n < 10; n++){
     double iterError = 0;
     for(int i = 0; i < nodeVector->size(); i++){
       DataNode* input = (*nodeVector)[i];
@@ -117,11 +119,11 @@ void LanguageModel::doSomething(){
       iterError += sentenceError;
     }
 
-     //printf("%.10f\n",iterError);
-     double endTime = clock();
-     double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
-
-     printf("%.5f\n", runtime);
+     printf("Epochos paklaida: %.10f\n",iterError);
+     // double endTime = clock();
+     // double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
+     //
+     // printf("%.5f\n", runtime);
   }
 
   rnn->getRnnCell()->printf_Network("2000_123_02.bin");
@@ -131,7 +133,7 @@ void LanguageModel::doSomething(){
   double endTime = clock();
   double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
 
-  printf("=== DOUBLE \n");
+  // printf("=== DOUBLE \n");
   printf("Apmokymas uztruko: %.5f sec\n", runtime);
 
 

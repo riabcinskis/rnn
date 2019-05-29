@@ -101,12 +101,6 @@ void RnnCell::printf_Network(string output_filename){
     fwrite (anns[3]->getHWeights() , sizeof(double), anns[3]->getTopology()->getLayerSize(1)*M, pFile);
 
     fclose (pFile);
-  // }
-  //
-  // void AnnSerialDBL::readf_Network(FILE *pFile){
-  //  (void)fread (w_arr , sizeof(double), cTopology->obtainWeightCount(), pFile);
-  //  (void)fread (dw_arr , sizeof(double), cTopology->obtainWeightCount(), pFile);
-  // }
 }
 
 void RnnCell::prepare(int M, Topology **top){
@@ -163,8 +157,6 @@ void RnnCell::prepare(int M, Topology **top){
       aderiv[u][v]->vh = new double[M*top[v]->getLayerSize(1)*M];
     }
   }
-
-
 }
 
 
@@ -174,7 +166,6 @@ void RnnCell::init(FILE * pFile=NULL){
     c_current[i] = 0;
     h_current[i] = 0;
   }
-
 }
 
 void RnnCell::feedForward(double *h_in, double *c_in, double *a_in, double *c_out, double *h_out){
@@ -479,15 +470,6 @@ Rnn::Rnn(int I, int M, RnnCell *rnnCell, int impl){
 }
 
 DataNode* Rnn::feedForward(DataNode* input, OutputLimit *outputLimit){
-  // this->I = 11;
-  // this->M = 11;
-  // this->V = 4;
-  // h_in = new double[M];
-  // h_out = new double[M];
-  // c_in = new double[M];
-  // c_out = new double[M];
-
-
   // printf("%d\n", M);
   for(int k = 0; k < M; k++){
     h_in[k] = 0;
