@@ -50,17 +50,29 @@ RnnCell::RnnCell(int M, string filename) {
   double* Whw2= new double[M*top[2]->getLayerSize(1)];
   double* Whw3= new double[M*top[3]->getLayerSize(1)];
 
-  (void)fread (Ww0 , sizeof(double), top[0]->obtainWeightCount(), p1File);
-  (void)fread (Whw0 , sizeof(double), M*top[0]->getLayerSize(1), p1File);
+  // (void)fread (Ww0 , sizeof(double), top[0]->obtainWeightCount(), p1File);
+  // (void)fread (Whw0 , sizeof(double), M*top[0]->getLayerSize(1), p1File);
+  //
+  // (void)fread (Ww1 , sizeof(double), top[1]->obtainWeightCount(), p1File);
+  // (void)fread (Whw1 , sizeof(double), M*top[1]->getLayerSize(1), p1File);
+  //
+  // (void)fread (Ww2 , sizeof(double), top[2]->obtainWeightCount(), p1File);
+  // (void)fread (Whw2 , sizeof(double), M*top[2]->getLayerSize(1), p1File);
+  //
+  // (void)fread (Ww3 , sizeof(double), top[3]->obtainWeightCount(), p1File);
+  // (void)fread (Whw3 , sizeof(double), M*top[3]->getLayerSize(1), p1File);
 
-  (void)fread (Ww1 , sizeof(double), top[1]->obtainWeightCount(), p1File);
-  (void)fread (Whw1 , sizeof(double), M*top[1]->getLayerSize(1), p1File);
+  size_t result = fread (Ww0 , sizeof(double), top[0]->obtainWeightCount(), p1File);
+  result = fread (Whw0 , sizeof(double), M*top[0]->getLayerSize(1), p1File);
 
-  (void)fread (Ww2 , sizeof(double), top[2]->obtainWeightCount(), p1File);
-  (void)fread (Whw2 , sizeof(double), M*top[2]->getLayerSize(1), p1File);
+  result = fread (Ww1 , sizeof(double), top[1]->obtainWeightCount(), p1File);
+  result = fread (Whw1 , sizeof(double), M*top[1]->getLayerSize(1), p1File);
 
-  (void)fread (Ww3 , sizeof(double), top[3]->obtainWeightCount(), p1File);
-  (void)fread (Whw3 , sizeof(double), M*top[3]->getLayerSize(1), p1File);
+  result = fread (Ww2 , sizeof(double), top[2]->obtainWeightCount(), p1File);
+  result = fread (Whw2 , sizeof(double), M*top[2]->getLayerSize(1), p1File);
+
+  result = fread (Ww3 , sizeof(double), top[3]->obtainWeightCount(), p1File);
+  result = fread (Whw3 , sizeof(double), M*top[3]->getLayerSize(1), p1File);
 
 
   anns[0]->setWeights(Ww0,Whw0);

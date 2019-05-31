@@ -39,12 +39,36 @@ void LanguageModel::doSomething(){
   // printf("%s\n", "asdsa");
 
 
+  char f[512];
+  printf("Parašykite apmokomo failo vardą: ");
+  scanf("%s", f);
+  printf("\n");
+  // printf("%s\n", "asdsad");
+  // printf("nuskaityta %s\n", f);
+  int epoch;
+  printf("Nurodykite tinklo apmokymo epochų kiekį: ");
+  scanf("%d", &epoch);
+  printf("\n");
+  // printf("%d\n", epoch);
+
+  double alpha1;
+  printf("Nurodykite tinklo apmokymo greitį: ");
+  scanf("%lf", &alpha1);
+  printf("\n");
+// printf("%3f\n", alpha1);
+  double eta1;
+  printf("Nurodykite tinklo apmokymo inerciją: ");
+  scanf("%lf", &eta1);
+  printf("\n");
 
 
+  char vard[512];
+  printf("Nurodykite failo vardą, kuriame bus saugomas tinklas: ");
+  scanf("%s", vard);
+  printf("\n");
+// printf("%.3f\n", eta1);
 
-
-
-  std::vector<DataNode*>* nodeVector = loadFromFile(abc, "data.txt");
+  std::vector<DataNode*>* nodeVector = loadFromFile(abc, f);
   // printf("%s\n", "asdsa");
 
 
@@ -56,8 +80,8 @@ void LanguageModel::doSomething(){
 
 
 
-  double alpha = 0.8;
-  double eta = 0.05;
+  double alpha = alpha1;
+  double eta = eta1;
   // printf("%s\n", "asdsa");
   int M = strlen(abc);
   int V = 4;
@@ -77,7 +101,7 @@ void LanguageModel::doSomething(){
   // printf("%s\n", "asdsa");
   double startTime = clock();
 
-  for(int n = 0; n < 10; n++){
+  for(int n = 0; n < epoch; n++){
     double iterError = 0;
     for(int i = 0; i < nodeVector->size(); i++){
       DataNode* input = (*nodeVector)[i];
@@ -126,7 +150,7 @@ void LanguageModel::doSomething(){
      // printf("%.5f\n", runtime);
   }
 
-  rnn->getRnnCell()->printf_Network("2000_123_02.bin");
+  rnn->getRnnCell()->printf_Network(vard);
 
 
 

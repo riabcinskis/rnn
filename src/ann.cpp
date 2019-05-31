@@ -84,10 +84,10 @@ void Topology::printTopology(FILE *file){
 
 void Topology::readTopology(FILE *file){
   int size=0;
-  (void)fread (&size , sizeof(int), 1, file);
+  size_t result = fread (&size , sizeof(int), 1, file);
   int* abc=new int[size];
   ml=new vector<int>();
-  (void)fread (abc , sizeof(int), size, file);
+  result = fread (abc , sizeof(int), size, file);
   for(int i=0;i<size;i++){
     ml->push_back(abc[i]);
   }
