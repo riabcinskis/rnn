@@ -38,33 +38,33 @@ void LanguageModel::doSomething(){
   // printf("%s", str);
   // printf("%s\n", "asdsa");
 
-
+  int aaaa=0;
   char f[512];
   printf("Parašykite apmokomo failo vardą: ");
-  scanf("%s", f);
+  aaaa = scanf("%s", f);
   printf("\n");
   // printf("%s\n", "asdsad");
   // printf("nuskaityta %s\n", f);
   int epoch;
   printf("Nurodykite tinklo apmokymo epochų kiekį: ");
-  scanf("%d", &epoch);
+  aaaa = scanf("%d", &epoch);
   printf("\n");
   // printf("%d\n", epoch);
 
   double alpha1;
   printf("Nurodykite tinklo apmokymo greitį: ");
-  scanf("%lf", &alpha1);
+  aaaa = scanf("%lf", &alpha1);
   printf("\n");
 // printf("%3f\n", alpha1);
   double eta1;
   printf("Nurodykite tinklo apmokymo inerciją: ");
-  scanf("%lf", &eta1);
+  aaaa = scanf("%lf", &eta1);
   printf("\n");
 
 
   char vard[512];
   printf("Nurodykite failo vardą, kuriame bus saugomas tinklas: ");
-  scanf("%s", vard);
+  aaaa = scanf("%s", vard);
   printf("\n");
 // printf("%.3f\n", eta1);
 
@@ -143,7 +143,7 @@ void LanguageModel::doSomething(){
       iterError += sentenceError;
     }
 
-     printf("Epochos paklaida: %.10f\n",iterError);
+     printf("%d epochos paklaida: %.10f\n", n+1,iterError);
      // double endTime = clock();
      // double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
      //
@@ -188,8 +188,8 @@ std::vector<DataNode*>* LanguageModel::loadFromFile(const char *abc, const char 
   std::vector<DataNode*>* vector = new std::vector<DataNode*>();
 
   while ((read = getline(&line, &len, file)) != -1) {
-    printf("\n\n");
-    printf("%s", line);
+    // printf("\n\n");
+    // printf("%s", line);
 
     DataNode* node = str_to_nodes(abc, line);
     vector->push_back(node);
