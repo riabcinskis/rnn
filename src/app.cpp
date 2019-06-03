@@ -6,36 +6,45 @@ LanguageModel::LanguageModel(){
 
 void LanguageModel::doSomething(){
 
-   char abc[64]=" abcdefghijklmnoprstuvyz";
-   // char abc[64]=" 123";
+   //char abc[64]=" abcdefghijklmnopqrstuvwxyz";
+    char abc[64]=" 012";
    // char abc[64]=" abcdeghilnoprstuvyz";
 
-  //
-  // int M = strlen(abc);
-  // int I = strlen(abc);
-  // printf("%s\n", "asdsa");
-  // int V = 4;
-  // Topology **topology = new Topology*[V];
-  // for(int v = 0; v < V; v++){
-  //   topology[v] = new Topology();
-  //   topology[v]->addLayer(I);
-  //   topology[v]->addLayer(M);
-  // }
-  //
-  // RnnCell *rnnCell = new RnnCell(M, "500_123_03.bin");
-  // Rnn* rnn = new Rnn(I, M, rnnCell, RNN_FULL_BACKPROPAGATION);
-  //
-  // SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
-  //   // printf("%s\n", "asdsa");
-  //     // printf("%s\n", "asdsa");
-  // DataNode *inputNodes = str_to_nodes(abc, "123 4");
-  //   // printf("%s\n", "asdsa");
-  // DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
-  //   // printf("%s\n", "asdsa");
-  // char str[512]="";
-  // nodes_to_str(abc, outputNodes, str);
-  //
-  // printf("%s", str);
+
+//   int M = strlen(abc);
+//   int I = strlen(abc);
+// //  printf("%s\n", "asdsa");
+//   int V = 4;
+//   Topology **topology = new Topology*[V];
+//   for(int v = 0; v < V; v++){
+//     topology[v] = new Topology();
+//     topology[v]->addLayer(I);
+//     topology[v]->addLayer(M);
+//   }
+//
+//     int aaaa=0;
+//     char f[512];
+//     printf("Parašykite tinklo svorių failo vardą: ");
+//     aaaa = scanf("%s", f);
+//
+//     char sentence[512];
+//     printf("Parašykite sakinio pradžią: ");
+//     aaaa = scanf("%s", sentence);
+//
+//   RnnCell *rnnCell = new RnnCell(M, f);
+//   Rnn* rnn = new Rnn(I, M, rnnCell, RNN_FULL_BACKPROPAGATION);
+//
+//   SecondMarkLimit* markLimit = new SecondMarkLimit(0, M);
+//     // printf("%s\n", "asdsa");
+//       // printf("%s\n", "asdsa");
+//   DataNode *inputNodes = str_to_nodes(abc, sentence);
+//     // printf("%s\n", "asdsa");
+//   DataNode* outputNodes = rnn->feedForward(inputNodes, markLimit);
+//     // printf("%s\n", "asdsa");
+//   char str[512]="";
+//   nodes_to_str(abc, outputNodes, str);
+//
+//    printf("%s\n", str);
   // printf("%s\n", "asdsa");
 
   int aaaa=0;
@@ -143,7 +152,7 @@ void LanguageModel::doSomething(){
       iterError += sentenceError;
     }
 
-     printf("%d epochos paklaida: %.10f\n", n+1,iterError);
+     printf("%2d epochos paklaida: %.10f\n", n+1,iterError);
      // double endTime = clock();
      // double runtime = (double)(endTime-startTime)/CLOCKS_PER_SEC;
      //

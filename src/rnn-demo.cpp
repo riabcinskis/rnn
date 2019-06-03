@@ -11,7 +11,7 @@ int main (int c, char *v[]) {
 
   printf("RNN - demo\n\n");
 
-  run_tests();
+  //run_tests();
 
   LanguageModel *model = new LanguageModel();
   model->doSomething();

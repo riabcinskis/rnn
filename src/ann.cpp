@@ -112,7 +112,10 @@ AnnSerial::AnnSerial(int V, int u, int M, Topology **top, double (*f)(double), d
   this->f=(*f);
   this->f_deriv=(*f_deriv);
 
+  //printf("  AnnSerial::AnnSerial : M = %d, top[u]->getOutputNeuronCount() = %d\n", M, top[u]->getOutputNeuronCount());
   assert(M == top[u]->getOutputNeuronCount());
+
+
   prepare(top);
 
   init(top, NULL);

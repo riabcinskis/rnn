@@ -37,6 +37,7 @@ RnnCell::RnnCell(int M, string filename) {
   top[2]->readTopology(p1File);
   top[3]->readTopology(p1File);
 
+ printf("RnnCell::RnnCell : M = %d\n", M);
 
   prepare(M,top);
 
@@ -116,8 +117,11 @@ void RnnCell::printf_Network(string output_filename){
 }
 
 void RnnCell::prepare(int M, Topology **top){
+  //printf("  RnnCell::prepare : M = %d\n", M);
+
   this->M = M;
   V = 4;
+  //printf("(2)RnnCell::prepare : M = %d\n", M);
 
   double (*func)(double);
   double (*func_deriv)(double);
@@ -173,6 +177,8 @@ void RnnCell::prepare(int M, Topology **top){
 
 
 void RnnCell::init(FILE * pFile=NULL){
+
+//  printf("  RnnCell::init : M = %d\n", M);
 
   for(int i=0; i<M; i++){
     c_current[i] = 0;
