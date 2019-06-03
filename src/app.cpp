@@ -6,7 +6,7 @@ LanguageModel::LanguageModel(){
 
 void LanguageModel::doSomething(){
 
-   char abc[64]=" abcdefghijklmnopqrstuvwxyz";
+   char abc[64]=" abcdefghijklmnoprstuvyz";
    // char abc[64]=" 123";
    // char abc[64]=" abcdeghilnoprstuvyz";
 
@@ -52,12 +52,12 @@ void LanguageModel::doSomething(){
   // printf("%d\n", epoch);
 
   double alpha1;
-  printf("Nurodykite tinklo apmokymo greitį: ");
+  printf("Nurodykite tinklo apmokymo inerciją: ");
   aaaa = scanf("%lf", &alpha1);
   printf("\n");
 // printf("%3f\n", alpha1);
   double eta1;
-  printf("Nurodykite tinklo apmokymo inerciją: ");
+  printf("Nurodykite tinklo apmokymo greitį: ");
   aaaa = scanf("%lf", &eta1);
   printf("\n");
 
