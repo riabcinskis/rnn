@@ -37,7 +37,6 @@ RnnCell::RnnCell(int M, string filename) {
   top[2]->readTopology(p1File);
   top[3]->readTopology(p1File);
 
- printf("RnnCell::RnnCell : M = %d\n", M);
 
   prepare(M,top);
 
