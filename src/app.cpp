@@ -6,9 +6,9 @@ LanguageModel::LanguageModel(){
 
 void LanguageModel::doSomething(){
 
-   //char abc[64]=" abcdefghijklmnopqrstuvwxyz";
+  // char abc[64]=" abcdefghijklmnoprstuvyz";
     char abc[64]=" 012";
-   // char abc[64]=" abcdeghilnoprstuvyz";
+  //  char abc[64]=" abcdeghilnoprstuvyz";
 
 
 //   int M = strlen(abc);
